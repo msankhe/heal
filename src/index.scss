@@ -14,13 +14,14 @@ html {
 }
 .root {
     position:absolute;
+    color:#424242;
     left:0px;
     right:0px;
     top:0px;
     bottom:0px;
     display:flex;
     flex-direction: column;
-    .header {
+    > .header {
         flex-grow: 0;
         height:$headerHeight;
     }
@@ -46,25 +47,43 @@ html {
             box-sizing: border-box;
             margin:$defaultPadding;
             @include boxshadow();
-            border-radius:20px;
+            border-radius:10px;
             flex-grow: 1;
             display:flex;
             flex-direction: column;
             align-items: flex-start;
+            position: relative;
             &.confirmed {
-                background: linear-gradient(blue,purple);
+                color:white;
+                background: linear-gradient(90deg,#2A6792,#933DF1);
+                &::before {
+                    background-image:url(../images/confirmed.svg);
+                }
+            }
+            &.recovered {
+                color:white;
+                background: linear-gradient(90deg,#4AA79A,#5FB159);
+                &::before {
+                    background-image:url(../images/recovered.svg);
+                }
+            }
+            &.deaths {
+                &::before {
+                    background-image: url(../images/deaths.svg);
+                }
             }
             &::before {
                 content:'';
                 position: absolute;
                 display: block;
-                left: 0px;
-                top:    0px;
+                left: 17px;
+                top: -10px;
                 bottom:0px;
-                right:30%;
+                width:30%;
                 background-position: center;
-                background-size: contain;
-                background-image:url(../images/confirmed.svg);
+                background-size:30px;
+                background-repeat: no-repeat;
+                
             }
             .metric {
                 font-size:1.9em;
@@ -114,7 +133,7 @@ html {
             }
         }
     }
-    .header {
+    > .header {
         position:absolute;
         left:0px;
         width:100%;
@@ -141,12 +160,79 @@ html {
             width:200px;
         }
     }
-    .data-list {
-        position:absolute;
+    .data-list-container {
+        position: absolute;
+        width: $listWidth;
+        top: 0px;
+        bottom: 0px;
+        right: 0px;
+        
+        .data-list {
+            overflow:hidden;
+            font-size: 14px;
+            @include boxshadow();
+            border-radius: 20px;
+            box-sizing: border-box;
 
-        width:$listWidth;
-        top:0px;
-        bottom:0px;
-        right:0px;
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+
+            left: $defaultPadding;
+            top: $defaultPadding;
+            bottom: $defaultPadding;
+            right: $defaultPadding;
+
+            >.header {
+                flex-grow: 0;
+                padding: 20px;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+
+            .list-widget {
+                flex-grow: 1;
+                overflow:auto;
+                .item {
+
+                    background-color: #EDEDED;
+                    display: flex;
+                    margin: 5px;
+                    padding: 25px 10px;
+                    border-radius: 10px;
+
+                    .c {
+                        margin:0px 5px;
+                        .label {
+                            font-size:11px;
+                        }
+                    }
+                }
+            }
+
+            >.footer {
+                flex-grow: 0;
+                padding: 10px;
+                background-color: #EFEFEF;
+                display: flex;
+                align-items: center;
+                font-size: 11px;
+
+                .tip {
+                    margin-right: 10px;
+                }
+
+                .action {
+                    padding: 5px 15px;
+                    border-radius: 20px;
+                    background-color: #969696;
+                    color: white;
+                    text-align: center;
+                    cursor: pointer;
+                }
+
+            }
+        }
     }
+
 }
