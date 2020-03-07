@@ -1,7 +1,7 @@
 $headerHeight:70px;
+$toolbarHeight:30px;
 $mapWidth:60%;
 $listWidth:100% - $mapWidth;
-$toolbarHeight: 70px;
 $statsHeight: 200px;
 $defaultPadding: 40px;
 @mixin boxshadow {
@@ -30,6 +30,47 @@ html {
     .toolbar {
         flex-grow: 0;
         height: $toolbarHeight;
+        display:flex;
+        justify-content: flex-end;
+        margin-right:$defaultPadding;
+
+        .countries.ddl {
+            background-color: #EFEFEF;
+            padding:5px 10px;
+            border-radius:20px;
+
+        }
+        .ddl {
+            position:relative;
+            cursor:pointer;
+            width:150px;
+            .txt {
+                font-size:11px;
+                padding:5px 10px;
+            }
+            &::before {
+                content:'';
+                position:absolute;
+                right:10px;
+                top:0px;
+                bottom:0px;
+                width:20px;
+                background-image: url(../images/down.svg);
+                background-repeat: no-repeat;
+                background-size: 10px;
+                background-position: center;
+            }
+            select {
+                opacity:0;
+                cursor:pointer;
+                position:absolute;
+                left:0px;
+                right:0px;
+                top:0px;
+                bottom:0px;
+
+            }
+        }
     }
 
     .data-section {
@@ -153,12 +194,13 @@ html {
         }
     }
 
-    >.header {
-        position: absolute;
-        left: 0px;
-        width: 100%;
+    > .header {
+        // position: absolute;
+        // left: 0px;
+        // width: 100%;
+        // top: 0px;
+        flex-grow:0;
         height: $headerHeight;
-        top: 0px;
         display: flex;
         align-items: center;
         box-sizing: border-box;
@@ -252,12 +294,11 @@ html {
             bottom: $defaultPadding;
             right: $defaultPadding;
 
-            >.header {
-                flex-grow: 0;
-                padding: 30px;
-                font-weight: bold;
-                text-transform: uppercase;
-            }
+           > .header {
+               font-weight: bold;
+               text-transform: uppercase;
+               padding:40px;
+           }
 
             .list-widget {
                 flex-grow: 1;
@@ -324,6 +365,12 @@ html {
 
                     .chart-row {
                         height: 100px;
+                        position:relative;
+                        .loading-data {
+                            margin:20px;
+                            text-align: center;
+                            font-style: italic;
+                        }
                     }
                 }
 
@@ -382,6 +429,21 @@ html {
             }
         }
     }
-
+    .tt {
+        font-size:12px;
+        background-color:white;
+        @include boxshadow();
+        color:#424242;
+        padding:10px;
+        box-sizing:border-box;
+        .date {
+            font-size:1.2em;
+            margin-bottom:5px;
+            font-weight:bold;
+        }
+        .c {
+            margin-top:5px;
+        }
+    }
 
 }
