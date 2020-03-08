@@ -1,60 +1,46 @@
-import { safeLoad } from 'js-yaml';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
-import ReactPlayer from 'react-player';
-import { BrowserRouter as Router, Link, Route, Switch } from "react-router-dom";
 import './index.scss';
-import { Map, Marker, Popup, TileLayer } from "react-leaflet";
+import { Map, Marker, TileLayer } from "react-leaflet";
 import {divIcon,Map as LeafletMap,LatLngBoundsExpression} from 'leaflet';
 import { AreaChart, Area,ResponsiveContainer,Tooltip, XAxis } from 'recharts';
+import {shortenNumber,averageGeolocation} from './util';
+
 const SYNC_INTERVAL_MINUTES = 30; //time in minutes to refresh data
+
+const API_URL = "https://staywoke.lucy.servicedeskhq.com/hook/Covid19";
+
 type IFilterMode = 'country' | 'global';
 type IStatType = 'confirmed' | 'deaths' | 'recovered';
-function shortenNumber(i:number):string {
-    if (i < 1000) return ''+i;
-    if (i < 10000) {
-        return (( i / 1000.0).toFixed(1))+'K';
-    }
-    if (i <1000000) {
-        return ( i / 1000).toFixed(0) + 'K';
-    }
-    return ( i / 1000000).toFixed(0) + 'M';
+
+
+
+interface IDataItem {
+    country:string;
+    region:string;
+    confirmed:number;
+    deaths:number;
+    recovered:number;
+    lat:number;
+    lon:number;
+    id:string;
+}
+interface IMetadata {
+    countries:string[];
+    lastUpdate:string;
 }
 
 
-/**
- * Calculate the center/average of multiple GeoLocation coordinates
- * Expects an array of objects with .latitude and .longitude properties
- *
- * @url http://stackoverflow.com/a/14231286/538646
- * @url https://gist.github.com/tlhunter/0ea604b77775b3e7d7d25ea0f70a23eb
- */
-function averageGeolocation(coords: { lat: number, lon: number }[]):{lat:number,lon:number} {
-    if (coords.length === 1) {
-        return coords[0];
-    }
-    let x = 0.0;
-    let y = 0.0;
-    let z = 0.0;
-    for (let coord of coords) {
-        let lat = coord.lat * Math.PI / 180;
-        let lon = coord.lon * Math.PI / 180;
-        x += Math.cos(lat) * Math.cos(lon);
-        y += Math.cos(lat) * Math.sin(lon);
-        z += Math.sin(lat);
-    }
-    let total = coords.length;
-    x = x / total;
-    y = y / total;
-    z = z / total;
-    let centrallon = Math.atan2(y, x);
-    let centralSquareRoot = Math.sqrt(x * x + y * y);
-    let centrallat = Math.atan2(z, centralSquareRoot);
-    return {
-        lat: centrallat * 180 / Math.PI,
-        lon: centrallon * 180 / Math.PI
-    };
+interface ITrendPoint {
+    timestamp: Date;
+    value: number;
 }
+interface ITrendData {
+    confirmed:ITrendPoint[];
+    recovered:ITrendPoint[];
+    deaths:ITrendPoint[];
+}
+
 
 
 interface IHealthDashboardProps {
@@ -71,31 +57,29 @@ interface IHealthDashboardState {
     dialog:'info'|'';
 }
 
-interface IDataItem {
-    country:string;
-    region:string;
-    confirmed:number;
-    deaths:number;
-    recovered:number;
-    lat:number;
-    lon:number;
-    id:string;
-}
-interface IMetadata {
-    countries:string[];
-    lastUpdate:string;
-}
 interface IMapWidgetProps {
     items:IDataItem[];
     selectedItem:IDataItem;
     onItemSelected:(item:IDataItem) => void;
     stat:IStatType;
 }
-interface ITrendPoint {
-    timestamp: Date;
-    value: number;
+
+interface IListWidgetProps {
+    items:IDataItem[];
+    selectedItem:IDataItem;
+    onItemSelected:(item:IDataItem)=>void;
+    mode:IFilterMode;
+    context:IAppContext;
+    sorting:IStatType;
 }
-interface ITrendData {confirmed:ITrendPoint[],recovered:ITrendPoint[],deaths:ITrendPoint[]}
+interface IListWidgetState {
+    trendData:ITrendData;
+    trendDataError:any;
+}
+
+interface IAppContext {
+    getTrends:(country:string, region:string) => Promise<ITrendData>;
+}
 class MapWidget extends React.Component<IMapWidgetProps,{}> {
     map:LeafletMap;
     componentDidMount() {
@@ -104,13 +88,12 @@ class MapWidget extends React.Component<IMapWidgetProps,{}> {
     componentDidUpdate(prevProps: IMapWidgetProps) {
         if (this.props.items.length == 0) return;
         if (this.props.selectedItem != null) {
-            // this.map?.panTo([this.props.selectedItem.lat, this.props.selectedItem.lon],{});
-            // if (this.map?.getZoom() < 2) this.map?.setZoom(2);
             let zoom = this.map?.getZoom() || 0;
             if (zoom < 3) zoom = 3;
             this.map?.setView([this.props.selectedItem.lat, this.props.selectedItem.lon],zoom);
             return;
         }
+
         /* if only one point is present - fitBounds() fails. So just pan to that item */
         if (this.props.items.length == 1) {
             let zoom = this.map?.getZoom() || 0;
@@ -153,24 +136,11 @@ class MapWidget extends React.Component<IMapWidgetProps,{}> {
         />;
     }
 }
-interface IAppContext {
-    getTrends:(country:string, region:string) => Promise<ITrendData>;
-}
 let Context = React.createContext<IAppContext>({
     getTrends:(c:string,r:string) => {throw 'not implemented';}
 });
-interface IListWidgetProps {
-    items:IDataItem[];
-    selectedItem:IDataItem;
-    onItemSelected:(item:IDataItem)=>void;
-    mode:IFilterMode;
-    context:IAppContext;
-    sorting:IStatType;
-}
-interface IListWidgetState {
-    trendData:ITrendData;
-    trendDataError:any;
-}
+
+
 class AxisTick extends React.PureComponent<{payload?:any},{}>{
     render() {
         let payload = this.props.payload;
@@ -198,8 +168,6 @@ class ListWidget extends React.Component<IListWidgetProps,IListWidgetState> {
         this.props.context.getTrends(item.country,item.region)
         .then(trendData => this.setState({trendData,trendDataError:null},()=>{
             if (this.selectedEl && this.containerEl) {
-                // let bottom = this.selectedEl.offset
-                // this.containerEl.scrollTo(0,this.selectedEl.offsetTop);
                 this.selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         }))
@@ -220,11 +188,7 @@ class ListWidget extends React.Component<IListWidgetProps,IListWidgetState> {
         if (this.props.selectedItem?.id == item.id) {
             this.props.onItemSelected(null);
         } else {
-            this.props.onItemSelected(item);/*.then(trendData => {
-                this.setState({trendData,trendDataError:null});
-            })
-            .catch(e => this.setState({trendDataError:e}))
-            ;*/
+            this.props.onItemSelected(item);
         }
     }
     renderSelectedItem(item:IDataItem,key:number) {
@@ -569,17 +533,7 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
     }
     onItemSelected(item:IDataItem) {
         this.setState({selectedItem:item});
-        /*
-        return new Promise((resolve,reject)=>{
-
-            this.setState({selectedItem:item},()=>{
-                if (item==null) return resolve(null);
-                this.getTrends(item.country,item.region)
-                .then(data => resolve(data))
-                .catch(err => reject(err));
-
-            });
-        });*/
+       
     }
     setMapFilter(filter:IStatType) {
         this.setState({mapFilter:filter});
@@ -741,4 +695,4 @@ function renderDashboard(url: string,base:string) {
         document.getElementById("root")
     );
 }
-renderDashboard("https://staywoke.lucy.servicedeskhq.com/hook/Covid19","/");
+renderDashboard(API_URL,"/");

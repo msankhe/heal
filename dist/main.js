@@ -97510,51 +97510,9 @@ __webpack_require__(/*! ./index.scss */ "./src/index.scss");
 const react_leaflet_1 = __webpack_require__(/*! react-leaflet */ "./node_modules/react-leaflet/es/index.js");
 const leaflet_1 = __webpack_require__(/*! leaflet */ "./node_modules/leaflet/dist/leaflet-src.js");
 const recharts_1 = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/index.js");
+const util_1 = __webpack_require__(/*! ./util */ "./src/util.ts");
 const SYNC_INTERVAL_MINUTES = 30; //time in minutes to refresh data
-function shortenNumber(i) {
-    if (i < 1000)
-        return '' + i;
-    if (i < 10000) {
-        return ((i / 1000.0).toFixed(1)) + 'K';
-    }
-    if (i < 1000000) {
-        return (i / 1000).toFixed(0) + 'K';
-    }
-    return (i / 1000000).toFixed(0) + 'M';
-}
-/**
- * Calculate the center/average of multiple GeoLocation coordinates
- * Expects an array of objects with .latitude and .longitude properties
- *
- * @url http://stackoverflow.com/a/14231286/538646
- * @url https://gist.github.com/tlhunter/0ea604b77775b3e7d7d25ea0f70a23eb
- */
-function averageGeolocation(coords) {
-    if (coords.length === 1) {
-        return coords[0];
-    }
-    let x = 0.0;
-    let y = 0.0;
-    let z = 0.0;
-    for (let coord of coords) {
-        let lat = coord.lat * Math.PI / 180;
-        let lon = coord.lon * Math.PI / 180;
-        x += Math.cos(lat) * Math.cos(lon);
-        y += Math.cos(lat) * Math.sin(lon);
-        z += Math.sin(lat);
-    }
-    let total = coords.length;
-    x = x / total;
-    y = y / total;
-    z = z / total;
-    let centrallon = Math.atan2(y, x);
-    let centralSquareRoot = Math.sqrt(x * x + y * y);
-    let centrallat = Math.atan2(z, centralSquareRoot);
-    return {
-        lat: centrallat * 180 / Math.PI,
-        lon: centrallon * 180 / Math.PI
-    };
-}
+const API_URL = "https://staywoke.lucy.servicedeskhq.com/hook/Covid19";
 class MapWidget extends React.Component {
     componentDidMount() {
     }
@@ -97563,8 +97521,6 @@ class MapWidget extends React.Component {
         if (this.props.items.length == 0)
             return;
         if (this.props.selectedItem != null) {
-            // this.map?.panTo([this.props.selectedItem.lat, this.props.selectedItem.lon],{});
-            // if (this.map?.getZoom() < 2) this.map?.setZoom(2);
             let zoom = ((_a = this.map) === null || _a === void 0 ? void 0 : _a.getZoom()) || 0;
             if (zoom < 3)
                 zoom = 3;
@@ -97594,7 +97550,7 @@ class MapWidget extends React.Component {
     }
     renderMarker(item, key) {
         var _a;
-        let stat = shortenNumber(item[this.props.stat]);
+        let stat = util_1.shortenNumber(item[this.props.stat]);
         return React.createElement(react_leaflet_1.Marker, { onClick: () => this.props.onItemSelected(item), position: [item.lat, item.lon], key: item.id, icon: leaflet_1.divIcon({ className: 'micon ' + this.props.stat + ((item.id === ((_a = this.props.selectedItem) === null || _a === void 0 ? void 0 : _a.id)) ? ' selected' : ''), 'html': '<div><div class="inner"></div><div class="outer"></div><div class="txt">' + stat + '</div></div>' }) });
     }
 }
@@ -97625,8 +97581,6 @@ class ListWidget extends React.Component {
         this.props.context.getTrends(item.country, item.region)
             .then(trendData => this.setState({ trendData, trendDataError: null }, () => {
             if (this.selectedEl && this.containerEl) {
-                // let bottom = this.selectedEl.offset
-                // this.containerEl.scrollTo(0,this.selectedEl.offsetTop);
                 this.selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         }))
@@ -97645,11 +97599,7 @@ class ListWidget extends React.Component {
             this.props.onItemSelected(null);
         }
         else {
-            this.props.onItemSelected(item); /*.then(trendData => {
-                this.setState({trendData,trendDataError:null});
-            })
-            .catch(e => this.setState({trendDataError:e}))
-            ;*/
+            this.props.onItemSelected(item);
         }
     }
     renderSelectedItem(item, key) {
@@ -97801,7 +97751,7 @@ class HealthDashboard extends React.Component {
         }
         if (aggregateCountries) {
             items = countryList.map(item => {
-                let newCoords = averageGeolocation(countryCoords[item.country]);
+                let newCoords = util_1.averageGeolocation(countryCoords[item.country]);
                 item.lat = newCoords.lat;
                 item.lon = newCoords.lon;
                 return item;
@@ -97955,17 +97905,6 @@ class HealthDashboard extends React.Component {
     }
     onItemSelected(item) {
         this.setState({ selectedItem: item });
-        /*
-        return new Promise((resolve,reject)=>{
-
-            this.setState({selectedItem:item},()=>{
-                if (item==null) return resolve(null);
-                this.getTrends(item.country,item.region)
-                .then(data => resolve(data))
-                .catch(err => reject(err));
-
-            });
-        });*/
     }
     setMapFilter(filter) {
         this.setState({ mapFilter: filter });
@@ -98071,7 +98010,67 @@ class HealthDashboard extends React.Component {
 function renderDashboard(url, base) {
     ReactDom.render(React.createElement(HealthDashboard, { apiUrl: url, basePath: base }), document.getElementById("root"));
 }
-renderDashboard("https://staywoke.lucy.servicedeskhq.com/hook/Covid19", "/");
+renderDashboard(API_URL, "/");
+
+
+/***/ }),
+
+/***/ "./src/util.ts":
+/*!*********************!*\
+  !*** ./src/util.ts ***!
+  \*********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function shortenNumber(i) {
+    if (i < 1000)
+        return '' + i;
+    if (i < 10000) {
+        return ((i / 1000.0).toFixed(1)) + 'K';
+    }
+    if (i < 1000000) {
+        return (i / 1000).toFixed(0) + 'K';
+    }
+    return (i / 1000000).toFixed(0) + 'M';
+}
+exports.shortenNumber = shortenNumber;
+/**
+ * Calculate the center/average of multiple GeoLocation coordinates
+ * Expects an array of objects with .latitude and .longitude properties
+ *
+ * @url http://stackoverflow.com/a/14231286/538646
+ * @url https://gist.github.com/tlhunter/0ea604b77775b3e7d7d25ea0f70a23eb
+ */
+function averageGeolocation(coords) {
+    if (coords.length === 1) {
+        return coords[0];
+    }
+    let x = 0.0;
+    let y = 0.0;
+    let z = 0.0;
+    for (let coord of coords) {
+        let lat = coord.lat * Math.PI / 180;
+        let lon = coord.lon * Math.PI / 180;
+        x += Math.cos(lat) * Math.cos(lon);
+        y += Math.cos(lat) * Math.sin(lon);
+        z += Math.sin(lat);
+    }
+    let total = coords.length;
+    x = x / total;
+    y = y / total;
+    z = z / total;
+    let centrallon = Math.atan2(y, x);
+    let centralSquareRoot = Math.sqrt(x * x + y * y);
+    let centrallat = Math.atan2(z, centralSquareRoot);
+    return {
+        lat: centrallat * 180 / Math.PI,
+        lon: centrallon * 180 / Math.PI
+    };
+}
+exports.averageGeolocation = averageGeolocation;
 
 
 /***/ })
