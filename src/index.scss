@@ -72,6 +72,7 @@ html {
             background-color: #EFEFEF;
             padding:5px 10px;
             border-radius:20px;
+            width:200px;
 
         }
         .ddl {
@@ -401,9 +402,67 @@ html {
             right: $defaultPadding;
 
            > .header {
-               font-weight: bold;
-               text-transform: uppercase;
-               padding:40px;
+               padding:40px 20px;
+               display:flex;
+               justify-content: space-between;
+               align-items:center;
+               .title {
+                font-weight: bold;
+                text-transform: uppercase;
+
+               }
+               .filters {
+                
+                display:flex;
+                align-items: center;
+                .lbl {
+                    font-size:11px;
+                    text-transform: uppercase;
+                    margin-right:10px;
+                }
+                .switch {
+                   &.set {
+                       font-weight:bold;
+                   }
+                    margin:5px 5px;
+                    padding:10px 10px 10px 10px;
+                    border-radius:20px;
+                    cursor:pointer;
+                    font-size:9px;
+                    text-transform: uppercase;
+                    background-color: #EFEFEF;
+                    color:#424242;
+                    &.confirmed {
+                        &.set {
+                            @include confirmed();
+                        }
+                    }
+                    &.recovered {
+                        &.set {
+                            @include recovered();
+                        }
+                    }
+                    &.deaths {
+                        &.set {
+                            @include deaths();
+                        }
+                    }
+                    &::before {
+                        content: '';
+                        display:none;
+                        position: absolute;
+
+                        left: -20px;
+                        top: -4px;
+                        bottom: 0px;
+                        width: 30%;
+                        background-position: center;
+                        background-size: 11px;
+                        background-repeat: no-repeat;
+        
+                    }
+                }
+            }
            }
 
             .list-widget {
@@ -456,15 +515,20 @@ html {
 
                     .row2 {
                         display: flex;
-                        height: 50px;
+
 
                         .c {
                             background-color: white;
                             border-radius: 10px;
                             color: #424242;
                             margin-right: 10px;
-                            padding: 10px;
+                            padding:20px 10px;
                             flex-grow: 1;
+
+                        }
+                        .label {
+                            margin-bottom: 5px;
+                            font-size: 12px;
                         }
 
                     }

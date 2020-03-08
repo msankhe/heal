@@ -67,6 +67,7 @@ interface IHealthDashboardState {
     metadata:IMetadata;
     countryFilter:string;
     mapFilter:IStatType;
+    sorting:IStatType;
 }
 
 interface IDataItem {
@@ -163,6 +164,7 @@ interface IListWidgetProps {
     onItemSelected:(item:IDataItem)=>void;
     mode:IFilterMode;
     context:IAppContext;
+    sorting:IStatType;
 }
 interface IListWidgetState {
     trendData:ITrendData;
@@ -203,9 +205,13 @@ class ListWidget extends React.Component<IListWidgetProps,IListWidgetState> {
         .catch(e => this.setState({trendDataError:e,trendData:null}));
     }
     render() {
+        let t = this.props.sorting;
+        let items = this.props.items.slice().sort((a,b) => {
+            return Number(b[t]) - Number(a[t]);
+        });
         return <div ref={(el)=>this.containerEl=el}  className='list-widget'>
             {
-                this.props.items.map((item,key) => this.renderItem(item,key))
+                items.map((item,key) => this.renderItem(item,key))
             }
         </div>;
     }
@@ -344,7 +350,7 @@ class ListWidget extends React.Component<IListWidgetProps,IListWidgetState> {
 class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashboardState> implements IAppContext {
     constructor(props:IHealthDashboardProps) {
         super(props);
-        this.state = {data:[],selectedItem:null,metadata:null,countryFilter:'',mapFilter:'confirmed'};
+        this.state = {data:[],selectedItem:null,metadata:null,countryFilter:'',mapFilter:'confirmed',sorting:'confirmed'};
     }
     filterItem(item:IDataItem) {
         if (this.state.countryFilter=='') return item;
@@ -562,6 +568,9 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
     setMapFilter(filter:IStatType) {
         this.setState({mapFilter:filter});
     }
+    setSorting(type:IStatType) {
+        this.setState({sorting:type});
+    }
     setCountryFilter(country:string) {
         this.setState({countryFilter:country,selectedItem:null});
     }
@@ -613,8 +622,19 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
             </div>
             <div className='data-list-container'>
                 <div className='data-list'>
-                    <div className='header'>{mode=='global'?'Countries':this.state.countryFilter}</div>
-                    <ListWidget context={context} selectedItem={selectedItem} mode={mode}  items={items} onItemSelected={this.onItemSelected.bind(this)} />
+                    <div className='header'>
+                        <div className='title'>{
+                    mode=='global'?'Countries':this.state.countryFilter}
+                    </div>
+                    <div className='filters'>
+                        <span className='lbl'>Sort</span>
+                    <div onClick={this.setSorting.bind(this,'confirmed')} className={(this.state.sorting=='confirmed'?'set':'') + ' switch confirmed'}>Confirmed</div>
+                        <div onClick={this.setSorting.bind(this,'deaths')}    className={(this.state.sorting=='deaths'?'set':'') + ' switch deaths'}>Deaths</div>
+                        <div onClick={this.setSorting.bind(this,'recovered')} className={(this.state.sorting=='recovered'?'set':'') + ' switch recovered'}>Recovered</div>
+
+                    </div>
+                    </div>
+                    <ListWidget sorting={this.state.sorting} context={context} selectedItem={selectedItem} mode={mode}  items={items} onItemSelected={this.onItemSelected.bind(this)} />
                     <div className='footer'>
                         <div className='tip'>Learn how this dashboard can be personalized for you</div>
                         <div className='action'>Learn More</div>
