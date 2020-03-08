@@ -126,6 +126,23 @@ html {
         padding-left:$defaultPadding - 10px;
         padding-right: $defaultPadding - 10px;
         box-sizing: border-box;
+        .stats-header {
+            position: absolute;
+            top: 0px;
+            left: 40px;
+            font-size: 12px;
+            .dt {
+                display:flex;
+                .lbl {
+                    margin-right:5px;
+                    color:#666;
+                    font-style:italic;
+                }
+                .value {
+
+                }
+            }
+        }
         .stat {
             padding: $defaultPadding;
             box-sizing: border-box;

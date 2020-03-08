@@ -509,6 +509,7 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
                 try {
                     let items = JSON.parse(raw);
                     let metadata = this.getMetadata(items);
+                    metadata.lastUpdate = localStorage.getItem('lastUpdated') || '';
                     resolve({items,metadata});
                 } catch(e) {
                     reject(e);
@@ -541,7 +542,9 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
                 throw await response.text();
             }
             let rawData = await response.json();
-            let data = rawData.map((item:any) => ({
+            let lastUpdate = rawData.updated;
+
+            let data = rawData.regions.map((item:any) => ({
                 country:item['Country/Region'],
                 region:item['Province/State'],
                 confirmed:Number(item['Confirmed']),
@@ -553,7 +556,11 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
             }));
             localStorage.setItem('raw',JSON.stringify(data));
             localStorage.setItem('lastSync',new Date().toISOString());
+            localStorage.setItem('lastUpdated',lastUpdate);
             let metadata = this.getMetadata(data);
+            /* we now get this separtely */
+            metadata.lastUpdate = lastUpdate;
+
             return {items:data,metadata};
         } catch(e) {
             throw e;
@@ -618,6 +625,16 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
             <div className='data-section'>
 
             <div className='stats'>
+                <div className='stats-header'>
+                    <div className='dt'>
+                        {
+                            this.state.metadata?.lastUpdate?<>
+                                <div className='lbl'>Last Updated</div>
+                                <div className='value'>{new Date(this.state.metadata.lastUpdate).toLocaleString()}</div>
+                            </>:null
+                        }
+                    </div>
+                </div>
                 <div className='stat confirmed'>
                     <div className='metric'>{confirmed}</div>
                     <div className='title'>confirmed</div>
