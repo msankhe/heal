@@ -5,10 +5,11 @@ import ReactPlayer from 'react-player';
 import { BrowserRouter as Router, Link, Route, Switch } from "react-router-dom";
 import './index.scss';
 import { Map, Marker, Popup, TileLayer } from "react-leaflet";
-import {divIcon} from 'leaflet';
-import { AreaChart, Area,ResponsiveContainer,Tooltip } from 'recharts';
+import {divIcon,Map as LeafletMap,LatLngBoundsExpression} from 'leaflet';
+import { AreaChart, Area,ResponsiveContainer,Tooltip, XAxis } from 'recharts';
 const SYNC_INTERVAL_MINUTES = 30; //time in minutes to refresh data
 type IFilterMode = 'country' | 'global';
+type IStatType = 'confirmed' | 'deaths' | 'recovered';
 function shortenNumber(i:number):string {
     if (i < 1000) return ''+i;
     if (i < 10000) {
@@ -65,6 +66,7 @@ interface IHealthDashboardState {
     selectedItem:IDataItem;
     metadata:IMetadata;
     countryFilter:string;
+    mapFilter:IStatType;
 }
 
 interface IDataItem {
@@ -84,6 +86,8 @@ interface IMetadata {
 interface IMapWidgetProps {
     items:IDataItem[];
     selectedItem:IDataItem;
+    onItemSelected:(item:IDataItem) => void;
+    stat:IStatType;
 }
 interface ITrendPoint {
     timestamp: Date;
@@ -91,46 +95,115 @@ interface ITrendPoint {
 }
 interface ITrendData {confirmed:ITrendPoint[],recovered:ITrendPoint[],deaths:ITrendPoint[]}
 class MapWidget extends React.Component<IMapWidgetProps,{}> {
-   
+    map:LeafletMap;
+    componentDidMount() {
+
+    }
+    componentDidUpdate(prevProps: IMapWidgetProps) {
+        if (this.props.items.length == 0) return;
+        if (this.props.selectedItem != null) {
+            // this.map?.panTo([this.props.selectedItem.lat, this.props.selectedItem.lon],{});
+            // if (this.map?.getZoom() < 2) this.map?.setZoom(2);
+            let zoom = this.map?.getZoom() || 0;
+            if (zoom < 3) zoom = 3;
+            this.map?.setView([this.props.selectedItem.lat, this.props.selectedItem.lon],zoom);
+            return;
+        }
+        /* if only one point is present - fitBounds() fails. So just pan to that item */
+        if (this.props.items.length == 1) {
+            let zoom = this.map?.getZoom() || 0;
+            if (zoom < 3) zoom = 3;
+            this.map?.setView([this.props.items[0].lat, this.props.items[0].lon],zoom);
+            return;
+        }
+
+        let bounds = this.props.items.map(item => [item.lat, item.lon]) as LatLngBoundsExpression;
+        this.map.fitBounds(bounds);
+
+    }
     render() {
         return <div className='gmap' >
-<Map center={[45.4, -75.7]} zoom={2} >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        
-      />
-      {
-          this.props.items.map((item,key)=>this.renderMarker(item,key))
-      }
-    </Map>
+            <Map center={[45.4, -75.7]} zoom={2}
+                ref={(el) => {
+                    if (!!el) {
+                        this.map = el.leafletElement;
+                    }
+                }}
+            >
+                <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+
+                />
+                {
+                    this.props.items.map((item, key) => this.renderMarker(item, key))
+                }
+            </Map>
 
         </div>;
     }
     renderMarker(item:IDataItem,key:number) {
+        let stat = shortenNumber(item[this.props.stat]);
         return <Marker 
+        onClick={()=>this.props.onItemSelected(item)}
         position={[item.lat,item.lon]}
-        key={key}
-        icon={divIcon({className:'micon' + ( (item.id === this.props.selectedItem?.id) ?' selected':''),'html':'<div><div class="inner"></div><div class="outer"></div><div class="txt">'+shortenNumber(item.confirmed)+'</div></div>'})}
+        key={item.id}
+        icon={divIcon({className:'micon ' + this.props.stat + ( (item.id === this.props.selectedItem?.id) ?' selected':''),'html':'<div><div class="inner"></div><div class="outer"></div><div class="txt">'+stat+'</div></div>'})}
         />;
     }
 }
+interface IAppContext {
+    getTrends:(country:string, region:string) => Promise<ITrendData>;
+}
+let Context = React.createContext<IAppContext>({
+    getTrends:(c:string,r:string) => {throw 'not implemented';}
+});
 interface IListWidgetProps {
     items:IDataItem[];
     selectedItem:IDataItem;
-    onItemSelected:(item:IDataItem) => Promise<ITrendData>;
+    onItemSelected:(item:IDataItem)=>void;
     mode:IFilterMode;
+    context:IAppContext;
 }
 interface IListWidgetState {
     trendData:ITrendData;
     trendDataError:any;
 }
+class AxisTick extends React.PureComponent<{payload?:any},{}>{
+    render() {
+        let payload = this.props.payload;
+        return <text>{'XXX'+payload}</text>;
+    }
+
+}
 class ListWidget extends React.Component<IListWidgetProps,IListWidgetState> {
+    selectedEl:HTMLElement;
+    containerEl:HTMLElement;
     constructor(props:IListWidgetProps) {
         super(props);
         this.state = {trendData:null,trendDataError:null};
     }
+    componentDidUpdate(prevProps:IListWidgetProps,prevState:IListWidgetState) {
+        let prevItem = prevProps.selectedItem;
+        let item = this.props.selectedItem;
+        if (item == null) {
+            return;
+        }
+        if (prevItem != null && prevItem.id === item.id) {
+            return;
+        }
+        console.log('Updating trends');
+        this.props.context.getTrends(item.country,item.region)
+        .then(trendData => this.setState({trendData,trendDataError:null},()=>{
+            if (this.selectedEl && this.containerEl) {
+                // let bottom = this.selectedEl.offset
+                // this.containerEl.scrollTo(0,this.selectedEl.offsetTop);
+                this.selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }))
+        .catch(e => this.setState({trendDataError:e,trendData:null}));
+    }
     render() {
-        return <div className='list-widget'>
+        return <div ref={(el)=>this.containerEl=el}  className='list-widget'>
             {
                 this.props.items.map((item,key) => this.renderItem(item,key))
             }
@@ -140,25 +213,27 @@ class ListWidget extends React.Component<IListWidgetProps,IListWidgetState> {
         if (this.props.selectedItem?.id == item.id) {
             this.props.onItemSelected(null);
         } else {
-            this.props.onItemSelected(item).then(trendData => {
+            this.props.onItemSelected(item);/*.then(trendData => {
                 this.setState({trendData,trendDataError:null});
             })
             .catch(e => this.setState({trendDataError:e}))
-            ;
+            ;*/
         }
     }
     renderSelectedItem(item:IDataItem,key:number) {
-        return <div key={key} className='selected-item' onClick={this.selectItem.bind(this, item)}>
+        return <div key={key} 
+        ref={(el)=>this.selectedEl = el}
+        className='selected-item' onClick={this.selectItem.bind(this, item)}>
             <div className='row1'>
                 {
-                    this.props.mode!='global'?null:
+                    (this.props.mode!='global' && !!item.region)?null:
                     <div className='country c'>
                     <div className='label'>Country</div>
                     <div className='value'>{item.country}</div>
                 </div>
                 }
                 {
-                    this.props.mode=='global'?null:
+                    (this.props.mode=='global' && !item.region)?null:
                     <div className='area c'>
                         <div className='label'>Area</div>
                         <div className='value'>{item.region}</div>
@@ -228,6 +303,7 @@ class ListWidget extends React.Component<IListWidgetProps,IListWidgetState> {
             <Area type='monotone' activeDot={{r:1}} dataKey='confirmed' fillOpacity={0.7} fill='#06F' />
             <Area type='monotone' activeDot={{r:1}} dataKey='recovered' fillOpacity={0.7} fill='green' />
             <Area type='monotone' activeDot={{r:1}} dataKey='deaths' fillOpacity={0.7} fill='red' />
+
         </AreaChart>
         </ResponsiveContainer>
     }
@@ -237,14 +313,14 @@ class ListWidget extends React.Component<IListWidgetProps,IListWidgetState> {
         }
 
         return <div key={key} className='item' onClick={this.selectItem.bind(this,item)}>
-           {  this.props.mode!='global'?null:
+           {  (this.props.mode!='global' && !!item.region)?null:
            <div className='country c'>
                 <div className='label'>Country</div>
                 <div className='value'>{item.country}</div>
             </div>
             }
             {
-                 this.props.mode=='global'?null:
+                 (this.props.mode=='global' && !item.region)?null:
                 <div className='area c'>
                 <div className='label'>Area</div>
                 <div className='value'>{item.region}</div>
@@ -261,16 +337,14 @@ class ListWidget extends React.Component<IListWidgetProps,IListWidgetState> {
                 <div className='label'>Recovered</div>
                 <div className='value'>{item.recovered}</div>
             </div>
-            <div className='notify c'>
-                <div className='action'>Notify Me</div>
-            </div>
+           
         </div>;
     }
 }
-class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashboardState> {
+class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashboardState> implements IAppContext {
     constructor(props:IHealthDashboardProps) {
         super(props);
-        this.state = {data:[],selectedItem:null,metadata:null,countryFilter:''};
+        this.state = {data:[],selectedItem:null,metadata:null,countryFilter:'',mapFilter:'confirmed'};
     }
     filterItem(item:IDataItem) {
         if (this.state.countryFilter=='') return item;
@@ -472,6 +546,8 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
 
     }
     onItemSelected(item:IDataItem) {
+        this.setState({selectedItem:item});
+        /*
         return new Promise((resolve,reject)=>{
 
             this.setState({selectedItem:item},()=>{
@@ -481,9 +557,18 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
                 .catch(err => reject(err));
 
             });
-        });
+        });*/
+    }
+    setMapFilter(filter:IStatType) {
+        this.setState({mapFilter:filter});
+    }
+    setCountryFilter(country:string) {
+        this.setState({countryFilter:country,selectedItem:null});
     }
     render() {
+        return this.renderWithContext(this);
+    }
+    renderWithContext(context:IAppContext) {
         let {items,confirmed,deaths,recovered} = this.filteredData();
         let selectedItem = this.state.selectedItem;
         let countries = this.state.metadata?.countries || [];
@@ -499,7 +584,7 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
                 <div className='countries ddl'>
                     <div className='txt'>{this.state.countryFilter || 'All Countries'}</div>
                     <select value={this.state.countryFilter} onChange={(e)=>{
-                        this.setState({countryFilter:e.target.value});
+                        this.setCountryFilter(e.target.value);
                     }}>
                         <option key={-1} value={''}>All Countries</option>
                         {
@@ -529,7 +614,7 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
             <div className='data-list-container'>
                 <div className='data-list'>
                     <div className='header'>{mode=='global'?'Countries':this.state.countryFilter}</div>
-                    <ListWidget selectedItem={selectedItem} mode={mode}  items={items} onItemSelected={this.onItemSelected.bind(this)} />
+                    <ListWidget context={context} selectedItem={selectedItem} mode={mode}  items={items} onItemSelected={this.onItemSelected.bind(this)} />
                     <div className='footer'>
                         <div className='tip'>Learn how this dashboard can be personalized for you</div>
                         <div className='action'>Learn More</div>
@@ -538,7 +623,12 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
             </div>
             <div className='map'>
                 <div className='map-widget'>
-                    <MapWidget items={items} selectedItem={selectedItem} />
+                    <div className='filters'>
+                        <div onClick={this.setMapFilter.bind(this,'confirmed')} className={(this.state.mapFilter=='confirmed'?'set':'') + ' switch confirmed'}>Confirmed</div>
+                        <div onClick={this.setMapFilter.bind(this,'deaths')}    className={(this.state.mapFilter=='deaths'?'set':'') + ' switch deaths'}>Deaths</div>
+                        <div onClick={this.setMapFilter.bind(this,'recovered')} className={(this.state.mapFilter=='recovered'?'set':'') + ' switch recovered'}>Recovered</div>
+                    </div>
+                    <MapWidget stat={this.state.mapFilter} items={items} selectedItem={selectedItem}  onItemSelected={this.onItemSelected.bind(this)}  />
                 </div>
             </div>
             </div>
