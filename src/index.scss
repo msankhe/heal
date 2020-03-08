@@ -379,7 +379,7 @@ html {
                 top: 50%;
                 transform: translate(-50%, -50%);
                 transform-origin: 0% 0%;
-                animation: ripple 2s linear 1s infinite;
+                animation: map-ripple 2s linear 1s infinite;
             }
             &.confirmed .inner {
                 border: 10px solid blue;
@@ -755,7 +755,7 @@ html {
         }
     }
 }
-@keyframes ripple{
+@keyframes map-ripple{
     0% {transform:scale(0.3) translate(-50%,-50%);opacity:0.0; }
     75% {transform:scale(1.75) translate(-50%,-50%); opacity:0.3;}
     100% {transform:scale(2) translate(-50%,-50%); opacity:0;}
