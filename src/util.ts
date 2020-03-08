@@ -7,7 +7,10 @@ export function shortenNumber(i:number):string {
     if (i <1000000) {
         return ( i / 1000).toFixed(0) + 'K';
     }
-    return ( i / 1000000).toFixed(0) + 'M';
+    if (i < 1000000000) {
+        return ( i / 1000000).toFixed(0) + 'M';
+    }
+    return (i / 1000000000).toFixed(1) + 'B';
 }
 
 

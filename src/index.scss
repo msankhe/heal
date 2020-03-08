@@ -104,6 +104,7 @@ html {
                 right:0px;
                 top:0px;
                 bottom:0px;
+                width:100%; // this is required for <select> ?
 
             }
         }
@@ -438,7 +439,22 @@ html {
                .title {
                 font-weight: bold;
                 text-transform: uppercase;
+                text-overflow: ellipsis;
+                overflow:hidden;
+                white-space:nowrap;
 
+               }
+               .goback {
+                   display: inline-block;
+                   width: 12px;
+                   position: relative;
+                   left: -3px;
+                   height: 12px;
+                   background-image: url(../images/down.svg);
+                   transform: rotate(90deg);
+                   background-position: center;
+                   background-repeat: no-repeat;
+                   cursor: pointer;
                }
                .filters {
                 

@@ -8,6 +8,8 @@ import {shortenNumber,averageGeolocation} from './util';
 
 const SYNC_INTERVAL_MINUTES = 30; //time in minutes to refresh data
 
+const POPULATION_SYNC_INTERVAL_MINUTES = 60*24; //population data can be synced once a day
+
 const API_URL = "https://staywoke.lucy.servicedeskhq.com/hook/Covid19";
 
 type IFilterMode = 'country' | 'global';
@@ -41,6 +43,10 @@ interface ITrendData {
     deaths:ITrendPoint[];
 }
 
+interface IPopulationInfo {
+    country: string;
+    population: number;
+}
 
 
 interface IHealthDashboardProps {
@@ -75,10 +81,17 @@ interface IListWidgetProps {
 interface IListWidgetState {
     trendData:ITrendData;
     trendDataError:any;
+    population:number;
 }
 
 interface IAppContext {
-    getTrends:(country:string, region:string) => Promise<ITrendData>;
+    getTrends:(country:string, region:string) => Promise<{trends:ITrendData,population:number}>;
+}
+
+function cfr(item:IDataItem) {
+    if (item.confirmed==0) return '0%';
+    let r = 100*item.deaths/item.confirmed;
+    return r.toFixed(1) + '%';
 }
 class MapWidget extends React.Component<IMapWidgetProps,{}> {
     map:LeafletMap;
@@ -153,8 +166,9 @@ class ListWidget extends React.Component<IListWidgetProps,IListWidgetState> {
     containerEl:HTMLElement;
     constructor(props:IListWidgetProps) {
         super(props);
-        this.state = {trendData:null,trendDataError:null};
+        this.state = {trendData:null,trendDataError:null,population:0};
     }
+
     componentDidUpdate(prevProps:IListWidgetProps,prevState:IListWidgetState) {
         let prevItem = prevProps.selectedItem;
         let item = this.props.selectedItem;
@@ -166,7 +180,7 @@ class ListWidget extends React.Component<IListWidgetProps,IListWidgetState> {
         }
         console.log('Updating trends');
         this.props.context.getTrends(item.country,item.region)
-        .then(trendData => this.setState({trendData,trendDataError:null},()=>{
+        .then(({trends,population}) => this.setState({trendData:trends,population,trendDataError:null},()=>{
             if (this.selectedEl && this.containerEl) {
                 this.selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
@@ -204,15 +218,31 @@ class ListWidget extends React.Component<IListWidgetProps,IListWidgetState> {
                 </div>
                 }
                 {
-                    (this.props.mode=='global' && !item.region)?null:
+                    (this.props.mode=='global' || !item.region)?null:
                     <div className='area c'>
                         <div className='label'>Area</div>
                         <div className='value'>{item.region}</div>
                     </div>
                 }
-                <div className='notify c'>
+                {
+                    this.state.population ?<>
+                        <div className='population c'>
+                            <div className='label'>Population</div>
+                            <div className='value'>{shortenNumber(this.state.population)}</div>
+                        </div>
+                       
+                       
+                        </>
+                        : null
+
+                }
+                 <div className='cfr c'>
+                            <div className='label' title='Case Fatality Rate'>CFR</div>
+                            <div className='value'>{cfr(item)}</div>
+                        </div>
+                {/* <div className='notify c'>
                     <div className='action'>Notify Me</div>
-                </div>
+                </div> */}
             </div>
             <div className='row2'>
 
@@ -291,7 +321,7 @@ class ListWidget extends React.Component<IListWidgetProps,IListWidgetState> {
             </div>
             }
             {
-                 (this.props.mode=='global' && !item.region)?null:
+                 (this.props.mode=='global' || !item.region)?null:
                 <div className='area c'>
                 <div className='label'>Area</div>
                 <div className='value'>{item.region}</div>
@@ -392,7 +422,23 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
         }
         return id;
     }
-    getTrends(country:string,region:string):Promise<ITrendData> {
+    async getTrends(country:string,region:string):Promise<{trends:ITrendData,population:number}> {
+        let trends = await this.getTrendData(country,region);
+        let population = 0;
+
+        /* only support population at the country level currently */
+        if (!region) {
+
+            let populationData = await this.getPopulationData();
+            let populationItems = populationData.filter(_ =>_.country == country);
+            if (populationItems?.length) {
+                population = populationItems[0].population;
+            }
+        }
+
+        return {trends,population};
+    }
+    getTrendData(country:string,region:string):Promise<ITrendData> {
         let requiresResync = false;
         let id = this.composeId(country,region);
         let trendData = localStorage.getItem('trends/' + id);
@@ -455,6 +501,52 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
         }
 
     }
+    getPopulationData():Promise<IPopulationInfo[]> {
+        let raw = localStorage.getItem('population');
+        let lastUpdate = localStorage.getItem('population/lastSync');
+        let requiresResync = false;
+        if (!lastUpdate || !raw) {
+            requiresResync = true;
+        } else {
+            let dt = new Date(lastUpdate);
+            let elapsedMinutes =  (Number(new Date()) - Number(dt))/(1000*60);
+            if (elapsedMinutes > POPULATION_SYNC_INTERVAL_MINUTES) {
+                requiresResync = true;
+            }
+        };
+        if (!requiresResync) {
+            return new Promise((resolve,reject)=>{
+                try {
+                    let items = JSON.parse(raw);
+                    resolve(items);
+                } catch(e) {
+                    reject(e);
+                }
+            });
+        }
+        return this.loadRemotePopulationData();
+    }
+    async loadRemotePopulationData():Promise<IPopulationInfo[]> {
+        try {
+            console.log('fetching population data...');
+            let response = await fetch(this.props.apiUrl + '/population',{method:'GET'});
+            if (!response.ok) {
+                throw await response.text();
+            }
+            let rawData = (await response.json()).population;
+            let data = rawData.map((item:any) => ({
+                country:item.country,
+                population:Number(item.population)
+            }));
+
+         
+            localStorage.setItem('population',JSON.stringify(data));
+            localStorage.setItem('population/lastSync',new Date().toISOString());
+            return data;
+        } catch(e) {
+            throw e;
+        }
+    }
     getMasterData():Promise<{items:IDataItem[],metadata:IMetadata}> {
         let raw = localStorage.getItem('raw');
         let lastUpdate = localStorage.getItem('lastSync');
@@ -491,7 +583,8 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
             countries[items[i].country] = 1;
             lastUpdate = '';
         }
-        return {countries:Object.keys(countries),lastUpdate};
+        let countryList = Object.keys(countries).sort();
+        return {countries:countryList,lastUpdate};
     }
 
     componentDidMount() {
@@ -606,7 +699,9 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
                 <div className='data-list'>
                     <div className='header'>
                         <div className='title'>{
-                    mode=='global'?'Countries':this.state.countryFilter}
+                    mode=='global'?'Countries':<><div className='goback' onClick={()=>this.setState({countryFilter:''})} />
+                    {this.state.countryFilter}
+                    </>}
                     </div>
                     <div className='filters'>
                         <span className='lbl'>Sort</span>
@@ -660,6 +755,14 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
                             <div className='text'>WHO has information on how to keep yourself and your family safe. </div>
                             <div className='action-container'>
                                 <a className='action' href='https://www.who.int/emergencies/diseases/novel-coronavirus-2019/advice-for-public' target='_blank'>View</a>
+                            </div>
+                        </li>
+                        <li>
+                            <div className='text'>
+                                CFR (Case Fatality Rate) is calculated as percentage of fatalities in confirmed cases.
+                                 </div>
+                            <div className='action-container'>
+                                
                             </div>
                         </li>
                         <li>
