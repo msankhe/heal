@@ -671,12 +671,18 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
         </div>
     }
     renderInfoDialog() {
-        return <><div className='dialog-sheet' />
+        return <><div className='dialog-sheet' onClick={()=>this.setState({dialog:''})} />
           <div className='dialog info'>
-              <div className='closer' />
-              <div className='header'>
-                    Information
-              </div>
+                <div className='header'>
+                    <div className='first'></div>
+                    <div className='title'>
+                        Information
+                        </div>
+                    <div className='last'>
+
+                        <div className='closer' onClick={() => this.setState({ dialog: '' })} />
+                    </div>
+                </div>
               <div className='body'>
                     <ol className='items'>
                         <li>

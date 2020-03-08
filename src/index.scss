@@ -651,6 +651,7 @@ html {
     display:flex;
     flex-direction: column;
     border-radius:20px;
+
     .header {
         flex-grow:0;
         height: 70px;
@@ -658,6 +659,21 @@ html {
         text-align:center;
         font-size:22px;
         font-weight:bold;
+        position:relative;
+        display:flex;
+        .title {
+            flex-grow:1;
+        }
+        .first,.second {flex-grow:0;width:100px;}
+        .closer {
+            background-image:url(../images/close.svg);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            width:20px;
+            height:20px;
+            cursor:pointer;
+        }
     }
     .body {
         flex-grow:1;
