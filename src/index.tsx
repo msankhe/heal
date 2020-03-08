@@ -68,6 +68,7 @@ interface IHealthDashboardState {
     countryFilter:string;
     mapFilter:IStatType;
     sorting:IStatType;
+    dialog:'info'|'';
 }
 
 interface IDataItem {
@@ -350,7 +351,15 @@ class ListWidget extends React.Component<IListWidgetProps,IListWidgetState> {
 class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashboardState> implements IAppContext {
     constructor(props:IHealthDashboardProps) {
         super(props);
-        this.state = {data:[],selectedItem:null,metadata:null,countryFilter:'',mapFilter:'confirmed',sorting:'confirmed'};
+        this.state = {
+            data: [],
+            selectedItem: null,
+            metadata: null,
+            countryFilter: '',
+            mapFilter: 'confirmed',
+            sorting: 'confirmed',
+            dialog:'',
+        };
     }
     filterItem(item:IDataItem) {
         if (this.state.countryFilter=='') return item;
@@ -585,9 +594,11 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
         
         return <div className='root'>
             <div className='header'>
-                <div className='logo'></div>
+                <a href='/' className='logo'></a>
                 <div className='title'>Health Monitor</div>
-                <div className='padder'></div>
+                <div className='padder'>
+
+                </div>
             </div>
             <div className='toolbar'>
                 <div className='countries ddl'>
@@ -636,8 +647,8 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
                     </div>
                     <ListWidget sorting={this.state.sorting} context={context} selectedItem={selectedItem} mode={mode}  items={items} onItemSelected={this.onItemSelected.bind(this)} />
                     <div className='footer'>
-                        <div className='tip'>Learn how this dashboard can be personalized for you</div>
-                        <div className='action'>Learn More</div>
+                        <div className='tip'>Learn more about this dashboard</div>
+                        <div className='action' onClick={()=>this.setState({dialog:'info'})}>Info</div>
                     </div>
                 </div>
             </div>
@@ -652,7 +663,51 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
                 </div>
             </div>
             </div>
+            {
+                ( this.state.dialog == 'info')?
+                        this.renderInfoDialog():null
+                }
+            }
         </div>
+    }
+    renderInfoDialog() {
+        return <><div className='dialog-sheet' />
+          <div className='dialog info'>
+              <div className='closer' />
+              <div className='header'>
+                    Information
+              </div>
+              <div className='body'>
+                    <ol className='items'>
+                        <li>
+                            <div className='text'>WHO has information on how to keep yourself and your family safe. </div>
+                            <div className='action-container'>
+                                <a className='action' href='https://www.who.int/emergencies/diseases/novel-coronavirus-2019/advice-for-public' target='_blank'>View</a>
+                            </div>
+                        </li>
+                        <li>
+                            <div className='text'>Data for this dashboard is sourced from several places, most notably, John Hopkins Center for System Science  and Engineering</div>
+                            <div className='action-container'>
+                                <a className='action' href='https://github.com/CSSEGISandData' target='_blank'>Source</a>
+                            </div>
+                        </li>
+                        <li>
+                            <div className='text'>The APIs for this dashboard are powered by Lucy using data culled from the sources mentioned above.</div>
+                            <div className='action-container'>
+                                <a className='action' href='https://lucyinthesky.io' target='_blank'>Learn More</a>
+                            </div>
+                        </li>
+                        <li>
+                            <div className='text'>The code for this dashboard is available on Github.</div>
+                            <div className='action-container'>
+                                <a className='action' href='https://github.com/lucy-platform/heal' target='_blank'>View on Github</a>
+                            </div>
+                        </li>
+                    </ol>
+
+              </div>
+        </div>
+        </>;
     }
 } 
 
