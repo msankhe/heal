@@ -12,7 +12,7 @@ Run `npx serve` to run it easily.
 
 Or just serve up the index.html file with any web server.
 
-## Source s
+## Sources
 
 The app connects to a Lucy-powered API that publishes data. 
 
