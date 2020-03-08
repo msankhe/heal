@@ -126,7 +126,7 @@ module.exports = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' v
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24.78 35.12'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:none;%7D%3C/style%3E%3C/defs%3E%3Cg id='Layer_2' data-name='Layer 2'%3E%3Cg id='Layer_1-2' data-name='Layer 1'%3E%3Cpath class='cls-1' d='M12.26,25.06A12.53,12.53,0,0,0,12.26,0C5,0,.24,5.49,0,12.24'/%3E%3Cpath class='cls-1' d='M3,35.12a12.52,12.52,0,0,1,17.71,0'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"
+module.exports = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 235.24 234.62'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:%23fff;%7D%3C/style%3E%3C/defs%3E%3Cg id='Layer_2' data-name='Layer 2'%3E%3Cg id='Layer_1-2' data-name='Layer 1'%3E%3Cpath class='cls-1' d='M105.19,172.83A86.42,86.42,0,1,0,105.19,0,87.61,87.61,0,0,0,71,6.66,79.86,79.86,0,0,0,34.57,37.53,92.62,92.62,0,0,0,20.46,84.29a9.5,9.5,0,0,0,19,.67,76.83,76.83,0,0,1,5.38-26,63.35,63.35,0,0,1,22.63-28.8C77.59,23.18,90.15,19,105.19,19a67.42,67.42,0,1,1,0,134.83,9.5,9.5,0,1,0,0,19Z'/%3E%3Cpath class='cls-1' d='M125,218.41a86.33,86.33,0,0,0-122.21,0,9.5,9.5,0,0,0,13.44,13.43,67.33,67.33,0,0,1,95.33,0A9.5,9.5,0,0,0,125,218.41Z'/%3E%3Cpath class='cls-1' d='M189.88,159.47,219,188.61a9.5,9.5,0,0,0,13.44-13.43L203.31,146a9.5,9.5,0,0,0-13.43,13.44'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"
 
 /***/ }),
 

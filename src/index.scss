@@ -34,6 +34,7 @@ $defaultPadding: 40px;
         background-image: url(../images/recovered.svg);
     }
 }
+
 @mixin deaths {
     color: #424242;
     @include deaths-gradient();
