@@ -120,6 +120,13 @@ class MapWidget extends React.Component<IMapWidgetProps,{}> {
 
     }
     render() {
+        let size = '';
+        let zoom = this.map?.getZoom();
+
+        if (zoom < 3) {
+            size ='tiny';
+        }
+
         return <div className='gmap' >
             <Map center={[45.4, -75.7]} zoom={2}
                 ref={(el) => {
@@ -127,25 +134,31 @@ class MapWidget extends React.Component<IMapWidgetProps,{}> {
                         this.map = el.leafletElement;
                     }
                 }}
+                
             >
                 <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 
                 />
                 {
-                    this.props.items.map((item, key) => this.renderMarker(item, key))
+                    this.props.items.map((item, key) => this.renderMarker(item, key,size))
                 }
             </Map>
 
         </div>;
     }
-    renderMarker(item:IDataItem,key:number) {
+    renderMarker(item:IDataItem,key:number,size:string) {
         let stat = shortenNumber(item[this.props.stat]);
+        let markerClass = `micon ${this.props.stat} ${size}`;
+        if (item.id === this.props.selectedItem?.id) {
+            markerClass += ' selected';
+        }
+        
         return <Marker 
         onClick={()=>this.props.onItemSelected(item)}
         position={[item.lat,item.lon]}
         key={item.id}
-        icon={divIcon({className:'micon ' + this.props.stat + ( (item.id === this.props.selectedItem?.id) ?' selected':''),'html':'<div><div class="inner"></div><div class="outer"></div><div class="txt">'+stat+'</div></div>'})}
+        icon={divIcon({className:markerClass,'html':'<div><div class="inner"></div><div class="outer"></div><div class="txt">'+stat+'</div></div>'})}
         />;
     }
 }

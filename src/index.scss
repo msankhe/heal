@@ -367,6 +367,17 @@ html {
             transform: translate(-50%, -50%);
             position: absolute;
         }
+
+        &.tiny {
+            .txt {
+                
+                padding:1px;
+                width:3px;
+                height:3px;
+                overflow:hidden;
+            }
+        }
+        
         &.selected {
             .inner {
                 border-radius: 50%;
