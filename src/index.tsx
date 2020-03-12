@@ -4,7 +4,7 @@ import './index.scss';
 import './mobile.scss';
 import { Map, Marker, TileLayer } from "react-leaflet";
 import {divIcon,Map as LeafletMap,LatLngBoundsExpression} from 'leaflet';
-import { AreaChart, Area,ResponsiveContainer,Tooltip, XAxis } from 'recharts';
+import * as Recharts from 'recharts';
 import {shortenNumber,averageGeolocation} from './util';
 
 const SYNC_INTERVAL_MINUTES = 30; //time in minutes to refresh data
@@ -300,9 +300,9 @@ class ListWidget extends React.Component<IListWidgetProps,IListWidgetState> {
                 timestamp:data.confirmed[i]?.timestamp,
             });
         }
-        return <ResponsiveContainer height='100%' width='100%'>
-        <AreaChart data={zippedData}>
-            <Tooltip content={(o:any)=>{
+        return <Recharts.ResponsiveContainer height='100%' width='100%'>
+        <Recharts.AreaChart data={zippedData}>
+            <Recharts.Tooltip content={(o:any)=>{
                 if (o.active) {
                     let obj = o.payload[0].payload;
                     return <div className='tt'>
@@ -315,12 +315,12 @@ class ListWidget extends React.Component<IListWidgetProps,IListWidgetState> {
                     return null;
                 }
             }} />
-            <Area type='monotone' activeDot={{r:1}} dataKey='confirmed' fillOpacity={0.7} fill='#06F' />
-            <Area type='monotone' activeDot={{r:1}} dataKey='recovered' fillOpacity={0.7} fill='green' />
-            <Area type='monotone' activeDot={{r:1}} dataKey='deaths' fillOpacity={0.7} fill='red' />
+            <Recharts.Area type='monotone' activeDot={{r:1}} dataKey='confirmed' fillOpacity={0.7} fill='#06F' />
+            <Recharts.Area type='monotone' activeDot={{r:1}} dataKey='recovered' fillOpacity={0.7} fill='green' />
+            <Recharts.Area type='monotone' activeDot={{r:1}} dataKey='deaths' fillOpacity={0.7} fill='red' />
 
-        </AreaChart>
-        </ResponsiveContainer>
+        </Recharts.AreaChart>
+        </Recharts.ResponsiveContainer>
     }
     renderItem(item:IDataItem,key:number) {
         if (item.id === this.props.selectedItem?.id) {
