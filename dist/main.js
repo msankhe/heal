@@ -3034,6 +3034,24 @@ module.exports = exports;
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/mobile.scss":
+/*!******************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/mobile.scss ***!
+  \******************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// Imports
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+exports = ___CSS_LOADER_API_IMPORT___(false);
+// Module
+exports.push([module.i, "@media screen and (max-width: 768px) {\n  .root > .header {\n    padding: 30px 40px 20px 40px; } }\n\n@media screen and (max-width: 480px) {\n  .root > .header {\n    display: inline-block;\n    width: 100%; } }\n\n@media screen and (max-width: 480px) {\n  .root > .header .logo {\n    width: 100%;\n    text-align: center;\n    background-position: center center; } }\n\n@media screen and (max-width: 480px) {\n  .root > .header .title {\n    width: 100%;\n    display: inline-block;\n    margin-top: 1.5em;\n    font-size: 17px; } }\n\n@media screen and (max-width: 480px) {\n  .root .toolbar {\n    margin-right: 0;\n    display: inline-block;\n    width: 84%;\n    margin-left: 8%;\n    margin-top: 3em; } }\n\n@media screen and (max-width: 480px) {\n  .root .toolbar .countries.ddl {\n    background-color: #EFEFEF;\n    padding: 5px 10px;\n    border-radius: 20px;\n    width: 100%;\n    box-sizing: border-box; } }\n\n@media screen and (max-width: 768px) {\n  .root .stats {\n    width: 100%;\n    position: inherit;\n    display: inline-block; } }\n\n@media screen and (max-width: 480px) {\n  .root .stats {\n    height: 68vh; } }\n\n@media screen and (max-width: 768px) {\n  .root .stats .stat {\n    margin-top: 0em;\n    position: inherit;\n    width: 30.5%; } }\n\n@media screen and (max-width: 480px) {\n  .root .stats .stat {\n    width: 100%;\n    margin: 10px 0px 10px 0px; } }\n\n@media screen and (max-width: 768px) {\n  .root .stats .stats-header {\n    position: inherit;\n    top: 0px;\n    margin-left: 10px;\n    margin-top: 20px;\n    margin-bottom: 20px;\n    left: 0; } }\n\n@media screen and (max-width: 768px) {\n  .root .data-list-container {\n    width: 90%;\n    top: 0;\n    position: inherit;\n    margin-left: 5%;\n    display: inline-block; } }\n\n@media screen and (max-width: 480px) {\n  .root .data-list-container {\n    width: 86%;\n    margin-left: 7%; } }\n\n@media screen and (max-width: 768px) {\n  .root .data-list-container .data-list {\n    height: 65vh;\n    position: inherit; } }\n\n@media screen and (max-width: 768px) {\n  .root .data-list-container .data-list .list-widget .item .c {\n    width: 150px; } }\n\n@media screen and (max-width: 768px) {\n  .root .data-list-container .data-list .list-widget .item .label {\n    margin-bottom: 0.6em; } }\n\n@media screen and (max-width: 768px) {\n  .root .map {\n    width: 100%;\n    margin-top: 1em;\n    height: 67vh;\n    position: inherit;\n    display: inline-block;\n    top: 0; } }\n\n@media screen and (max-width: 480px) {\n  .root .map .map-widget {\n    left: 35px;\n    right: 35px; } }\n\n@media screen and (max-width: 480px) {\n  .root .map .map-widget .filters .switch {\n    margin: 5px 5px;\n    padding: 9px 9px 9px 9px;\n    border-radius: 15px;\n    font-size: 8px; } }\n", ""]);
+// Exports
+module.exports = exports;
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/dist/runtime/api.js":
 /*!*****************************************************!*\
   !*** ./node_modules/css-loader/dist/runtime/api.js ***!
@@ -97507,6 +97525,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const ReactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
 __webpack_require__(/*! ./index.scss */ "./src/index.scss");
+__webpack_require__(/*! ./mobile.scss */ "./src/mobile.scss");
 const react_leaflet_1 = __webpack_require__(/*! react-leaflet */ "./node_modules/react-leaflet/es/index.js");
 const leaflet_1 = __webpack_require__(/*! leaflet */ "./node_modules/leaflet/dist/leaflet-src.js");
 const recharts_1 = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/index.js");
@@ -98106,6 +98125,37 @@ function renderDashboard(url, base) {
 }
 renderDashboard(API_URL, "/");
 
+
+/***/ }),
+
+/***/ "./src/mobile.scss":
+/*!*************************!*\
+  !*** ./src/mobile.scss ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var api = __webpack_require__(/*! ../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+            var content = __webpack_require__(/*! !../node_modules/css-loader/dist/cjs.js!../node_modules/sass-loader/dist/cjs.js!./mobile.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/mobile.scss");
+
+            content = content.__esModule ? content.default : content;
+
+            if (typeof content === 'string') {
+              content = [[module.i, content, '']];
+            }
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = api(content, options);
+
+var exported = content.locals ? content.locals : {};
+
+
+
+module.exports = exported;
 
 /***/ }),
 

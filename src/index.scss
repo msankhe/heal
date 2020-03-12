@@ -4,6 +4,7 @@ $mapWidth:60%;
 $listWidth:100% - $mapWidth;
 $statsHeight: 200px;
 $defaultPadding: 40px;
+
 @mixin boxshadow {
     box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
 

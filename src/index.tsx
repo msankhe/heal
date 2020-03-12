@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import './index.scss';
+import './mobile.scss';
 import { Map, Marker, TileLayer } from "react-leaflet";
 import {divIcon,Map as LeafletMap,LatLngBoundsExpression} from 'leaflet';
 import { AreaChart, Area,ResponsiveContainer,Tooltip, XAxis } from 'recharts';
