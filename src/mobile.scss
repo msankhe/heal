@@ -192,4 +192,27 @@
              }
          }
      }
+     @media screen and (max-width: $break-medium) {
+         .dialog {
+             left:0px;
+             right:0px;
+             top:0px;
+             bottom:0px;
+             border-radius:0px;
+             .header {
+                 height:unset;
+                 .first {
+                     width:0px;
+                 }
+             }
+             .body {
+                 overflow: auto;;
+                 padding:20px 10px;
+                 
+                 ol {
+                     width:100%;
+                 }
+             }
+         }
+     }
  }
