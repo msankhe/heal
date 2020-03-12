@@ -1,142 +1,195 @@
- 
-$break-small: 480px;
-$break-medium: 768px;
+ $break-small: 480px;
+ $break-medium: 768px;
 
-.root{
-      > .header {
-        @media screen and (max-width: $break-medium) {
-            padding: 30px 40px 20px 40px;
-        }  
-        @media screen and (max-width: $break-small) {             
-            display: inline-block;
-            width: 100%;
-        }  
-        .logo{
-            @media screen and (max-width: $break-small) {             
-                width: 100%;
-                text-align: center;
-                background-position: center center;
-            }  
-        }
-        .title{
-            @media screen and (max-width: $break-small) {             
-                width: 100%;
-                display: inline-block;
-                margin-top: 1.5em;
-                font-size: 17px;
-            } 
-           
-        }   
-    }
-    .toolbar {
-        @media screen and (max-width: $break-small) {             
-            margin-right: 0;
-            display: inline-block;
-            width: 84%;
-            margin-left: 8%;
-            margin-top: 3em;
-        }
-        .countries.ddl {
-            @media screen and (max-width: $break-small) {             
-                background-color: #EFEFEF;
-                padding: 5px 10px;
-                border-radius: 20px;
-                width: 100%;
-                box-sizing: border-box;
-            }            
-        }
-    }
-    .stats {       
-            @media screen and (max-width: $break-medium) {
-                width: 100%;
-                position: inherit;
-                display: inline-block;
-            }
-            @media screen and (max-width: $break-small) {
-                height: 68vh;
-            }
-            .stat{
-                @media screen and (max-width: $break-medium) {                    
-                    margin-top: 0em;
-                    position: inherit; 
-                    width: 30.5%;
-                }
-                @media screen and (max-width: $break-small) {
-                    width: 100%; 
-                    margin: 10px 0px 10px 0px;
-                }               
-            }
-            .stats-header{
-                @media screen and (max-width: $break-medium) {                    
-                    position: inherit;
-                    top: 0px;
-                    margin-left: 10px;    
-                    margin-top: 20px;
-                    margin-bottom: 20px;
-                    left: 0;
-                }
-                @media screen and (max-width: $break-small) {
-                    
-                }               
-            }
-        }
-        .data-list-container {       
-            @media screen and (max-width: $break-medium) {
-                width: 90%;
-                top: 0;
-                position: inherit;
-                margin-left: 5%;
-                display: inline-block;
-            }
-            @media screen and (max-width: $break-small) {
-                width: 86%;
-                margin-left: 7%;
-            }
-            .data-list{
-                @media screen and (max-width: $break-medium) {
-                    height: 65vh;
-                    position: inherit;
-                }
-                .list-widget{
-                    .item{
-                        .c{ 
-                            @media screen and (max-width: $break-medium) {
-                                width: 150px;
-                            }                                                     
-                        }
-                        .label{
-                            @media screen and (max-width: $break-medium) {
-                                margin-bottom: 0.6em;
-                            }       
-                        } 
-                    }
-                }
-            }
-        }
-        .map {
-            @media screen and (max-width: $break-medium) {
-                width: 100%;
-                margin-top: 1em;
-                height: 67vh;
-                position: inherit;
-                display: inline-block;
-                top: 0;
-            }
-            .map-widget {
-                @media screen and (max-width: $break-small) {
-                    left: 35px; 
-                    right: 35px;
-                }             
-                .filters {
-                    .switch {
-                        @media screen and (max-width: $break-small) {
-                            margin: 5px 5px;
-                            padding: 9px 9px 9px 9px;
-                            border-radius: 15px; 
-                            font-size: 8px; 
-                        }                    
-                    }
-                }
-            }
-        }
-    }
+ .root {
+     >.header {
+         @media screen and (max-width: $break-medium) {
+             padding: 30px 40px 20px 40px;
+         }
+
+         @media screen and (max-width: $break-small) {
+             display: inline-block;
+             width: 100%;
+         }
+
+         .logo {
+             @media screen and (max-width: $break-small) {
+                 width: 100%;
+                 text-align: center;
+                 background-position: center center;
+             }
+         }
+
+         .title {
+             @media screen and (max-width: $break-small) {
+                 width: 100%;
+                 display: inline-block;
+                 margin-top: 1.5em;
+                 font-size: 17px;
+             }
+
+         }
+     }
+
+     .toolbar {
+         @media screen and (max-width: $break-small) {
+             margin-right: 0;
+             display: inline-block;
+             width: 84%;
+             margin-left: 8%;
+             margin-top: 3em;
+         }
+
+         .countries.ddl {
+             @media screen and (max-width: $break-small) {
+                 background-color: #EFEFEF;
+                 padding: 5px 10px;
+                 border-radius: 20px;
+                 width: 100%;
+                 box-sizing: border-box;
+             }
+         }
+     }
+
+     .stats {
+         @media screen and (max-width: $break-medium) {
+             width: 100%;
+             position: inherit;
+             display: inline-block;
+         }
+
+         @media screen and (max-width: $break-small) {
+             height: 68vh;
+         }
+
+         .stat {
+             @media screen and (max-width: $break-medium) {
+                 margin-top: 0em;
+                 position: inherit;
+                 width: 30.5%;
+             }
+
+             @media screen and (max-width: $break-small) {
+                 width: 100%;
+                 margin: 10px 0px 10px 0px;
+             }
+         }
+
+         .stats-header {
+             @media screen and (max-width: $break-medium) {
+                 position: inherit;
+                 top: 0px;
+                 margin-left: 10px;
+                 margin-top: 20px;
+                 margin-bottom: 20px;
+                 left: 0;
+             }
+
+             @media screen and (max-width: $break-small) {}
+         }
+     }
+
+     .data-list-container {
+         @media screen and (max-width: $break-medium) {
+             width: 90%;
+             top: 0;
+             position: inherit;
+             margin-left: 5%;
+             display: inline-block;
+         }
+
+         @media screen and (max-width: $break-small) {
+             width: 86%;
+             margin-left: 7%;
+         }
+
+         .data-list {
+             @media screen and (max-width: $break-medium) {
+
+                 height: 65vh;
+                 position: inherit;
+
+                 .header {
+                     flex-direction: column;
+                     align-items: flex-start;
+                     padding: 10px 20px;
+                     height: 80px;
+                     justify-content: space-around;
+                 }
+
+                 .list-widget {
+                     display:flex;
+                     .selected-item {
+                         .population {
+                             .label {
+                                 display:none !important;
+                            }
+                         }
+                     }
+                     .item {
+                         flex-direction: column;
+                         justify-content: space-around;
+                         .c {
+                            //  width: 150px;
+                            width:75vw;
+                            text-align: center;
+                            margin:5px 0px;
+                            padding:10px;
+                            box-sizing: border-box;
+                            &.country {
+                                .label {
+                                    display:none;
+                                }
+                                .value {
+                                    font-family: "Century Gothic Bold";
+                                    font-size:1.3em;
+                                }
+                            }
+                            &.confirmed,&.deaths,&.recovered {
+                                background-color: white;
+                                border-radius:10px;
+                            }
+
+
+                         }
+
+                         .label {
+
+                             margin-bottom: 0.6em;
+
+                         }
+                     }
+                 }
+             }
+         }
+     }
+
+     .map {
+         @media screen and (max-width: $break-medium) {
+             width: 100%;
+             margin-top: 1em;
+             height: 67vh;
+             position: inherit;
+             display: inline-block;
+             top: 0;
+         }
+
+         .map-widget {
+             @media screen and (max-width: $break-small) {
+                 left: 35px;
+                 right: 35px;
+             }
+
+             .filters {
+                 .switch {
+                     @media screen and (max-width: $break-small) {
+                         margin: 5px 5px;
+                         padding: 9px 9px 9px 9px;
+                         border-radius: 15px;
+                         font-size: 8px;
+                     }
+                 }
+             }
+         }
+     }
+ }
