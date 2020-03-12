@@ -655,14 +655,7 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
         let countries = this.state.metadata?.countries || [];
         let mode:IFilterMode = this.state.countryFilter?'country':'global';
         
-        return <div className='root'>
-            <div className='header'>
-                <a href='/' className='logo'></a>
-                <div className='title'>Health Monitor</div>
-                <div className='padder'>
-
-                </div>
-            </div>
+        return (<>
             <div className='toolbar'>
                 <div className='countries ddl'>
                     <div className='txt'>{this.state.countryFilter || 'All Countries'}</div>
@@ -737,14 +730,17 @@ class HealthDashboard extends React.Component<IHealthDashboardProps,IHealthDashb
                     <MapWidget stat={this.state.mapFilter} items={items} selectedItem={selectedItem}  onItemSelected={this.onItemSelected.bind(this)}  />
                 </div>
             </div>
+
             </div>
             {
                 ( this.state.dialog == 'info')?
                         this.renderInfoDialog():null
                 }
             }
-        </div>
+            </>
+        )
     }
+    
     renderInfoDialog() {
         return <><div className='dialog-sheet' onClick={()=>this.setState({dialog:''})} />
           <div className='dialog info'>
