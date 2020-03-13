@@ -1,6 +1,9 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import HealthDashboard from "./components/global-dashboard/global-dashboard";
+import LocalDashBoard from './components/local-dashboard/local-dashboard';
+
+import "./index.scss"
 
 const API_URL = "https://staywoke.lucy.servicedeskhq.com/hook/Covid19";
 
@@ -19,7 +22,7 @@ class Layout extends React.Component<IProps, IState>{
         super(props);
 
         this.state = {
-            dashboard: "global",
+            dashboard: "local",
             title: "Health Monitor",
             userName: 'User'
         };
@@ -33,6 +36,9 @@ class Layout extends React.Component<IProps, IState>{
 
         if (this.state.dashboard == "global") {
             content = <HealthDashboard apiUrl={API_URL} basePath={"/"} />;
+        }
+        else {
+            content = <LocalDashBoard  />;
         }
 
         return (

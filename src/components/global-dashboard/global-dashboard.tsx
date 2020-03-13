@@ -1,5 +1,5 @@
 import * as React from "react";
-import './global-dashboard.scss';
+// import './global-dashboard.scss';
 import './global-mobile.scss';
 import { Map, Marker, TileLayer } from "react-leaflet";
 import {divIcon,Map as LeafletMap,LatLngBoundsExpression} from 'leaflet';
@@ -122,6 +122,9 @@ class MapWidget extends React.Component<IMapWidgetProps,{}> {
         if (zoom < 3) {
             size ='tiny';
         }
+
+        console.log('items');
+        console.log(this.props.items);
 
         return <div className='gmap' >
             <Map center={[45.4, -75.7]} zoom={2}
