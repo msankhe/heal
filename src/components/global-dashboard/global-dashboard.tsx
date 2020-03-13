@@ -123,9 +123,6 @@ class MapWidget extends React.Component<IMapWidgetProps,{}> {
             size ='tiny';
         }
 
-        console.log('items');
-        console.log(this.props.items);
-
         return <div className='gmap' >
             <Map center={[45.4, -75.7]} zoom={2}
                 ref={(el) => {
