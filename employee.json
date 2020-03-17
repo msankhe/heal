@@ -1,0 +1,36 @@
+{
+    "stats": {
+        "screened": 10,
+        "employees": 10,
+        "oranges": 4
+    },
+    "lastupdated": "2020/03/13",
+    "employees": [
+        {
+            "temperature": 30.0,
+            "locationName": "London Office",
+            "lat": 111111,
+            "long": 111111,
+            "lastCountryVisisted": "",
+            "dataSourceName": "Google sheet",
+            "dataSourceIcon": "http://s3.amazonaws.com/ecyber.public/connector-icons/google-calendar.svg",
+            "status": "letf",
+            "starred": true,
+            "lastScanned": "2020/03/13",
+            "name": "smith"
+        },
+        {
+            "temperature": 30.0,
+            "locationName": "London Office",
+            "lat": 111111,
+            "long": 111111,
+            "lastCountryVisisted": "",
+            "dataSourceName": "Google sheet",
+            "dataSourceIcon": "http://s3.amazonaws.com/ecyber.public/connector-icons/google-calendar.svg",
+            "status": "letf",
+            "starred": true,
+            "lastScanned": "2020/03/13",
+            "name": "smith"
+        }
+    ]
+}

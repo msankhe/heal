@@ -747,6 +747,12 @@ html {
                     border-radius: 10px;
                     cursor: pointer;
 
+                    &.local-list{
+                        border-radius: 0;
+                        background-color: #fff;
+                        border-bottom: 1px solid #EDEDED;
+                    }
+
                     .c {
                         margin: 0px 5px;
                         width: 120px;
@@ -763,6 +769,20 @@ html {
                             color: white;
                             text-align: center;
                             cursor: pointer;
+                        }
+
+                        &.status {
+                            .label {
+                                // background-image: url("../images/");
+                            }
+                        }
+
+                        &.data-source {
+                            .value {
+                                img {
+                                    width: 25px;
+                                }
+                            }
                         }
                     }
                 }
