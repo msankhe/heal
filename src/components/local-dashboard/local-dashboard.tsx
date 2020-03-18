@@ -39,7 +39,7 @@ interface ILocalState {
     lastUpdated: string,
     sorting: IStatType,
     data: IEmployeeDetails[],
-    dialog: 'info' | 'scann' | '',
+    dialog: 'info' | 'precautions' | 'scann' | '',
     mapFilter: IStatType,
     scannData: IScanData
 }
@@ -69,9 +69,13 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
 
         return <div key={key} className='item local-list'>
 
-            <div className='status c'>
-                <div className='label'></div>
+            <div className='c status'>
+                <div className={`label ${item.status} `}></div>
                 <div className='value'>{item.status}</div>
+            </div>
+            <div className=' c'>
+                <div className='label'>Location</div>
+                <div className='value'>{item.locationName} </div>
             </div>
             <div className='temperature c'>
                 <div className='label'>Temperature</div>
@@ -91,10 +95,8 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
                     <img src={item.dataSourceIcon} alt={item.dataSourceName} />
                 </div>
             </div>
-            <div className='starred c'>
-                <div className='label'></div>
-                <div className='value'>
-
+            <div className={`c starred`}>
+                <div className={`value starred ${item.starred ? "fill" : ""}  `}>
                 </div>
             </div>
         </div>;
@@ -231,7 +233,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 details = rawData.employees;
             }
 
-            this.setState({ data: details });
+            this.setState({ data: details, lastUpdated: lastUpdate });
 
             return { details };
         } catch (e) {
@@ -302,12 +304,41 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         </>;
     }
 
+    renderPrecautions() {
+        return <><div className='dialog-sheet' onClick={() => this.setState({ dialog: '' })} />
+            <div className='dialog info'>
+                <div className='header'>
+                    <div className='first'></div>
+                    <div className='title'>
+                        Precautions To avoid infection
+                        </div>
+                    <div className='last'>
+
+                        <div className='closer' onClick={() => this.setState({ dialog: '' })} />
+                    </div>
+                </div>
+                <div className='body'>
+                    <ol className='items'>
+                        <li>
+                            <div className='text'>Wash your hands each time you walk in the door </div>
+                            <div className='action-container'>
+                                <a className='action' href='https://www.who.int/emergencies/diseases/novel-coronavirus-2019/advice-for-public' target='_blank'>Read more</a>
+                            </div>
+                        </li>
+
+                    </ol>
+
+                </div>
+            </div>
+        </>;
+    }
+
     renderScanningForm() {
         return <>
             <div className='dialog-sheet' onClick={() => this.setState({ dialog: '' })} />
             <div className='dialog scann-form'>
                 <div className='header'>
-                    
+
                     <div className='title'>
                         New Screening Form
                         </div>
@@ -347,20 +378,34 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
                 </div>
             </div>
-            
+
         </>;
     }
 
     render() {
+
+        var dialog = <></>;
+        if(this.state.dialog == "info") {
+            dialog = this.renderInfoDialog();
+        }
+        else if(this.state.dialog == "precautions") {
+            dialog = this.renderPrecautions();
+        }
+        else if(this.state.dialog == "scann") {
+            dialog = this.renderScanningForm();
+        }
+
         return (<>
             <div className='toolbar'>
-                <select>
-                    <option key={-1} value={''}>Precautions</option>
-                </select>
+                {/* <div className="updatedDate">Last updated {this.state.lastUpdated}</div> */}
 
-                <select>
-                    <option key={-1} value={''}>All</option>
-                </select>
+                <div className="toolbar-button" onClick={() => this.setState({ dialog: 'precautions' })} >
+                    Precautions <span className="arrow">></span>
+                </div>
+
+                <div className="toolbar-button" onClick={() => this.setState({ dialog: '' })} >
+                    All <span className="arrow">></span>
+                </div>
 
             </div>
 
@@ -410,9 +455,9 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 <div className='map local-map'>
                     <div className='map-widget'>
                         <div className='filters'>
-                            <div onClick={this.setMapFilter.bind(this, 'screened')} className={(this.state.mapFilter == 'screened' ? 'set' : '') + ' switch screened'}>screened</div>
-                            <div onClick={this.setMapFilter.bind(this, 'employees')} className={(this.state.mapFilter == 'employees' ? 'set' : '') + ' switch employees'}>employees</div>
-                            <div onClick={this.setMapFilter.bind(this, 'oranges')} className={(this.state.mapFilter == 'oranges' ? 'set' : '') + ' switch oranges'}>oranges</div>
+                            <div onClick={this.setMapFilter.bind(this, 'screened')} className={(this.state.mapFilter == 'screened' ? 'set' : '') + ' switch screened'}><span className="icon"></span> screened</div>
+                            <div onClick={this.setMapFilter.bind(this, 'employees')} className={(this.state.mapFilter == 'employees' ? 'set' : '') + ' switch employees'}><span className="icon"></span>employees</div>
+                            <div onClick={this.setMapFilter.bind(this, 'oranges')} className={(this.state.mapFilter == 'oranges' ? 'set' : '') + ' switch oranges'}><span className="icon"></span>oranges</div>
                         </div>
 
                         <MapWidget items={this.state.data} />
@@ -422,16 +467,11 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
             </div>
 
-            <div className="bottom-bar">
-                <div></div>
+            <div className={`bottom-bar `} onClick={() => this.setState({dialog: "scann"})}>
+            
             </div>
 
-            {
-                (this.state.dialog == 'info') ?
-                    this.renderInfoDialog() :
-                    (this.state.dialog == 'scann') ?
-                        this.renderScanningForm() : null
-            }
+            { dialog }
 
         </>);
     }
