@@ -14,7 +14,7 @@ interface IProps {
 
 interface IState {
     dashboard: string,
-    title: string,
+    title: any,
     userName: string
 }
 
@@ -23,19 +23,35 @@ class Layout extends React.Component<IProps, IState>{
         super(props);
 
         this.state = {
-            dashboard: "local",
+            dashboard: "global",
             title: "Health Monitor",
-            userName: 'User'
+            userName: null
         };
+
+        this.toggleDashboard = this.toggleDashboard.bind(this);
     }
 
     componentDidMount() {
-        if(this.state.dashboard == "global") {
+        
+    }
 
+    toggleDashboard() {
+        if(this.state.dashboard == "global") {
+            this.setState({
+                dashboard: "local",
+                title: <span><span className="highlight">Employee </span> health management</span>,
+                userName: "User 01"
+            });
+        }
+        else {
+            this.setState({
+                dashboard: "global",
+                title: "Health Monitor",
+                userName: null
+            });
         }
     }
 
-    
 
     render() {
 
@@ -45,7 +61,7 @@ class Layout extends React.Component<IProps, IState>{
             content = <HealthDashboard apiUrl={API_URL} basePath={"/"} />;
         }
         else {
-            content = <LocalDashBoard apiUrl={Local_Data_URL} basePath={"/"}  />;
+            content = <LocalDashBoard apiUrl={Local_Data_URL} basePath={"/"} />;
         }
 
         return (
@@ -55,10 +71,21 @@ class Layout extends React.Component<IProps, IState>{
                     <a href='/' className='logo'></a>
                     <div className='title'>{this.state.title}</div>
                     <div className='padder'>
-                        {this.state.userName == null ? "" : <><span className="great">Welcome</span> {this.state.userName}</> }
+                        {this.state.userName == null ? "" : <><span className="great">Welcome</span> {this.state.userName}</>}
+                    </div>
+
+
+                </div>
+                <div className="header-buttons">
+                    <div className="toggle-button">
+                        <span className={`label ${this.state.dashboard == "global" ? "global" : ""} `}>Global Dashboard</span>
+                        <div className="range" onClick={this.toggleDashboard}>
+                            <span className="rail"></span>
+                            <span className={`slider ${this.state.dashboard} `}></span>
+                        </div>
+                        <span className={`label ${this.state.dashboard == "local" ? "local" : ""} `}>User Dashboard</span>
                     </div>
                 </div>
-                
 
                 {content}
 

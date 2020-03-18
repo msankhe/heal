@@ -19,6 +19,13 @@ interface IEmployeeDetails {
     name: string
 }
 
+interface IScanData {
+    temperature: number,
+    name: string,
+    location: string,
+    lastVisitedCountry: string
+}
+
 interface ILocalProps {
     apiUrl: string,
     basePath: string
@@ -32,8 +39,9 @@ interface ILocalState {
     lastUpdated: string,
     sorting: IStatType,
     data: IEmployeeDetails[],
-    dialog: 'info' | '',
-    mapFilter: IStatType
+    dialog: 'info' | 'scann' | '',
+    mapFilter: IStatType,
+    scannData: IScanData
 }
 
 interface IListWidgetProps {
@@ -86,7 +94,7 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
             <div className='starred c'>
                 <div className='label'></div>
                 <div className='value'>
-                    
+
                 </div>
             </div>
         </div>;
@@ -184,7 +192,13 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             sorting: 'screened',
             data: [],
             dialog: "",
-            mapFilter: 'screened'
+            mapFilter: 'screened',
+            scannData: {
+                temperature: 0,
+                name: null,
+                location: null,
+                lastVisitedCountry: null
+            }
         }
     }
 
@@ -287,7 +301,56 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             </div>
         </>;
     }
-    
+
+    renderScanningForm() {
+        return <>
+            <div className='dialog-sheet' onClick={() => this.setState({ dialog: '' })} />
+            <div className='dialog scann-form'>
+                <div className='header'>
+                    
+                    <div className='title'>
+                        New Screening Form
+                        </div>
+                    <div className='last'>
+
+                        <div className='closer' onClick={() => this.setState({ dialog: '' })} />
+                    </div>
+                </div>
+                <div className='body'>
+
+                    <div className="form-group">
+                        <label className="label" >Temperature</label>
+                        <input type="number" min={0} step={0.1} name="temperature" className="input" value={this.state.scannData.temperature} placeholder="" />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="label" >Name <span>Autofill</span> </label>
+                        <input type="text" name="name" className="input" value={this.state.scannData.name} placeholder="Example: John Doe" />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="label" >Location <span>Autofill</span> </label>
+                        <input type="text" name="location" className="input" value={this.state.scannData.location} placeholder="Example: Singapore" />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="label" >Last Country Visited </label>
+                        <input type="text" name="lastvisited" className="input" value={this.state.scannData.lastVisitedCountry} placeholder="Example: Kenya" />
+                    </div>
+
+                    <div className="form-group buttons">
+                        <button type="button" className="submit-button">
+                            <span className="icon"></span>
+                            SUBMIT
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+            
+        </>;
+    }
+
     render() {
         return (<>
             <div className='toolbar'>
@@ -359,9 +422,15 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
             </div>
 
+            <div className="bottom-bar">
+                <div></div>
+            </div>
+
             {
                 (this.state.dialog == 'info') ?
-                    this.renderInfoDialog() : null
+                    this.renderInfoDialog() :
+                    (this.state.dialog == 'scann') ?
+                        this.renderScanningForm() : null
             }
 
         </>);

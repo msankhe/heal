@@ -9,8 +9,8 @@
         {
             "temperature": 30.0,
             "locationName": "London Office",
-            "lat": 111111,
-            "long": 111111,
+            "lat": 6.927079,
+            "long": 79.861244,
             "lastCountryVisisted": "",
             "dataSourceName": "Google sheet",
             "dataSourceIcon": "http://s3.amazonaws.com/ecyber.public/connector-icons/google-calendar.svg",
@@ -22,8 +22,8 @@
         {
             "temperature": 30.0,
             "locationName": "London Office",
-            "lat": 111111,
-            "long": 111111,
+            "lat": 20.5936832,
+            "long": 78.962883,
             "lastCountryVisisted": "",
             "dataSourceName": "Google sheet",
             "dataSourceIcon": "http://s3.amazonaws.com/ecyber.public/connector-icons/google-calendar.svg",

@@ -396,6 +396,13 @@ html {
             font-size:14px;
             font-weight:bold;
             flex-grow: 1;
+
+            span {
+                font-weight: normal;
+                &.highlight {
+                    font-weight: bold;
+                }
+            }
         }
 
         .padder {
@@ -408,6 +415,80 @@ html {
                 color: white;
                 text-align: center;
                 cursor: pointer;
+            }
+        }
+
+        
+    }
+
+    .header-buttons {
+        width: 100%;
+        height: auto;
+        float: left;
+        clear: both;
+        padding: 0 $defaultPadding;
+        box-sizing: border-box;
+
+        .toggle-button {
+            position: relative;
+            display: table;
+
+            .label {
+                color: lightgray;
+                font-size: 0.6rem;
+                padding: 0 8px;
+                display: table-cell;
+
+
+                &.global {
+                    color: #000;
+                }
+
+                &.local {
+                    color: #000;
+                }
+            }
+
+            .range{
+                width: 50px;
+                position: relative;
+                display: table-cell;
+                cursor: pointer;
+
+                .rail {
+                    position: absolute;
+                    width: 100%;
+                    height: 6px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    background-color: lightgray;
+                }
+
+                .slider {
+                    width: 20px;
+                    height: 20px;
+                    background: url("../images/slider.svg");
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    background-size: contain;
+                    position: absolute;
+                    top: 50%;
+                    left: 10px;
+                    transform: translateY(-50%);
+                    transition-duration: 0.4s;
+
+                    &.global {
+                        left: 0;
+                        right: 100%;
+                        transform: translateY(-50%);
+                    }
+
+                    &.local {
+                        right: 0;
+                        left: 100%;
+                        transform: translate(-100%, -50%);
+                    }
+                }
             }
         }
     }
@@ -830,6 +911,27 @@ html {
         }
     }
 
+    .bottom-bar {
+        //position: absolute;
+        //bottom: 0;
+        width: 100%;
+        height: 100px;
+        // background-color: red;
+        background: url("../images/footer-icon.svg");
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+        z-index: 1;
+
+        &:hover {
+            background: url("../images/footer-hover.svg");
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center;
+            z-index: 1;
+        }
+    }
+
 }
 .dialog-sheet {
     position:fixed;
@@ -853,6 +955,13 @@ html {
     display:flex;
     flex-direction: column;
     border-radius:20px;
+
+    &.scann-form{
+        left: 25%;
+        top:40px;
+        bottom:40px;
+        right:25%;
+    }
 
     .header {
         flex-grow:0;
@@ -919,6 +1028,61 @@ html {
                     text-decoration: none;
 
 
+                }
+            }
+        }
+
+        .form-group{
+            position: relative;
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+
+            .label {
+                position: relative;
+                display: block;
+                width: 100%;
+                margin-bottom: 15px;
+                color: #000;
+                font-weight: 600;
+
+                span {
+                    float: right;
+                    color: lightgray;
+
+                }
+            }
+
+            .input {
+                position: relative;
+                display: block;
+                width: 100%;
+                box-sizing: border-box;
+                padding: 10px 20px;
+                border-radius: 10px;
+                background-color: #F8F8F8;
+                border: 0;
+            }
+
+            &.buttons {
+                text-align: center;
+                margin-top: 30px;
+
+                .submit-button {
+                    width: auto;
+                    padding: 10px 40px;
+                    border-radius: 50px;
+                    background-color: #F8F8F8;
+                    border: 0;
+                    box-shadow: -2px 6px 9px rgba(0,0,0,0.3);
+                    color: gray;
+
+
+                    .icon{
+                        //width: 30px;
+                        //height: 30px;
+                        //background: url("../images/");
+                    }
                 }
             }
         }
