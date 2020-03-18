@@ -4,6 +4,7 @@ import { divIcon, Map as LeafletMap, LatLngBoundsExpression } from 'leaflet';
 
 
 type IStatType = 'screened' | 'employees' | 'oranges';
+type IListFilter = 'starred' | 'all';
 
 interface IEmployeeDetails {
     lat: number;
@@ -37,7 +38,7 @@ interface ILocalState {
     employees: number,
     oranges: number,
     lastUpdated: string,
-    sorting: IStatType,
+    sorting: IListFilter,
     data: IEmployeeDetails[],
     dialog: 'info' | 'precautions' | 'scann' | '',
     mapFilter: IStatType,
@@ -46,7 +47,7 @@ interface ILocalState {
 
 interface IListWidgetProps {
     items: IEmployeeDetails[];
-    sorting: IStatType;
+    sorting: IListFilter;
 }
 interface IListWidgetState {
 }
@@ -154,10 +155,7 @@ class MapWidget extends React.Component<IMapWidgetProps, {}> {
                 }}
 
             >
-                <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-
-                />
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 {
                     this.props.items.map((item, key) => this.renderMarker(item, key, size))
                 }
@@ -191,7 +189,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             employees: 0,
             oranges: 0,
             lastUpdated: null,
-            sorting: 'screened',
+            sorting: 'starred',
             data: [],
             dialog: "",
             mapFilter: 'screened',
@@ -242,7 +240,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
     }
 
-    setSorting(type: IStatType) {
+    setSorting(type: IListFilter) {
         this.setState({ sorting: type });
     }
 
@@ -397,14 +395,13 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
         return (<>
             <div className='toolbar'>
-                {/* <div className="updatedDate">Last updated {this.state.lastUpdated}</div> */}
 
                 <div className="toolbar-button" onClick={() => this.setState({ dialog: 'precautions' })} >
-                    Precautions <span className="arrow">></span>
+                    Precautions <span className="arrow"></span>
                 </div>
 
                 <div className="toolbar-button" onClick={() => this.setState({ dialog: '' })} >
-                    All <span className="arrow">></span>
+                    All <span className="arrow"></span>
                 </div>
 
             </div>
@@ -436,11 +433,12 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     <div className='data-list'>
                         <div className='header'>
                             <div className='title local-list'>
+                                <span className="arrow"></span>
                                 Last scanned
                             </div>
                             <div className='filters'>
-                                <div onClick={this.setSorting.bind(this, 'screened')} className={(this.state.sorting == 'screened' ? 'set' : '') + ' switch screened'}>starred</div>
-                                <div onClick={this.setSorting.bind(this, 'employees')} className={(this.state.sorting == 'employees' ? 'set' : '') + ' switch employees'}>All</div>
+                                <div onClick={this.setSorting.bind(this, 'starred')} className={(this.state.sorting == 'starred' ? 'set' : '') + ' switch starred'}><span className="icon star"></span>starred</div>
+                                <div onClick={this.setSorting.bind(this, 'all')} className={(this.state.sorting == 'all' ? 'set' : '') + ' switch all'}>All <span className="icon arrow"></span> </div>
 
                             </div>
                         </div>

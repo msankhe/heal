@@ -119,8 +119,14 @@ html {
             color: gray;
 
             .arrow {
+                width: 10px;
+                height: 10px;
+                display: inline-block;
                 margin-left: 20px;
-                float: right;
+                background-image: url(../images/down.svg);
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: contain;
             }
         }
 
@@ -691,6 +697,18 @@ html {
                 &.local-list {
                     color: blue;
                     font-size: 0.7rem;
+
+                    .arrow {
+                        width: 10px;
+                        height: 10px;
+                        display: inline-block;
+                        margin-right: 10px;
+                        background-image: url(../images/down.svg);
+                        background-position: center;
+                        background-repeat: no-repeat;
+                        background-size: contain;
+                        fill: blue;
+                    }
                 }
 
                }
@@ -743,21 +761,37 @@ html {
                         }
                     }
 
-                    &.screened {
+                    &.starred {
+                        padding: 8px 10px;
                         &.set {
                             @include screened();
                         }
                     }
 
-                    &.employees {
+                    &.all {
+                        padding: 8px 10px;
                         &.set {
                             @include employees();
                         }
                     }
 
-                    &.oranges {
-                        &.set {
-                            @include oranges();
+                    .icon {
+                        width: 8px;
+                        height: 8px;
+                        display: inline-block;
+                        margin-left: 20px;
+                        background-position: center;
+                        background-repeat: no-repeat;
+                        background-size: contain;
+                
+                        &.star {
+                            margin: 0 10px 0 0;
+                            background-image: url(../images/star-gray.svg);
+                        }
+
+                        &.arrow {
+                            margin: 0 0 0 10px;
+                            background-image: url(../images/down.svg);
                         }
                     }
 
