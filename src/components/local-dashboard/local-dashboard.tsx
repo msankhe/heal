@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { Map, Marker, TileLayer } from "react-leaflet";
+import { divIcon, Map as LeafletMap, LatLngBoundsExpression } from 'leaflet';
 
 
 type IStatType = 'screened' | 'employees' | 'oranges';
@@ -30,7 +32,8 @@ interface ILocalState {
     lastUpdated: string,
     sorting: IStatType,
     data: IEmployeeDetails[],
-    dialog: 'info' | '';
+    dialog: 'info' | '',
+    mapFilter: IStatType
 }
 
 interface IListWidgetProps {
@@ -38,6 +41,10 @@ interface IListWidgetProps {
     sorting: IStatType;
 }
 interface IListWidgetState {
+}
+
+interface IMapWidgetProps {
+    items: IEmployeeDetails[]
 }
 
 
@@ -101,6 +108,68 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
     }
 }
 
+class MapWidget extends React.Component<IMapWidgetProps, {}> {
+    map: LeafletMap;
+
+    componentDidUpdate(prevProps: IMapWidgetProps) {
+        if (this.props.items.length == 0) return;
+
+        /* if only one point is present - fitBounds() fails. So just pan to that item */
+        if (this.props.items.length == 1) {
+            let zoom = this.map?.getZoom() || 0;
+            //if (zoom < 3) zoom = 3;
+            this.map?.setView([this.props.items[0].lat, this.props.items[0].long], zoom);
+            return;
+        }
+
+        let bounds = this.props.items.map(item => [item.lat, item.long]) as LatLngBoundsExpression;
+        this.map.fitBounds(bounds);
+
+    }
+
+    render() {
+        let size = '';
+        let zoom = this.map?.getZoom();
+
+        if (zoom < 3) {
+            size = 'tiny';
+        }
+
+        return <div className='gmap' >
+            <Map center={[45.4, -75.7]} zoom={2}
+                ref={(el) => {
+                    if (!!el) {
+                        this.map = el.leafletElement;
+                    }
+                }}
+
+            >
+                <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+
+                />
+                {
+                    this.props.items.map((item, key) => this.renderMarker(item, key, size))
+                }
+            </Map>
+
+        </div>;
+    }
+
+    renderMarker(item: IEmployeeDetails, key: number, size: string) {
+        //let stat = shortenNumber(item[this.props.stat]);
+        //console.log(stat);
+        let markerClass = `micon screened selected ${size}`;
+
+        return <Marker
+            //onClick={() => this.props.onItemSelected(item)}
+            position={[item.lat, item.long]}
+            key={key}
+            icon={divIcon({ className: markerClass, 'html': '<div><div class="inner"></div><div class="outer"></div><div class="txt"></div></div>' })}
+        />;
+    }
+}
+
 class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
     constructor(props: ILocalProps) {
@@ -114,7 +183,8 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             lastUpdated: null,
             sorting: 'screened',
             data: [],
-            dialog: ""
+            dialog: "",
+            mapFilter: 'screened'
         }
     }
 
@@ -158,6 +228,10 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
     setSorting(type: IStatType) {
         this.setState({ sorting: type });
+    }
+
+    setMapFilter(filter: IStatType) {
+        this.setState({ mapFilter: filter });
     }
 
     renderInfoDialog() {
@@ -269,15 +343,16 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         </div>
                     </div>
                 </div>
+
                 <div className='map local-map'>
                     <div className='map-widget'>
                         <div className='filters'>
-                            {/* <div onClick={this.setMapFilter.bind(this, 'screened')} className={(this.state.mapFilter == 'screened' ? 'set' : '') + ' switch screened'}>screened</div> */}
-                            {/* <div onClick={this.setMapFilter.bind(this, 'employees')} className={(this.state.mapFilter == 'employees' ? 'set' : '') + ' switch employees'}>employees</div> */}
-                            {/* <div onClick={this.setMapFilter.bind(this, 'oranges')} className={(this.state.mapFilter == 'oranges' ? 'set' : '') + ' switch oranges'}>oranges</div> */}
+                            <div onClick={this.setMapFilter.bind(this, 'screened')} className={(this.state.mapFilter == 'screened' ? 'set' : '') + ' switch screened'}>screened</div>
+                            <div onClick={this.setMapFilter.bind(this, 'employees')} className={(this.state.mapFilter == 'employees' ? 'set' : '') + ' switch employees'}>employees</div>
+                            <div onClick={this.setMapFilter.bind(this, 'oranges')} className={(this.state.mapFilter == 'oranges' ? 'set' : '') + ' switch oranges'}>oranges</div>
                         </div>
 
-                        {/* <MapWidget items={this.state.data} selectedItem={selectedItem} stat={this.state.mapFilter} onItemSelected={this.onItemSelected.bind(this)} /> */}
+                        <MapWidget items={this.state.data} />
                     </div>
                 </div>
 
