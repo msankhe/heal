@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Map, Marker, TileLayer } from "react-leaflet";
 import { divIcon, Map as LeafletMap, LatLngBoundsExpression } from 'leaflet';
 
+declare const window: any;
 
 type IStatType = 'screened' | 'employees' | 'oranges';
 type IListFilter = 'starred' | 'all';
@@ -219,10 +220,25 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
         this.submitForm = this.submitForm.bind(this);
         this.updateFormData = this.updateFormData.bind(this);
+        this.closeScanningForm = this.closeScanningForm.bind(this);
+        this.subscribe = this.subscribe.bind(this);
     }
 
     componentDidMount() {
         this.loadRemoteData();
+        this.subscribe();
+    }
+
+    subscribe() {
+        window.Lucy.MessageBus.init({ url: 'https://staywoke.lucy.servicedeskhq.com', apiKey: 'SC:staywoke:f543c530b15de66a' })
+            .then(() => {
+                window.Lucy.MessageBus.subscribe('situation-dashboard', (value: string, channel:string) => {
+                    // update status
+                    var dataSet = this.state.data;
+                    dataSet.push(JSON.parse(value));
+                    this.setState({data: dataSet});
+                });
+            });
     }
 
     async loadRemoteData(): Promise<{ details: IEmployeeDetails[] }> {
@@ -447,7 +463,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
     renderScanningForm() {
         return <>
-            <div className='dialog-sheet' onClick={() => this.setState({ dialog: '' })} />
+            <div className='dialog-sheet' onClick={this.closeScanningForm} />
             <div className='dialog scann-form'>
                 <div className='header'>
 
@@ -456,7 +472,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         </div>
                     <div className='last'>
 
-                        <div className='closer' onClick={() => this.setState({ dialog: '' })} />
+                        <div className='closer' onClick={this.closeScanningForm} />
                     </div>
                 </div>
                 <div className='body'>
@@ -501,6 +517,24 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             </div>
 
         </>;
+    }
+
+    closeScanningForm() {
+        let scannData = this.state.scannData;
+
+        scannData.id = "";
+        scannData.name = "";
+        scannData.temperature = "";
+        scannData.location = "";
+        scannData.lastVisitedCountry = "";
+        scannData.isValid = false;
+        scannData.feedback = <span></span>;
+        scannData.buttonText = "Submit"
+
+        this.setState({
+            scannData: scannData,
+            dialog: ""
+        });
     }
 
     render() {
