@@ -230,7 +230,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
     }
 
     subscribe() {
-        window.Lucy.MessageBus.init({ url: 'https://staywoke.lucy.servicedeskhq.com', apiKey: 'SC:staywoke:f543c530b15de66a' })
+        window.Lucy.MessageBus.init({ url: 'https://staywoke.lucy.servicedeskhq.com', apiKey: this.props.apiKey })
             .then(() => {
                 window.Lucy.MessageBus.subscribe('situation-dashboard', (value: string, channel:string) => {
                     // update status
@@ -374,6 +374,82 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         </>;
     }
 
+    renderScanningForm() {
+        return <>
+            <div className='dialog-sheet' onClick={this.closeScanningForm} />
+            <div className='dialog scann-form'>
+                <div className='header'>
+
+                    <div className='title'>
+                        New Screening Form
+                        </div>
+                    <div className='last'>
+
+                        <div className='closer' onClick={this.closeScanningForm} />
+                    </div>
+                </div>
+                <div className='body'>
+
+                    <div className="form-group">
+                        <label className="label" >Temperature</label>
+                        <input type="text" name="temperature" className={`input ${this.state.scannData.temperature.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.temperature} placeholder="Example: 23" onChange={(event) => this.updateFormData(event, 'temperature')} />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="label" >Id  </label>
+                        <input type="text" name="id" className={`input ${this.state.scannData.id.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.id} placeholder="Example: E123" onChange={(event) => this.updateFormData(event, 'id')} />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="label" >Name  </label>
+                        <input type="text" name="name" className={`input ${this.state.scannData.name.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.name} placeholder="Example: John Doe" onChange={(event) => this.updateFormData(event, 'name')} />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="label" >Location  </label>
+                        <input type="text" name="location" className={`input ${this.state.scannData.location.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.location} placeholder="Example: Singapore" onChange={(event) => this.updateFormData(event, 'location')} />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="label" >Last Country Visited </label>
+                        <input type="text" name="lastvisited" className={`input ${this.state.scannData.lastVisitedCountry.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.lastVisitedCountry} placeholder="Example: Kenya" onChange={(event) => this.updateFormData(event, 'lastVisited')} />
+                    </div>
+
+                    <div className="form-group">
+                        {this.state.scannData.feedback}
+                    </div>
+
+                    <div className="form-group buttons">
+                        <button type="button" className={`submit-button ${this.state.scannData.isValid ? "valid" : ""} `} onClick={this.submitForm}>
+                            <span className="icon"></span>
+                            {this.state.scannData.buttonText}
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+        </>;
+    }
+
+    closeScanningForm() {
+        let scannData = this.state.scannData;
+
+        scannData.id = "";
+        scannData.name = "";
+        scannData.temperature = "";
+        scannData.location = "";
+        scannData.lastVisitedCountry = "";
+        scannData.isValid = false;
+        scannData.feedback = <span></span>;
+        scannData.buttonText = "Submit"
+
+        this.setState({
+            scannData: scannData,
+            dialog: ""
+        });
+    }
+
     updateFormData(event: React.ChangeEvent<HTMLInputElement>, filed: string) {
         let scannedData = this.state.scannData;
         let newValue = event.target.value
@@ -459,82 +535,6 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     throw err;
                 })
         }
-    }
-
-    renderScanningForm() {
-        return <>
-            <div className='dialog-sheet' onClick={this.closeScanningForm} />
-            <div className='dialog scann-form'>
-                <div className='header'>
-
-                    <div className='title'>
-                        New Screening Form
-                        </div>
-                    <div className='last'>
-
-                        <div className='closer' onClick={this.closeScanningForm} />
-                    </div>
-                </div>
-                <div className='body'>
-
-                    <div className="form-group">
-                        <label className="label" >Temperature</label>
-                        <input type="text" name="temperature" className={`input ${this.state.scannData.temperature.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.temperature} placeholder="Example: 23" onChange={(event) => this.updateFormData(event, 'temperature')} />
-                    </div>
-
-                    <div className="form-group">
-                        <label className="label" >Id  </label>
-                        <input type="text" name="id" className={`input ${this.state.scannData.id.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.id} placeholder="Example: E123" onChange={(event) => this.updateFormData(event, 'id')} />
-                    </div>
-
-                    <div className="form-group">
-                        <label className="label" >Name  </label>
-                        <input type="text" name="name" className={`input ${this.state.scannData.name.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.name} placeholder="Example: John Doe" onChange={(event) => this.updateFormData(event, 'name')} />
-                    </div>
-
-                    <div className="form-group">
-                        <label className="label" >Location  </label>
-                        <input type="text" name="location" className={`input ${this.state.scannData.location.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.location} placeholder="Example: Singapore" onChange={(event) => this.updateFormData(event, 'location')} />
-                    </div>
-
-                    <div className="form-group">
-                        <label className="label" >Last Country Visited </label>
-                        <input type="text" name="lastvisited" className={`input ${this.state.scannData.lastVisitedCountry.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.lastVisitedCountry} placeholder="Example: Kenya" onChange={(event) => this.updateFormData(event, 'lastVisited')} />
-                    </div>
-
-                    <div className="form-group">
-                        {this.state.scannData.feedback}
-                    </div>
-
-                    <div className="form-group buttons">
-                        <button type="button" className={`submit-button ${this.state.scannData.isValid ? "valid" : ""} `} onClick={this.submitForm}>
-                            <span className="icon"></span>
-                            {this.state.scannData.buttonText}
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-
-        </>;
-    }
-
-    closeScanningForm() {
-        let scannData = this.state.scannData;
-
-        scannData.id = "";
-        scannData.name = "";
-        scannData.temperature = "";
-        scannData.location = "";
-        scannData.lastVisitedCountry = "";
-        scannData.isValid = false;
-        scannData.feedback = <span></span>;
-        scannData.buttonText = "Submit"
-
-        this.setState({
-            scannData: scannData,
-            dialog: ""
-        });
     }
 
     render() {
