@@ -1033,23 +1033,27 @@ html {
     }
 
     .bottom-bar {
-        //position: absolute;
-        //bottom: 0;
         width: 100%;
         height: 100px;
-        // background-color: red;
-        background: url("../images/footer-icon.svg");
-        background-repeat: no-repeat;
-        background-size: contain;
-        background-position: center;
-        z-index: 1;
 
-        &:hover {
-            background: url("../images/footer-hover.svg");
+        .scanning-button {
+            height: 100%;
+            width: 500px;
+            margin: 0 auto;
+            background-image: url("../images/footer-icon.svg");
             background-repeat: no-repeat;
             background-size: contain;
             background-position: center;
             z-index: 1;
+            cursor: pointer;
+    
+            &:hover {
+                background: url("../images/footer-hover.svg");
+                background-repeat: no-repeat;
+                background-size: contain;
+                background-position: center;
+                z-index: 1;
+            }
         }
     }
 
@@ -1183,6 +1187,11 @@ html {
                 border-radius: 10px;
                 background-color: #F8F8F8;
                 border: 0;
+
+                &.filled {
+                    @include employees-gradient();
+                    color: #fff;
+                }
             }
 
             &.buttons {
@@ -1204,6 +1213,30 @@ html {
                         //height: 30px;
                         //background: url("../images/");
                     }
+
+                    &.valid {
+                        background-color: orange;
+                        color: #fff;
+                    }
+                }
+            }
+
+            .feedback{
+                display: block;
+                width: 100%;
+                height:  auto;
+                color: black;
+                text-align: center; 
+
+                &.info {
+                    color: blue;
+                }
+
+                &.success {
+                    color: green;
+                }
+                &.error {
+                    color: red;
                 }
             }
         }

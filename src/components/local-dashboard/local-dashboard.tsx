@@ -27,10 +27,14 @@ interface IEmployeeDetails {
 }
 
 interface IScanData {
-    temperature: number,
+    temperature: string,
+    id: string,
     name: string,
     location: string,
-    lastVisitedCountry: string
+    lastVisitedCountry: string,
+    isValid: boolean,
+    feedback: any,
+    buttonText: string
 }
 
 interface ILocalProps {
@@ -202,12 +206,19 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             dialog: "",
             mapFilter: 'screened',
             scannData: {
-                temperature: 0,
-                name: null,
-                location: null,
-                lastVisitedCountry: null
+                temperature: "",
+                id: "",
+                name: "",
+                location: "",
+                lastVisitedCountry: "",
+                isValid: false,
+                feedback: <span></span>,
+                buttonText: "Submit"
             }
         }
+
+        this.submitForm = this.submitForm.bind(this);
+        this.updateFormData = this.updateFormData.bind(this);
     }
 
     componentDidMount() {
@@ -347,6 +358,93 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         </>;
     }
 
+    updateFormData(event: React.ChangeEvent<HTMLInputElement>, filed: string) {
+        let scannedData = this.state.scannData;
+        let newValue = event.target.value
+
+        switch (filed) {
+            case "temperature":
+                scannedData.temperature = newValue;
+                break;
+            case "id":
+                scannedData.id = newValue;
+                break;
+            case "name":
+                scannedData.name = newValue;
+                break;
+            case "location":
+                scannedData.location = newValue;
+                break;
+            case "lastVisited":
+                scannedData.lastVisitedCountry = newValue;
+                break;
+        }
+
+        scannedData.isValid = scannedData.id.trim().length > 0 && scannedData.name.trim().length > 0 && scannedData.location.trim().length > 0 && scannedData.temperature.trim().length > 0 && scannedData.lastVisitedCountry.trim().length > 0;
+
+        this.setState({ scannData: scannedData });
+    }
+
+    submitForm() {
+
+        let scanData = this.state.scannData;
+        scanData.feedback = <span className="feedback info" >Your data is submitting...Please wait...</span>;
+        scanData.buttonText = "Submitting...";
+
+        this.setState({ scannData: scanData });
+
+        if (this.state.scannData.isValid) {
+            // submit form 
+            let _data = JSON.stringify({
+                "id": this.state.scannData.id.trim(),
+                "name": this.state.scannData.name.trim(),
+                "location": this.state.scannData.location.trim(),
+                "temperature": this.state.scannData.temperature.trim(),
+                "source": "Manual",
+                "countriesvisited": this.state.scannData.lastVisitedCountry.trim(),
+            });
+
+            fetch("https://staywoke.lucy.servicedeskhq.com/Lucy/SituationalAwareness/users", {
+                method: "post",
+                headers: {
+                    'Authorization': 'APIKEY ' + this.props.apiKey,
+                    'Content-Type': 'application/json'
+                },
+                body: _data
+            })
+                .then((res) => res.json())
+                .then(response => {
+
+                    console.log(response);
+
+                    if (response._id) {
+                        let scannedData = this.state.scannData;
+
+                        scannedData.id = "";
+                        scannedData.name = "";
+                        scannedData.temperature = "";
+                        scannedData.lastVisitedCountry = "";
+                        scannedData.location = "";
+                        scannedData.isValid = false;
+                        scannedData.feedback = <span className="feedback success">Record Added Successfully!</span>;
+                        scanData.buttonText = "Submit";
+
+                        this.setState({ scannData: scannedData });
+                    }
+                })
+                .catch(err => {
+
+                    let scannedData = this.state.scannData;
+                    scannedData.feedback = <span className="feedback error">Oops! something went wrong</span>;
+                    scanData.buttonText = "Submit";
+                    this.setState({ scannData: scannedData });
+
+                    console.log(err);
+                    throw err;
+                })
+        }
+    }
+
     renderScanningForm() {
         return <>
             <div className='dialog-sheet' onClick={() => this.setState({ dialog: '' })} />
@@ -365,28 +463,37 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
                     <div className="form-group">
                         <label className="label" >Temperature</label>
-                        <input type="number" min={0} step={0.1} name="temperature" className="input" value={this.state.scannData.temperature} placeholder="" />
+                        <input type="text" name="temperature" className={`input ${this.state.scannData.temperature.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.temperature} placeholder="Example: 23" onChange={(event) => this.updateFormData(event, 'temperature')} />
                     </div>
 
                     <div className="form-group">
-                        <label className="label" >Name <span>Autofill</span> </label>
-                        <input type="text" name="name" className="input" value={this.state.scannData.name} placeholder="Example: John Doe" />
+                        <label className="label" >Id  </label>
+                        <input type="text" name="id" className={`input ${this.state.scannData.id.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.id} placeholder="Example: E123" onChange={(event) => this.updateFormData(event, 'id')} />
                     </div>
 
                     <div className="form-group">
-                        <label className="label" >Location <span>Autofill</span> </label>
-                        <input type="text" name="location" className="input" value={this.state.scannData.location} placeholder="Example: Singapore" />
+                        <label className="label" >Name  </label>
+                        <input type="text" name="name" className={`input ${this.state.scannData.name.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.name} placeholder="Example: John Doe" onChange={(event) => this.updateFormData(event, 'name')} />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="label" >Location  </label>
+                        <input type="text" name="location" className={`input ${this.state.scannData.location.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.location} placeholder="Example: Singapore" onChange={(event) => this.updateFormData(event, 'location')} />
                     </div>
 
                     <div className="form-group">
                         <label className="label" >Last Country Visited </label>
-                        <input type="text" name="lastvisited" className="input" value={this.state.scannData.lastVisitedCountry} placeholder="Example: Kenya" />
+                        <input type="text" name="lastvisited" className={`input ${this.state.scannData.lastVisitedCountry.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.lastVisitedCountry} placeholder="Example: Kenya" onChange={(event) => this.updateFormData(event, 'lastVisited')} />
+                    </div>
+
+                    <div className="form-group">
+                        {this.state.scannData.feedback}
                     </div>
 
                     <div className="form-group buttons">
-                        <button type="button" className="submit-button">
+                        <button type="button" className={`submit-button ${this.state.scannData.isValid ? "valid" : ""} `} onClick={this.submitForm}>
                             <span className="icon"></span>
-                            SUBMIT
+                            {this.state.scannData.buttonText}
                         </button>
                     </div>
 
@@ -481,8 +588,8 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
             </div>
 
-            <div className={`bottom-bar `} onClick={() => this.setState({ dialog: "scann" })}>
-
+            <div className={`bottom-bar`} >
+                <div className={`scanning-button`} onClick={() => this.setState({ dialog: "scann" })}></div>
             </div>
 
             {dialog}
