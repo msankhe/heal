@@ -7,17 +7,23 @@ type IStatType = 'screened' | 'employees' | 'oranges';
 type IListFilter = 'starred' | 'all';
 
 interface IEmployeeDetails {
+    _id: string,
+    id: string,
+    name: string,
+    location: string,
+    source: string,
+    countriesvisited: string;
+    created: Date
+
     lat: number;
     long: number;
     temperature: number;
     locationName: string;
-    lastCountryVisisted: string;
     dataSourceName: string;
     dataSourceIcon: string;
     status: string;
     starred: boolean;
     lastScanned: string,
-    name: string
 }
 
 interface IScanData {
@@ -29,6 +35,7 @@ interface IScanData {
 
 interface ILocalProps {
     apiUrl: string,
+    apiKey: string,
     basePath: string
 }
 
@@ -76,7 +83,7 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
             </div>
             <div className=' c'>
                 <div className='label'>Location</div>
-                <div className='value'>{item.locationName} </div>
+                <div className='value'>{item.location} </div>
             </div>
             <div className='temperature c'>
                 <div className='label'>Temperature</div>
@@ -88,12 +95,13 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
             </div>
             <div className='last-country c'>
                 <div className='label'>Last Country Visited</div>
-                <div className='value'>{item.lastCountryVisisted}</div>
+                <div className='value'>{item.countriesvisited}</div>
             </div>
             <div className='data-source c'>
                 <div className='label'>Data Source</div>
                 <div className='value'>
-                    <img src={item.dataSourceIcon} alt={item.dataSourceName} />
+                    {item.source}
+                    {/* <img src={item.dataSourceIcon} alt={item.dataSourceName} /> */}
                 </div>
             </div>
             <div className={`c starred`}>
@@ -123,18 +131,18 @@ class MapWidget extends React.Component<IMapWidgetProps, {}> {
     map: LeafletMap;
 
     componentDidUpdate(prevProps: IMapWidgetProps) {
-        if (this.props.items.length == 0) return;
+        // if (this.props.items.length == 0) return;
 
-        /* if only one point is present - fitBounds() fails. So just pan to that item */
-        if (this.props.items.length == 1) {
-            let zoom = this.map?.getZoom() || 0;
-            //if (zoom < 3) zoom = 3;
-            this.map?.setView([this.props.items[0].lat, this.props.items[0].long], zoom);
-            return;
-        }
+        // /* if only one point is present - fitBounds() fails. So just pan to that item */
+        // if (this.props.items.length == 1) {
+        //     let zoom = this.map?.getZoom() || 0;
+        //     //if (zoom < 3) zoom = 3;
+        //     this.map?.setView([this.props.items[0].lat, this.props.items[0].long], zoom);
+        //     return;
+        // }
 
-        let bounds = this.props.items.map(item => [item.lat, item.long]) as LatLngBoundsExpression;
-        this.map.fitBounds(bounds);
+        // let bounds = this.props.items.map(item => [item.lat, item.long]) as LatLngBoundsExpression;
+        // this.map.fitBounds(bounds);
 
     }
 
@@ -157,7 +165,7 @@ class MapWidget extends React.Component<IMapWidgetProps, {}> {
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 {
-                    this.props.items.map((item, key) => this.renderMarker(item, key, size))
+                    //this.props.items.map((item, key) => this.renderMarker(item, key, size))
                 }
             </Map>
 
@@ -169,12 +177,12 @@ class MapWidget extends React.Component<IMapWidgetProps, {}> {
         //console.log(stat);
         let markerClass = `micon screened selected ${size}`;
 
-        return <Marker
-            //onClick={() => this.props.onItemSelected(item)}
-            position={[item.lat, item.long]}
-            key={key}
-            icon={divIcon({ className: markerClass, 'html': '<div><div class="inner"></div><div class="outer"></div><div class="txt"></div></div>' })}
-        />;
+        // return <Marker
+        //     //onClick={() => this.props.onItemSelected(item)}
+        //     position={[item.lat, item.long]}
+        //     key={key}
+        //     icon={divIcon({ className: markerClass, 'html': '<div><div class="inner"></div><div class="outer"></div><div class="txt"></div></div>' })}
+        // />;
     }
 }
 
@@ -209,7 +217,13 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
     async loadRemoteData(): Promise<{ details: IEmployeeDetails[] }> {
         try {
             console.log('fetching data...');
-            let response = await fetch(this.props.apiUrl, { method: 'GET' });
+            let response = await fetch(this.props.apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'APIKEY ' + this.props.apiKey,
+                    'Content-Type': 'application/json'
+                }
+            });
             if (!response.ok) {
                 throw await response.text();
             }
@@ -217,18 +231,20 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             let lastUpdate = rawData.lastUpdated;
             localStorage.setItem('locallastUpdated', lastUpdate);
 
-            if (rawData.stats) {
-                this.setState({
-                    screened: rawData.stats.screened,
-                    employees: rawData.stats.employees,
-                    oranges: rawData.stats.oranges
-                })
-            }
+            // console.log(rawData);
+
+            // if (rawData.stats) {
+            //     this.setState({
+            //         screened: rawData.stats.screened,
+            //         employees: rawData.stats.employees,
+            //         oranges: rawData.stats.oranges
+            //     })
+            // }
 
             let details = [];
 
-            if (rawData.employees) {
-                details = rawData.employees;
+            if (rawData) {
+                details = rawData;
             }
 
             this.setState({ data: details, lastUpdated: lastUpdate });
@@ -383,13 +399,13 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
     render() {
 
         var dialog = <></>;
-        if(this.state.dialog == "info") {
+        if (this.state.dialog == "info") {
             dialog = this.renderInfoDialog();
         }
-        else if(this.state.dialog == "precautions") {
+        else if (this.state.dialog == "precautions") {
             dialog = this.renderPrecautions();
         }
-        else if(this.state.dialog == "scann") {
+        else if (this.state.dialog == "scann") {
             dialog = this.renderScanningForm();
         }
 
@@ -465,11 +481,11 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
             </div>
 
-            <div className={`bottom-bar `} onClick={() => this.setState({dialog: "scann"})}>
-            
+            <div className={`bottom-bar `} onClick={() => this.setState({ dialog: "scann" })}>
+
             </div>
 
-            { dialog }
+            {dialog}
 
         </>);
     }

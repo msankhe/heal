@@ -6,7 +6,8 @@ import LocalDashBoard from './components/local-dashboard/local-dashboard';
 import "./index.scss"
 
 const API_URL = "https://staywoke.lucy.servicedeskhq.com/hook/Covid19";
-const Local_Data_URL = "http://localhost:5000/employee.json"
+const Local_Data_URL = "https://staywoke.lucy.servicedeskhq.com/Lucy/SituationalAwareness/users/today"
+const APIKey  = "SC:staywoke:f543c530b15de66a";
 
 interface IProps {
 
@@ -61,7 +62,7 @@ class Layout extends React.Component<IProps, IState>{
             content = <HealthDashboard apiUrl={API_URL} basePath={"/"} />;
         }
         else {
-            content = <LocalDashBoard apiUrl={Local_Data_URL} basePath={"/"} />;
+            content = <LocalDashBoard apiUrl={Local_Data_URL} apiKey={APIKey} basePath={"/"} />;
         }
 
         return (
