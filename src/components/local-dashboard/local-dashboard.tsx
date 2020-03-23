@@ -75,7 +75,6 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
 
     constructor(props: IListWidgetProps) {
         super(props);
-
     }
 
     componentDidUpdate(prevProps: IListWidgetProps, prevState: IListWidgetState) { }
@@ -120,17 +119,21 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
     }
 
     render() {
-        let t = this.props.sorting;
-        // let items = this.props.items.slice().sort((a, b) => {
-        //     return Number(b[t]) - Number(a[t]);
-        // });
-
         let items = this.props.items;
+        let starredItemsString = localStorage.getItem("starredItems");
+        let starredItems = JSON.parse(starredItemsString);
 
+        if(this.props.sorting == "starred") {
+            items = items.filter((item:IEmployeeDetails) => {
+                return (starredItems.indexOf(item._id) != -1);
+            })
+        }
+        
         return <div className='list-widget'>
             {
                 items.map((item, key) => this.renderItem(item, key))
             }
+            
         </div>;
     }
 }
@@ -205,7 +208,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             employees: 0,
             oranges: 0,
             lastUpdated: null,
-            sorting: 'starred',
+            sorting: 'all',
             data: [],
             dialog: "",
             mapFilter: 'screened',
@@ -585,7 +588,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                             </div>
                             <div className='filters'>
                                 <div onClick={this.setSorting.bind(this, 'starred')} className={(this.state.sorting == 'starred' ? 'set' : '') + ' switch starred'}><span className="icon star"></span>starred</div>
-                                <div onClick={this.setSorting.bind(this, 'all')} className={(this.state.sorting == 'all' ? 'set' : '') + ' switch all'}>All <span className="icon arrow"></span> </div>
+                                <div onClick={this.setSorting.bind(this, 'all')} className={(this.state.sorting == 'all' ? 'set' : '') + ' switch all'}>All {/* <span className="icon arrow"></span> */} </div>
 
                             </div>
                         </div>
