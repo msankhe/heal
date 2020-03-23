@@ -59,8 +59,9 @@ interface ILocalState {
 }
 
 interface IListWidgetProps {
-    items: IEmployeeDetails[];
-    sorting: IListFilter;
+    items: IEmployeeDetails[],
+    sorting: IListFilter,
+    toggleStarred: any
 }
 interface IListWidgetState {
 }
@@ -78,6 +79,7 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
     }
 
     componentDidUpdate(prevProps: IListWidgetProps, prevState: IListWidgetState) { }
+
 
     renderItem(item: IEmployeeDetails, key: number) {
 
@@ -111,7 +113,7 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
                 </div>
             </div>
             <div className={`c starred`}>
-                <div className={`value starred ${item.starred ? "fill" : ""}  `}>
+                <div className={`value starred ${item.starred ? "fill" : ""}  `} onClick={() => this.props.toggleStarred(item._id)} >
                 </div>
             </div>
         </div>;
@@ -223,6 +225,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         this.updateFormData = this.updateFormData.bind(this);
         this.closeScanningForm = this.closeScanningForm.bind(this);
         this.subscribe = this.subscribe.bind(this);
+        this.toggleItemStarred = this.toggleItemStarred.bind(this);
     }
 
     componentDidMount() {
@@ -273,6 +276,14 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
             if (rawData) {
                 details = rawData;
+
+                // get localstorage data
+                let starredItemsString = localStorage.getItem("starredItems");
+                let starredItems = JSON.parse(starredItemsString);
+        
+                details.map((item: IEmployeeDetails) => {
+                    item.starred = (starredItems.indexOf(item._id) != -1)
+                });
             }
 
             this.setState({ data: details, lastUpdated: lastUpdate });
@@ -484,6 +495,40 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         }
     }
 
+    toggleItemStarred(_id : string) {
+        
+        let starredItemsString = localStorage.getItem("starredItems");
+        let starredItems = JSON.parse(starredItemsString);
+        
+        if(starredItems == null) {
+            starredItems = [];
+        }
+
+        // check if item exist in localstorage
+        let index = starredItems.indexOf(_id);
+        console.log("index-" + index);
+
+        if(index == -1) {
+            starredItems.push(_id);
+        }
+        else {
+            starredItems.splice(index, 1);
+        }
+
+        // update data list 
+        let data = this.state.data;
+        data.map((item, key) => {
+            if(item._id == _id) {
+                item.starred = !item.starred;
+            }
+        })
+
+        this.setState({data: data});
+
+        localStorage.setItem("starredItems", JSON.stringify(starredItems));
+
+    }
+
     render() {
 
         var dialog = <></>;
@@ -544,7 +589,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
                             </div>
                         </div>
-                        <ListWidget sorting={this.state.sorting} items={this.state.data} />
+                        <ListWidget sorting={this.state.sorting} items={this.state.data} toggleStarred={this.toggleItemStarred} />
                         <div className='footer'>
                             <div className='tip'>Learn more about this dashboard</div>
                             <div className='action' onClick={this.props.renderInfo}>Info</div>
