@@ -48,6 +48,7 @@ interface IPopulationInfo {
 interface IHealthDashboardProps {
     apiUrl: string;
     basePath: string;
+    renderInfo: any
 }
 interface IHealthDashboardState {
     data: IDataItem[];
@@ -716,7 +717,7 @@ class HealthDashboard extends React.Component<IHealthDashboardProps, IHealthDash
                         <ListWidget sorting={this.state.sorting} context={context} selectedItem={selectedItem} mode={mode} items={items} onItemSelected={this.onItemSelected.bind(this)} />
                         <div className='footer'>
                             <div className='tip'>Learn more about this dashboard</div>
-                            <div className='action' onClick={() => this.setState({ dialog: 'info' })}>Info</div>
+                            <div className='action' onClick={this.props.renderInfo}>Info</div>
                         </div>
                     </div>
                 </div>
@@ -732,67 +733,9 @@ class HealthDashboard extends React.Component<IHealthDashboardProps, IHealthDash
                 </div>
 
             </div>
-            {
-                (this.state.dialog == 'info') ?
-                    this.renderInfoDialog() : null
-            }
-            }
+        
         </>
         )
-    }
-
-    renderInfoDialog() {
-        return <><div className='dialog-sheet' onClick={() => this.setState({ dialog: '' })} />
-            <div className='dialog info'>
-                <div className='header'>
-                    <div className='first'></div>
-                    <div className='title'>
-                        Information
-                        </div>
-                    <div className='last'>
-
-                        <div className='closer' onClick={() => this.setState({ dialog: '' })} />
-                    </div>
-                </div>
-                <div className='body'>
-                    <ol className='items'>
-                        <li>
-                            <div className='text'>WHO has information on how to keep yourself and your family safe. </div>
-                            <div className='action-container'>
-                                <a className='action' href='https://www.who.int/emergencies/diseases/novel-coronavirus-2019/advice-for-public' target='_blank'>View</a>
-                            </div>
-                        </li>
-                        <li>
-                            <div className='text'>
-                                CFR (Case Fatality Rate) is calculated as percentage of fatalities in confirmed cases.
-                                 </div>
-                            <div className='action-container'>
-
-                            </div>
-                        </li>
-                        <li>
-                            <div className='text'>Data for this dashboard is sourced from several places, most notably, John Hopkins Center for System Science  and Engineering</div>
-                            <div className='action-container'>
-                                <a className='action' href='https://github.com/CSSEGISandData' target='_blank'>Source</a>
-                            </div>
-                        </li>
-                        <li>
-                            <div className='text'>The APIs for this dashboard are powered by Lucy using data culled from the sources mentioned above.</div>
-                            <div className='action-container'>
-                                <a className='action' href='https://lucyinthesky.io' target='_blank'>Learn More</a>
-                            </div>
-                        </li>
-                        <li>
-                            <div className='text'>The code for this dashboard is available on Github.</div>
-                            <div className='action-container'>
-                                <a className='action' href='https://github.com/lucy-platform/heal' target='_blank'>View on Github</a>
-                            </div>
-                        </li>
-                    </ol>
-
-                </div>
-            </div>
-        </>;
     }
 }
 

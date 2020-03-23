@@ -41,7 +41,8 @@ interface IScanData {
 interface ILocalProps {
     apiUrl: string,
     apiKey: string,
-    basePath: string
+    basePath: string,
+    renderInfo: any
 }
 
 interface ILocalState {
@@ -230,7 +231,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
     }
 
     subscribe() {
-        window.Lucy.MessageBus.init({ url: 'https://staywoke.lucy.servicedeskhq.com', apiKey: this.props.apiKey })
+        window.Lucy.MessageBus.init({ url: this.props.apiUrl, apiKey: this.props.apiKey })
             .then(() => {
                 window.Lucy.MessageBus.subscribe('situation-dashboard', (value: string, channel:string) => {
                     // update status
@@ -244,7 +245,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
     async loadRemoteData(): Promise<{ details: IEmployeeDetails[] }> {
         try {
             console.log('fetching data...');
-            let response = await fetch(this.props.apiUrl, {
+            let response = await fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/today", {
                 method: 'GET',
                 headers: {
                     'Authorization': 'APIKEY ' + this.props.apiKey,
@@ -289,60 +290,6 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
     setMapFilter(filter: IStatType) {
         this.setState({ mapFilter: filter });
-    }
-
-    renderInfoDialog() {
-        return <><div className='dialog-sheet' onClick={() => this.setState({ dialog: '' })} />
-            <div className='dialog info'>
-                <div className='header'>
-                    <div className='first'></div>
-                    <div className='title'>
-                        Information
-                        </div>
-                    <div className='last'>
-
-                        <div className='closer' onClick={() => this.setState({ dialog: '' })} />
-                    </div>
-                </div>
-                <div className='body'>
-                    <ol className='items'>
-                        <li>
-                            <div className='text'>WHO has information on how to keep yourself and your family safe. </div>
-                            <div className='action-container'>
-                                <a className='action' href='https://www.who.int/emergencies/diseases/novel-coronavirus-2019/advice-for-public' target='_blank'>View</a>
-                            </div>
-                        </li>
-                        <li>
-                            <div className='text'>
-                                CFR (Case Fatality Rate) is calculated as percentage of fatalities in confirmed cases.
-                                 </div>
-                            <div className='action-container'>
-
-                            </div>
-                        </li>
-                        <li>
-                            <div className='text'>Data for this dashboard is sourced from several places, most notably, John Hopkins Center for System Science  and Engineering</div>
-                            <div className='action-container'>
-                                <a className='action' href='https://github.com/CSSEGISandData' target='_blank'>Source</a>
-                            </div>
-                        </li>
-                        <li>
-                            <div className='text'>The APIs for this dashboard are powered by Lucy using data culled from the sources mentioned above.</div>
-                            <div className='action-container'>
-                                <a className='action' href='https://lucyinthesky.io' target='_blank'>Learn More</a>
-                            </div>
-                        </li>
-                        <li>
-                            <div className='text'>The code for this dashboard is available on Github.</div>
-                            <div className='action-container'>
-                                <a className='action' href='https://github.com/lucy-platform/heal' target='_blank'>View on Github</a>
-                            </div>
-                        </li>
-                    </ol>
-
-                </div>
-            </div>
-        </>;
     }
 
     renderPrecautions() {
@@ -496,7 +443,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 "countriesvisited": this.state.scannData.lastVisitedCountry.trim(),
             });
 
-            fetch("https://staywoke.lucy.servicedeskhq.com/Lucy/SituationalAwareness/users", {
+            fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users", {
                 method: "post",
                 headers: {
                     'Authorization': 'APIKEY ' + this.props.apiKey,
@@ -540,10 +487,8 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
     render() {
 
         var dialog = <></>;
-        if (this.state.dialog == "info") {
-            dialog = this.renderInfoDialog();
-        }
-        else if (this.state.dialog == "precautions") {
+        
+        if (this.state.dialog == "precautions") {
             dialog = this.renderPrecautions();
         }
         else if (this.state.dialog == "scann") {
@@ -601,8 +546,8 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         </div>
                         <ListWidget sorting={this.state.sorting} items={this.state.data} />
                         <div className='footer'>
-                            <div className='tip'>Learn how this dashboard could be personalised to you</div>
-                            <div className='action' onClick={() => this.setState({ dialog: 'info' })}>Info</div>
+                            <div className='tip'>Learn more about this dashboard</div>
+                            <div className='action' onClick={this.props.renderInfo}>Info</div>
                         </div>
                     </div>
                 </div>
