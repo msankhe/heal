@@ -1097,8 +1097,71 @@ html {
         font-weight:bold;
         position:relative;
         display:flex;
+
         .title {
             flex-grow:1;
+
+            &.edit {
+                text-align: left;
+                
+                .left {
+                    position: relative;
+                    padding-left: 40px;
+                    font-weight: normal;
+
+                    &::before {
+                        content: "";
+                        background-image: url("../images/left.svg");
+                        background-repeat: no-repeat;
+                        background-position: center;
+                        background-size: contain;
+                        width: 30px;
+                        height: 25px;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                    }
+                }
+    
+                .present {
+                    position: relative;
+                    padding-left: 40px;
+                    font-weight: normal;
+
+                    &::before {
+                        content: "";
+                        background-image: url("../images/present.svg");
+                        background-repeat: no-repeat;
+                        background-position: center;
+                        background-size: contain;
+                        width: 30px;
+                        height: 25px;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                    }
+                }
+    
+                .arriving {
+                    position: relative;
+                    padding-left: 40px;
+                    font-weight: normal;
+
+                    &::before {
+                        content: "";
+                        background-image: url("../images/arriving.svg");
+                        background-repeat: no-repeat;
+                        background-position: center;
+                        background-size: contain;
+                        width: 30px;
+                        height: 25px;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                    }
+                }
+            
+            }
         }
         .first,.second {flex-grow:0;width:100px;}
         .closer {
@@ -1155,6 +1218,25 @@ html {
 
                 }
             }
+        }
+
+        .left{
+            width: 55%;
+            display: inline-block;
+            box-sizing: border-box;
+        }
+
+        .middle {
+            display: inline-block;
+            width: 10%;
+            box-sizing: border-box;
+        }
+
+        .right {
+            width: 33%;
+            display: inline-block;
+            box-sizing: border-box;
+            vertical-align: top;
         }
 
         .form-group{
@@ -1237,6 +1319,114 @@ html {
                 }
                 &.error {
                     color: red;
+                }
+            }
+        }
+
+        &.edit {
+            .form-group{
+                position: relative;
+
+                .temp-units{
+                    position: absolute;
+                    top: 50%;
+                    right: 0px;
+                    transform: translate(100%, -50%);
+
+                    .temp-label {
+                        padding: 8px;
+                        border-radius: 50%;
+                        /* background-color: #F8F8F8; */
+                        margin: 1px;
+                        font-size: 0.7rem;
+                        cursor: pointer;
+
+                        &.selected {
+                            background: white;
+                            box-shadow: 0px 0px 1px 2px rgba(0,0,0,0.2);
+                            color: black;
+                        }
+                    }
+                }
+
+                .placeholder {
+                    width: 100%;
+                    height: 100px;
+                    background-color: gray;
+                    border-radius: 10px;
+                    margin-bottom: 10px;
+                }
+
+                .take-photo {
+                    position: absolute;
+                    text-align: center;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: auto;
+                    padding: 8px;
+                    border-radius: 50px;
+                    background-color: #F8F8F8;
+                    border: 0;
+                    color: gray;
+                    font-size: 0.6rem;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    cursor: pointer;
+
+                    .icon{
+                        display: inline-block;
+                        width: 15px;
+                        height: 10px;
+                        background-image: url("../images/camera.svg");
+                        background-repeat: no-repeat;
+                        background-position: center;
+                        background-size: contain;
+                    }
+                }
+
+                .label {
+                    display: inline-block;
+                    width: 35%;
+                    font-size: 0.7rem;
+                    text-align: right;
+                    padding-right: 8px;
+                    box-sizing: border-box;
+
+                    &.full-width {
+                        width: 100%;
+                        display: block;
+                        text-align: left;
+                    }
+                }
+
+                .value {
+                    font-size: 0.8rem;
+                }
+    
+                .input {
+                    display: inline-block;
+                    width: 65%;
+
+                    &.filled {
+                        background: white;
+                        box-shadow: 0px 0px 1px 2px rgba(0,0,0,0.2);
+                        color: black;
+                    }
+                }
+    
+                &.buttons {
+                    text-align: right;
+                    margin-top: 0px;
+    
+                    .save-changes-button, .check-in-button  {
+                        width: auto;
+                        padding: 10px 40px;
+                        border-radius: 50px;
+                        background-color: #F8F8F8;
+                        border: 0;
+                        color: gray;
+                        text-transform: uppercase;
+                    }
                 }
             }
         }

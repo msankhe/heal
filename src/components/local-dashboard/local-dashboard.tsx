@@ -18,7 +18,7 @@ interface IEmployeeDetails {
 
     lat: number;
     long: number;
-    temperature: number;
+    temperature: string;
     locationName: string;
     dataSourceName: string;
     dataSourceIcon: string;
@@ -38,6 +38,12 @@ interface IScanData {
     buttonText: string
 }
 
+interface IEditFormData {
+    buttonText: string,
+    stateButtonText: string,
+    feedback: any
+}
+
 interface ILocalProps {
     apiUrl: string,
     apiKey: string,
@@ -53,15 +59,19 @@ interface ILocalState {
     lastUpdated: string,
     sorting: IListFilter,
     data: IEmployeeDetails[],
-    dialog: 'info' | 'precautions' | 'scann' | '',
+    dialog: 'info' | 'precautions' | 'scann' | 'edit' | '',
     mapFilter: IStatType,
-    scannData: IScanData
+    scannData: IScanData,
+    selected: IEmployeeDetails | null,
+    editForm: IEditFormData
 }
 
 interface IListWidgetProps {
     items: IEmployeeDetails[],
     sorting: IListFilter,
-    toggleStarred: any
+    toggleStarred: any,
+    selected: IEmployeeDetails,
+    onSelectItem: any
 }
 interface IListWidgetState {
 }
@@ -82,29 +92,34 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
 
     renderItem(item: IEmployeeDetails, key: number) {
 
-        return <div key={key} className='item local-list'>
+        let cls = "";
+        if (this.props.selected != null && this.props.selected._id == item._id) {
+            cls = "selected"
+        }
 
-            <div className='c status'>
+        return <div key={key} className={`item local-list ${cls} `}>
+
+            <div className='c status' onClick={() => this.props.onSelectItem(item)}>
                 <div className={`label ${item.status} `}></div>
                 <div className='value'>{item.status}</div>
             </div>
-            <div className=' c'>
+            <div className=' c' onClick={() => this.props.onSelectItem(item)}>
                 <div className='label'>Location</div>
                 <div className='value'>{item.location} </div>
             </div>
-            <div className='temperature c'>
+            <div className='temperature c' onClick={() => this.props.onSelectItem(item)}>
                 <div className='label'>Temperature</div>
                 <div className='value'>{item.temperature} &#8451;</div>
             </div>
-            <div className='name c'>
+            <div className='name c' onClick={() => this.props.onSelectItem(item)}>
                 <div className='label'>Name</div>
                 <div className='value'>{item.name}</div>
             </div>
-            <div className='last-country c'>
+            <div className='last-country c' onClick={() => this.props.onSelectItem(item)}>
                 <div className='label'>Last Country Visited</div>
                 <div className='value'>{item.countriesvisited}</div>
             </div>
-            <div className='data-source c'>
+            <div className='data-source c' onClick={() => this.props.onSelectItem(item)}>
                 <div className='label'>Data Source</div>
                 <div className='value'>
                     {item.source}
@@ -123,17 +138,21 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
         let starredItemsString = localStorage.getItem("starredItems");
         let starredItems = JSON.parse(starredItemsString);
 
-        if(this.props.sorting == "starred") {
-            items = items.filter((item:IEmployeeDetails) => {
+        if (starredItems == null) {
+            starredItems = [];
+        }
+
+        if (this.props.sorting == "starred") {
+            items = items.filter((item: IEmployeeDetails) => {
                 return (starredItems.indexOf(item._id) != -1);
             })
         }
-        
+
         return <div className='list-widget'>
             {
                 items.map((item, key) => this.renderItem(item, key))
             }
-            
+
         </div>;
     }
 }
@@ -221,14 +240,25 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 isValid: false,
                 feedback: <span></span>,
                 buttonText: "Submit"
+            },
+            selected: null,
+            editForm: {
+                buttonText: "submit",
+                stateButtonText: "check-in",
+                feedback: ""
             }
         }
 
         this.submitForm = this.submitForm.bind(this);
         this.updateFormData = this.updateFormData.bind(this);
+        this.updateEditFormData = this.updateEditFormData.bind(this);
         this.closeScanningForm = this.closeScanningForm.bind(this);
         this.subscribe = this.subscribe.bind(this);
         this.toggleItemStarred = this.toggleItemStarred.bind(this);
+        this.onSelectItem = this.onSelectItem.bind(this);
+        this.onCloseEditDialog = this.onCloseEditDialog.bind(this);
+        this.updateUserState = this.updateUserState.bind(this);
+        this.updateUserDetails = this.updateUserDetails.bind(this);
     }
 
     componentDidMount() {
@@ -239,11 +269,11 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
     subscribe() {
         window.Lucy.MessageBus.init({ url: this.props.apiUrl, apiKey: this.props.apiKey })
             .then(() => {
-                window.Lucy.MessageBus.subscribe('situation-dashboard', (value: string, channel:string) => {
+                window.Lucy.MessageBus.subscribe('situation-dashboard', (value: string, channel: string) => {
                     // update status
                     var dataSet = this.state.data;
                     dataSet.push(JSON.parse(value));
-                    this.setState({data: dataSet});
+                    this.setState({ data: dataSet });
                 });
             });
     }
@@ -251,12 +281,13 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
     async loadRemoteData(): Promise<{ details: IEmployeeDetails[] }> {
         try {
             console.log('fetching data...');
-            let response = await fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/today", {
-                method: 'GET',
-                headers: {
-                    'Authorization': 'APIKEY ' + this.props.apiKey,
-                    'Content-Type': 'application/json'
-                }
+            let response = await fetch("http://localhost:5000/employee.json", {
+                // let response = await fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/today", {
+                // method: 'GET',
+                // headers: {
+                //     'Authorization': 'APIKEY ' + this.props.apiKey,
+                //     'Content-Type': 'application/json'
+                // }
             });
             if (!response.ok) {
                 throw await response.text();
@@ -283,10 +314,12 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 // get localstorage data
                 let starredItemsString = localStorage.getItem("starredItems");
                 let starredItems = JSON.parse(starredItemsString);
-        
-                details.map((item: IEmployeeDetails) => {
-                    item.starred = (starredItems.indexOf(item._id) != -1)
-                });
+
+                if (starredItems != null) {
+                    details.map((item: IEmployeeDetails) => {
+                        item.starred = (starredItems.indexOf(item._id) != -1)
+                    });
+                }
             }
 
             this.setState({ data: details, lastUpdated: lastUpdate });
@@ -393,6 +426,86 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         </>;
     }
 
+    renderEditForm() {
+        return <>
+            <div className='dialog-sheet' onClick={this.onCloseEditDialog} />
+            <div className='dialog scann-form'>
+                <div className='header'>
+
+                    <div className='title edit'>
+                        <label className={`${this.state.selected.status}`} >{this.state.selected.status}</label>
+                    </div>
+                    <div className='last'>
+                        <div className='closer' onClick={this.onCloseEditDialog} />
+                    </div>
+                </div>
+                <div className='body edit'>
+
+                    <div className={`left`}>
+                        <div className="form-group">
+                            <label className="label" >Temperature</label>
+                            <input type="text" name="temperature" className={`input ${this.state.selected.temperature.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.temperature} placeholder="Example: 23" onChange={(event) => this.updateEditFormData(event, 'temperature')} />
+
+                            <span className="temp-units">
+                                <span className={`temp-label `}>&#8451;</span>
+                                <span className={`temp-label `}>&#8457;</span>
+                            </span>
+                        </div>
+
+                        <div className="form-group">
+                            <label className="label" >Name  </label>
+                            <input type="text" name="name" className={`input ${this.state.selected.name.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.name} placeholder="Example: John Doe" onChange={(event) => this.updateEditFormData(event, 'name')} />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="label" >Location  </label>
+                            <input type="text" name="location" className={`input ${this.state.selected.location.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.location} placeholder="Example: Singapore" onChange={(event) => this.updateEditFormData(event, 'location')} />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="label" >Last Country Visited </label>
+                            <input type="text" name="lastvisited" className={`input ${this.state.selected.countriesvisited.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.countriesvisited} placeholder="Example: Kenya" onChange={(event) => this.updateEditFormData(event, 'lastVisited')} />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="label" >Data Source </label>
+                            <span className="value">{this.state.selected.source}</span>
+                        </div>
+
+                    </div>
+                    <div className={`middle`}></div>
+                    <div className={`right`}>
+
+                    <div className="form-group">
+                        <label className="label full-width" >Capture Image </label>
+                        <div className="placeholder"></div>
+                        <button className={`take-photo`}><span className={`icon`}></span> Take Photo </button>
+                    </div>
+
+                    </div>
+
+                    <div className="form-group">
+                        {this.state.editForm.feedback}
+                    </div>
+
+                    <div className="form-group buttons">
+
+                    <button type="button" className={`check-in-button `} onClick={this.updateUserState}>
+                            <span className="icon"></span>
+                            {this.state.editForm.stateButtonText}
+                        </button>
+
+                        <button type="button" className={`save-changes-button `} onClick={this.updateUserDetails}>
+                            <span className="icon"></span>
+                            {this.state.editForm.buttonText}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </>;
+    }
+
     closeScanningForm() {
         let scannData = this.state.scannData;
 
@@ -436,6 +549,30 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         scannedData.isValid = scannedData.id.trim().length > 0 && scannedData.name.trim().length > 0 && scannedData.location.trim().length > 0 && scannedData.temperature.trim().length > 0 && scannedData.lastVisitedCountry.trim().length > 0;
 
         this.setState({ scannData: scannedData });
+    }
+
+    updateEditFormData(event: React.ChangeEvent<HTMLInputElement>, filed: string) {
+        let selected = this.state.selected;
+        let newValue = event.target.value
+
+        switch (filed) {
+            case "temperature":
+                selected.temperature = newValue;
+                break;
+            case "name":
+                selected.name = newValue;
+                break;
+            case "location":
+                selected.location = newValue;
+                break;
+            case "lastVisited":
+                selected.countriesvisited = newValue;
+                break;
+        }
+
+        //scannedData.isValid = scannedData.id.trim().length > 0 && scannedData.name.trim().length > 0 && scannedData.location.trim().length > 0 && scannedData.temperature.trim().length > 0 && scannedData.lastVisitedCountry.trim().length > 0;
+
+        this.setState({ selected: selected });
     }
 
     submitForm() {
@@ -498,12 +635,42 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         }
     }
 
-    toggleItemStarred(_id : string) {
-        
+    updateUserState() {
+        let editForm = this.state.editForm;
+        editForm.feedback = <span className="feedback info" >Your data is submitting...Please wait...</span>;
+        editForm.stateButtonText = "Submitting...";
+
+        this.setState({ editForm: editForm });
+
+        let selected = this.state.selected;
+        let isValid = selected.temperature.trim().length > 0 && selected.name.trim().length > 0 && selected.countriesvisited.trim().length > 0 && selected.location.trim().length > 0;
+
+        if(isValid) {
+            // submit form 
+            // let _data = JSON.stringify({
+            //     "name": this.state.scannData.name.trim(),
+            //     "location": this.state.scannData.location.trim(),
+            //     "temperature": this.state.scannData.temperature.trim(),
+            //     "countriesvisited": this.state.scannData.lastVisitedCountry.trim(),
+            // });
+        }
+        else {
+            editForm.feedback = <span className="feedback error" >Please Complete the form</span>;
+            editForm.stateButtonText = selected.status == "check-in" ? "check-out" : "check-in";
+            this.setState({ editForm: editForm });
+        }
+    }
+
+    updateUserDetails() {
+
+    }
+
+    toggleItemStarred(_id: string) {
+
         let starredItemsString = localStorage.getItem("starredItems");
         let starredItems = JSON.parse(starredItemsString);
-        
-        if(starredItems == null) {
+
+        if (starredItems == null) {
             starredItems = [];
         }
 
@@ -511,7 +678,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         let index = starredItems.indexOf(_id);
         console.log("index-" + index);
 
-        if(index == -1) {
+        if (index == -1) {
             starredItems.push(_id);
         }
         else {
@@ -521,26 +688,48 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         // update data list 
         let data = this.state.data;
         data.map((item, key) => {
-            if(item._id == _id) {
+            if (item._id == _id) {
                 item.starred = !item.starred;
             }
         })
 
-        this.setState({data: data});
+        this.setState({ data: data });
 
         localStorage.setItem("starredItems", JSON.stringify(starredItems));
 
     }
 
+    onSelectItem(item: IEmployeeDetails) {
+        this.setState({
+            selected: item,
+            dialog: "edit",
+            editForm: {
+                stateButtonText: item.status == "check-in" ? "check-out" : "check-in",
+                buttonText: "Submit",
+                feedback: ""
+            }
+        })
+    }
+
+    onCloseEditDialog() {
+        this.setState({
+            selected: null,
+            dialog: ""
+        })
+    }
+
     render() {
 
         var dialog = <></>;
-        
+
         if (this.state.dialog == "precautions") {
             dialog = this.renderPrecautions();
         }
         else if (this.state.dialog == "scann") {
             dialog = this.renderScanningForm();
+        }
+        else if (this.state.dialog == "edit") {
+            dialog = this.renderEditForm();
         }
 
         return (<>
@@ -592,7 +781,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
                             </div>
                         </div>
-                        <ListWidget sorting={this.state.sorting} items={this.state.data} toggleStarred={this.toggleItemStarred} />
+                        <ListWidget sorting={this.state.sorting} items={this.state.data} toggleStarred={this.toggleItemStarred} selected={this.state.selected} onSelectItem={this.onSelectItem} />
                         <div className='footer'>
                             <div className='tip'>Learn more about this dashboard</div>
                             <div className='action' onClick={this.props.renderInfo}>Info</div>
