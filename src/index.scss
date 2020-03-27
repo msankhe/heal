@@ -990,6 +990,23 @@ html {
                                 
                             }
                         }
+
+                        &.temperature {
+                            .value {
+                                position: relative;
+
+                                &.celsius {
+                                    &::after {
+                                        content: "\2103";
+                                    }
+                                }
+                                &.fahrenheit {
+                                    &::after {
+                                        content: "\2109";
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

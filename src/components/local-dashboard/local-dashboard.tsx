@@ -13,18 +13,18 @@ interface IEmployeeDetails {
     name: string,
     location: string,
     source: string,
-    countriesvisited: string;
-    created: Date
+    countriesvisited: string,
+    created: Date,
+    temperature: string,
+    status: string,
+    starred: boolean,
+    tempunit: string,
 
-    lat: number;
-    long: number;
-    temperature: string;
-    locationName: string;
-    dataSourceName: string;
-    dataSourceIcon: string;
-    status: string;
-    starred: boolean;
-    lastScanned: string,
+    lat: number,
+    long: number,
+    locationName: string,
+    dataSourceIcon: string,
+    lastScanned: string
 }
 
 interface IScanData {
@@ -35,7 +35,8 @@ interface IScanData {
     lastVisitedCountry: string,
     isValid: boolean,
     feedback: any,
-    buttonText: string
+    buttonText: string,
+    tempUnit: string
 }
 
 interface IEditFormData {
@@ -109,7 +110,7 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
             </div>
             <div className='temperature c' onClick={() => this.props.onSelectItem(item)}>
                 <div className='label'>Temperature</div>
-                <div className='value'>{item.temperature} &#8451;</div>
+                <div className={`value ${item.tempunit}`}>{item.temperature} </div>
             </div>
             <div className='name c' onClick={() => this.props.onSelectItem(item)}>
                 <div className='label'>Name</div>
@@ -239,7 +240,8 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 lastVisitedCountry: "",
                 isValid: false,
                 feedback: <span></span>,
-                buttonText: "Submit"
+                buttonText: "Submit",
+                tempUnit: "celsius"
             },
             selected: null,
             editForm: {
@@ -258,6 +260,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         this.onSelectItem = this.onSelectItem.bind(this);
         this.onCloseEditDialog = this.onCloseEditDialog.bind(this);
         this.submitEditForm = this.submitEditForm.bind(this);
+        this.updateTempUnit = this.updateTempUnit.bind(this);
     }
 
     componentDidMount() {
@@ -446,8 +449,8 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                             <input type="text" name="temperature" className={`input ${this.state.selected.temperature != null && this.state.selected.temperature.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.temperature} placeholder="Example: 23" onChange={(event) => this.updateEditFormData(event, 'temperature')} />
 
                             <span className="temp-units">
-                                <span className={`temp-label `}>&#8451;</span>
-                                <span className={`temp-label `}>&#8457;</span>
+                                <span className={`temp-label ${this.state.selected.tempunit == "celsius" ? "selected" : ""}`} onClick={() => this.updateTempUnit("celsius")}>&#8451;</span>
+                                <span className={`temp-label ${this.state.selected.tempunit == "fahrenheit" ? "selected" : ""} `} onClick={() => this.updateTempUnit("fahrenheit")}>&#8457;</span>
                             </span>
                         </div>
 
@@ -574,6 +577,12 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         this.setState({ selected: selected });
     }
 
+    updateTempUnit(unit: string) {
+        let selected = this.state.selected;
+        selected.tempunit = unit;
+        this.setState({selected: selected});
+    }
+
     submitForm() {
 
         let scanData = this.state.scannData;
@@ -591,6 +600,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 "temperature": this.state.scannData.temperature.trim(),
                 "source": "Manual",
                 "countriesvisited": this.state.scannData.lastVisitedCountry.trim(),
+                "tempunit": this.state.scannData.tempUnit
             });
 
             fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users", {
@@ -676,7 +686,8 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 "countriesvisited": selected.countriesvisited.trim(),
                 "_id": selected._id,
                 "id": selected.id,
-                "status": status
+                "status": status,
+                "tempunit": selected.tempunit
             });
 
             fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/update", {
