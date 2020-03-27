@@ -257,8 +257,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         this.toggleItemStarred = this.toggleItemStarred.bind(this);
         this.onSelectItem = this.onSelectItem.bind(this);
         this.onCloseEditDialog = this.onCloseEditDialog.bind(this);
-        this.updateUserState = this.updateUserState.bind(this);
-        this.updateUserDetails = this.updateUserDetails.bind(this);
+        this.submitEditForm = this.submitEditForm.bind(this);
     }
 
     componentDidMount() {
@@ -281,13 +280,13 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
     async loadRemoteData(): Promise<{ details: IEmployeeDetails[] }> {
         try {
             console.log('fetching data...');
-            let response = await fetch("http://localhost:5000/employee.json", {
-                // let response = await fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/today", {
-                // method: 'GET',
-                // headers: {
-                //     'Authorization': 'APIKEY ' + this.props.apiKey,
-                //     'Content-Type': 'application/json'
-                // }
+            
+            let response = await fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/today", {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'APIKEY ' + this.props.apiKey,
+                    'Content-Type': 'application/json'
+                }
             });
             if (!response.ok) {
                 throw await response.text();
@@ -444,7 +443,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     <div className={`left`}>
                         <div className="form-group">
                             <label className="label" >Temperature</label>
-                            <input type="text" name="temperature" className={`input ${this.state.selected.temperature.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.temperature} placeholder="Example: 23" onChange={(event) => this.updateEditFormData(event, 'temperature')} />
+                            <input type="text" name="temperature" className={`input ${this.state.selected.temperature != null && this.state.selected.temperature.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.temperature} placeholder="Example: 23" onChange={(event) => this.updateEditFormData(event, 'temperature')} />
 
                             <span className="temp-units">
                                 <span className={`temp-label `}>&#8451;</span>
@@ -476,11 +475,11 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     <div className={`middle`}></div>
                     <div className={`right`}>
 
-                    <div className="form-group">
-                        <label className="label full-width" >Capture Image </label>
-                        <div className="placeholder"></div>
-                        <button className={`take-photo`}><span className={`icon`}></span> Take Photo </button>
-                    </div>
+                        <div className="form-group">
+                            <label className="label full-width" >Capture Image </label>
+                            <div className="placeholder"></div>
+                            <button className={`take-photo`}><span className={`icon`}></span> Take Photo </button>
+                        </div>
 
                     </div>
 
@@ -490,12 +489,12 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
                     <div className="form-group buttons">
 
-                    <button type="button" className={`check-in-button `} onClick={this.updateUserState}>
+                        <button type="button" className={`check-in-button `} onClick={() => this.submitEditForm("status")}>
                             <span className="icon"></span>
                             {this.state.editForm.stateButtonText}
                         </button>
 
-                        <button type="button" className={`save-changes-button `} onClick={this.updateUserDetails}>
+                        <button type="button" className={`save-changes-button `} onClick={() => this.submitEditForm("save")}>
                             <span className="icon"></span>
                             {this.state.editForm.buttonText}
                         </button>
@@ -642,28 +641,115 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
         this.setState({ editForm: editForm });
 
+
+    }
+
+    submitEditForm(type: string) {
+        let editForm = this.state.editForm;
+        editForm.feedback = <span className="feedback info" >Your data is submitting...Please wait...</span>;
+
+        if (type == "status") {
+            editForm.stateButtonText = "Submitting...";
+        }
+        else {
+            editForm.buttonText = "Submitting...";
+        }
+        this.setState({ editForm: editForm });
+
+
         let selected = this.state.selected;
         let isValid = selected.temperature.trim().length > 0 && selected.name.trim().length > 0 && selected.countriesvisited.trim().length > 0 && selected.location.trim().length > 0;
 
-        if(isValid) {
+        if (isValid) {
+
+            status = selected.status;
+
+            if (type == "status") {
+                status = status == "check-in" ? "check-out" : "check-in";
+            }
+
             // submit form 
-            // let _data = JSON.stringify({
-            //     "name": this.state.scannData.name.trim(),
-            //     "location": this.state.scannData.location.trim(),
-            //     "temperature": this.state.scannData.temperature.trim(),
-            //     "countriesvisited": this.state.scannData.lastVisitedCountry.trim(),
-            // });
+            let _data = JSON.stringify({
+                "name": selected.name.trim(),
+                "location": selected.location.trim(),
+                "temperature": selected.temperature.trim(),
+                "countriesvisited": selected.countriesvisited.trim(),
+                "_id": selected._id,
+                "id": selected.id,
+                "status": status
+            });
+
+            fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/update", {
+                method: "post",
+                headers: {
+                    'Authorization': 'APIKEY ' + this.props.apiKey,
+                    'Content-Type': 'application/json'
+                },
+                body: _data
+            })
+                .then((res) => res.json())
+                .then(response => {
+
+                    let selected = response;
+
+                    let editForm = this.state.editForm;
+                    editForm.feedback = <span className="feedback success">Your changes saved successfully</span>;
+                    editForm.buttonText = "Submit";
+                    editForm.stateButtonText = selected.status == "check-in" ? "check-out" : "check-in";
+
+                    // update data set
+                    let data = this.state.data;
+
+                    let starredItemsString = localStorage.getItem("starredItems");
+                    let starredItems = JSON.parse(starredItemsString);
+
+                    if (starredItems == null) {
+                        starredItems = [];
+                    }
+
+                    var updated = data.map(item => {
+
+                        if (item._id == selected._id) {
+                            item = selected;
+                        }
+
+                        item.starred = (starredItems.indexOf(item._id) != -1);
+
+                        return item;
+                    })
+
+                    console.table(updated);
+
+                    this.setState({ editForm: editForm, data: updated, selected: selected });
+                })
+                .catch(err => {
+
+                    let editForm = this.state.editForm;
+                    editForm.feedback = <span className="feedback error">Oops! something went wrong</span>;
+                    editForm.buttonText = "Submit";
+                    editForm.stateButtonText = this.state.selected.status == "check-in" ? "check-out" : "check-in";
+                    this.setState({ editForm: editForm });
+
+                    console.log(err);
+                    throw err;
+                })
+
         }
         else {
             editForm.feedback = <span className="feedback error" >Please Complete the form</span>;
-            editForm.stateButtonText = selected.status == "check-in" ? "check-out" : "check-in";
+
+            if (type == "status") {
+                editForm.stateButtonText = selected.status == "check-in" ? "check-out" : "check-in";
+            }
+            else {
+                editForm.buttonText = "Submit";
+            }
+
             this.setState({ editForm: editForm });
         }
     }
 
-    updateUserDetails() {
 
-    }
 
     toggleItemStarred(_id: string) {
 

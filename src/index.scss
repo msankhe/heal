@@ -907,6 +907,10 @@ html {
                         border-bottom: 1px solid #EDEDED;
                     }
 
+                    &.selected {
+                        background-color: #F8F8F8;
+                    }
+
                     .c {
                         margin: 0px 5px;
                         width: 120px;
@@ -935,11 +939,11 @@ html {
                                 background-size: contain;
                                 margin-bottom: 8px;
 
-                                &.left {
+                                &.check-out {
                                     background-image: url("../images/left.svg");
                                 }
 
-                                &.present {
+                                &.check-in {
                                     background-image: url("../images/present.svg");
                                 }
 
@@ -1104,7 +1108,7 @@ html {
             &.edit {
                 text-align: left;
                 
-                .left {
+                .check-out {
                     position: relative;
                     padding-left: 40px;
                     font-weight: normal;
@@ -1123,7 +1127,7 @@ html {
                     }
                 }
     
-                .present {
+                .check-in {
                     position: relative;
                     padding-left: 40px;
                     font-weight: normal;
