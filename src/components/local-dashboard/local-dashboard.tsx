@@ -124,7 +124,9 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
                 <div className='label'>Data Source</div>
                 <div className='value'>
                     {/* {item.source} */}
-                    <img src={`./images/datasources/${item.source.toLowerCase()}.png`} alt={item.source} />
+                    {
+                        item.source == null ? "" : <img src={`./images/datasources/${item.source.toLowerCase()}.png`} alt={item.source} />
+                    }
                 </div>
             </div>
             <div className={`c starred`}>
@@ -274,8 +276,24 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 window.Lucy.MessageBus.subscribe('situation-dashboard', (value: string, channel: string) => {
                     // update status
                     var dataSet = this.state.data;
-                    dataSet.push(JSON.parse(value));
-                    this.setState({ data: dataSet });
+                    let NewRecord: IEmployeeDetails = JSON.parse(value);
+                    dataSet.push(NewRecord);
+
+                    let screened = this.state.screened;
+                    let employees = this.state.employees;
+                    let oranges = this.state.oranges;
+
+                    if (NewRecord.temperature != null && NewRecord.temperature.trim().length > 0) {
+                        screened++;
+                    }
+                    employees++;
+
+                    this.setState({
+                        data: dataSet,
+                        screened: screened,
+                        employees: employees,
+                        oranges: oranges
+                    });
                 });
             });
     }
@@ -283,7 +301,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
     async loadRemoteData(): Promise<{ details: IEmployeeDetails[] }> {
         try {
             console.log('fetching data...');
-            
+
             let response = await fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/today", {
                 method: 'GET',
                 headers: {
@@ -310,6 +328,10 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
             let details = [];
 
+            let screened = 0;
+            let employees = 0;
+            let oranges = 0;
+
             if (rawData) {
                 details = rawData;
 
@@ -317,14 +339,34 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 let starredItemsString = localStorage.getItem("starredItems");
                 let starredItems = JSON.parse(starredItemsString);
 
+
+
                 if (starredItems != null) {
-                    details.map((item: IEmployeeDetails) => {
-                        item.starred = (starredItems.indexOf(item._id) != -1)
+                    let temp = details.map((item: IEmployeeDetails) => {
+                        item.starred = (starredItems.indexOf(item._id) != -1);
+
+                        item.tempunit = "celsius";
+
+                        if (item.temperature != null && item.temperature.trim().length > 0) {
+                            screened++;
+                        }
+                        employees++;
+
+                        return item;
                     });
+
+                    details = temp;
                 }
             }
 
-            this.setState({ data: details, lastUpdated: lastUpdate });
+            //console.table(details);
+            this.setState({
+                data: details,
+                lastUpdated: lastUpdate,
+                screened: screened,
+                employees: employees,
+                oranges: oranges
+            });
 
             return { details };
         } catch (e) {
@@ -580,7 +622,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
     updateTempUnit(unit: string) {
         let selected = this.state.selected;
         selected.tempunit = unit;
-        this.setState({selected: selected});
+        this.setState({ selected: selected });
     }
 
     submitForm() {
@@ -592,6 +634,13 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         this.setState({ scannData: scanData });
 
         if (this.state.scannData.isValid) {
+
+            let temperature = this.state.scannData.temperature.trim();
+            let tempUnit = this.state.scannData.tempUnit;
+            if (tempUnit == "fahrenheit") {
+                temperature = this.calcCelsiusValue(temperature);
+            }
+
             // submit form 
             let _data = JSON.stringify({
                 "id": this.state.scannData.id.trim(),
@@ -599,8 +648,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 "location": this.state.scannData.location.trim(),
                 "temperature": this.state.scannData.temperature.trim(),
                 "source": "Lucy",
-                "countriesvisited": this.state.scannData.lastVisitedCountry.trim(),
-                "tempunit": this.state.scannData.tempUnit
+                "countriesvisited": temperature
             });
 
             fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users", {
@@ -614,7 +662,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 .then((res) => res.json())
                 .then(response => {
 
-                    console.log(response);
+                    //console.log(response);
 
                     if (response._id) {
                         let scannedData = this.state.scannData;
@@ -672,22 +720,27 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
         if (isValid) {
 
-            status = selected.status;
-
+            status = selected.status == null ? "" : selected.status;
+            //console.log(typeof status);
             if (type == "status") {
                 status = status == "check-in" ? "check-out" : "check-in";
+            }
+
+            let temperature = selected.temperature.trim();
+            let tempUnit = selected.tempunit;
+            if (tempUnit != "celsius") {
+                temperature = this.calcCelsiusValue(temperature);
             }
 
             // submit form 
             let _data = JSON.stringify({
                 "name": selected.name.trim(),
                 "location": selected.location.trim(),
-                "temperature": selected.temperature.trim(),
+                "temperature": temperature,
                 "countriesvisited": selected.countriesvisited.trim(),
                 "_id": selected._id,
                 "id": selected.id,
-                "status": status,
-                "tempunit": selected.tempunit
+                "status": status
             });
 
             fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/update", {
@@ -718,6 +771,10 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         starredItems = [];
                     }
 
+                    let screened = 0;
+                    let employees = 0;
+                    let oranges = 0;
+
                     var updated = data.map(item => {
 
                         if (item._id == selected._id) {
@@ -725,13 +782,24 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         }
 
                         item.starred = (starredItems.indexOf(item._id) != -1);
+                        item.tempunit = "celsius";
+
+                        if (item.temperature != null && item.temperature.trim().length > 0) {
+                            screened++;
+                        }
+                        employees++;
 
                         return item;
-                    })
+                    });
 
-                    console.table(updated);
-
-                    this.setState({ editForm: editForm, data: updated, selected: selected });
+                    this.setState({
+                        editForm: editForm,
+                        data: updated,
+                        selected: selected,
+                        screened: screened,
+                        employees: employees,
+                        oranges: oranges
+                    });
                 })
                 .catch(err => {
 
@@ -773,7 +841,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
         // check if item exist in localstorage
         let index = starredItems.indexOf(_id);
-        console.log("index-" + index);
+        //console.log("index-" + index);
 
         if (index == -1) {
             starredItems.push(_id);
@@ -813,6 +881,18 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             selected: null,
             dialog: ""
         })
+    }
+
+    calcCelsiusValue(fahrenheit: string) {
+        let F = parseFloat(fahrenheit);
+
+        if (isNaN(F)) {
+            throw "Temperature should be a numbber";
+        }
+
+        let C = (5 / 9) * (F - 32);
+        C = Math.round((C + 0.00001) * 100) / 100;
+        return C.toString();
     }
 
     render() {
@@ -856,7 +936,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     </div>
                     <div className='stat employees'>
                         <div className='metric'>{this.state.employees}</div>
-                        <div className='title'>employees</div>
+                        <div className='title'>Expected</div>
                     </div>
                     <div className='stat oranges'>
                         <div className='metric'>{this.state.oranges}</div>
@@ -890,7 +970,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     <div className='map-widget'>
                         <div className='filters'>
                             <div onClick={this.setMapFilter.bind(this, 'screened')} className={(this.state.mapFilter == 'screened' ? 'set' : '') + ' switch screened'}><span className="icon"></span> screened</div>
-                            <div onClick={this.setMapFilter.bind(this, 'employees')} className={(this.state.mapFilter == 'employees' ? 'set' : '') + ' switch employees'}><span className="icon"></span>employees</div>
+                            <div onClick={this.setMapFilter.bind(this, 'employees')} className={(this.state.mapFilter == 'employees' ? 'set' : '') + ' switch employees'}><span className="icon"></span>Expected</div>
                             <div onClick={this.setMapFilter.bind(this, 'oranges')} className={(this.state.mapFilter == 'oranges' ? 'set' : '') + ' switch oranges'}><span className="icon"></span>oranges</div>
                         </div>
 
