@@ -145,6 +145,9 @@ class MapWidget extends React.Component<IMapWidgetProps, {}> {
         </div>;
     }
     renderMarker(item: IDataItem, key: number, size: string) {
+        if (!item?.lat || !item?.lon) {
+            return null;
+        }
         let stat = shortenNumber(item[this.props.stat]);
         let markerClass = `micon ${this.props.stat} ${size}`;
         if (item.id === this.props.selectedItem?.id) {
@@ -617,8 +620,8 @@ class HealthDashboard extends React.Component<IHealthDashboardProps, IHealthDash
                 confirmed: Number(item['Confirmed']),
                 recovered: Number(item['Recovered']),
                 deaths: Number(item['Deaths']),
-                lat: Number(item['lat']),
-                lon: Number(item['lon']),
+                lat: Number(item['lat'] || item['Latitude']),
+                lon: Number(item['lon'] || item['Longitude']),
                 id: item['Country/Region'] + '/' + item['Province/State'],
             }));
             localStorage.setItem('raw', JSON.stringify(data));
