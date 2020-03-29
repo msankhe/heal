@@ -744,7 +744,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             });
 
             fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/update", {
-                method: "post",
+                method: "PATCH",
                 headers: {
                     'Authorization': 'APIKEY ' + this.props.apiKey,
                     'Content-Type': 'application/json'
