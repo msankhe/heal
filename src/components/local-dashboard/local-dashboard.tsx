@@ -73,7 +73,8 @@ interface IListWidgetProps {
     sorting: IListFilter,
     toggleStarred: any,
     selected: IEmployeeDetails,
-    onSelectItem: any
+    onSelectItem: any,
+    searchText: string
 }
 interface IListWidgetState {
 }
@@ -151,6 +152,16 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
                 return (starredItems.indexOf(item._id) != -1);
             })
         }
+
+        let searchText = this.props.searchText;
+        
+        if(searchText != null && searchText.trim().length > 0) {
+            items = items.filter((item:IEmployeeDetails) => {
+                let regExp = new RegExp(searchText, "i");
+                return ((item.id == searchText) || (regExp.test(item.name)) );
+            });
+        }
+
 
         return <div className='list-widget'>
             {
@@ -265,7 +276,6 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         this.onCloseEditDialog = this.onCloseEditDialog.bind(this);
         this.submitEditForm = this.submitEditForm.bind(this);
         this.updateTempUnit = this.updateTempUnit.bind(this);
-        this.search = this.search.bind(this);
     }
 
     componentDidMount() {
@@ -898,79 +908,6 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         return C.toString();
     }
 
-    async search(event: React.ChangeEvent<HTMLInputElement>): Promise<{ details: IEmployeeDetails[] }> {
-
-        try {
-            let searchText = event.target.value;
-            this.setState({ searchText: searchText });
-
-            // filter
-            if(searchText.trim().length == 0) {
-                searchText = "__all__";
-            }
-            let searchParam = encodeURI(searchText.trim());
-            let response = await fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/search/" + searchParam , {
-                method: 'GET',
-                headers: {
-                    'Authorization': 'APIKEY ' + this.props.apiKey,
-                    'Content-Type': 'application/json'
-                }
-            });
-            if (!response.ok) {
-                throw await response.text();
-            }
-
-            // update state
-            let details = [];
-            let rawFiltered = await response.json();
-
-            let screened = 0;
-            let employees = 0;
-            let oranges = 0;
-
-            if (rawFiltered) {
-                details = rawFiltered;
-
-                // get localstorage data
-                let starredItemsString = localStorage.getItem("starredItems");
-                let starredItems = JSON.parse(starredItemsString);
-
-
-
-                if (starredItems != null) {
-                    let temp = details.map((item: IEmployeeDetails) => {
-                        item.starred = (starredItems.indexOf(item._id) != -1);
-
-                        item.tempunit = "celsius";
-
-                        if (item.temperature != null && item.temperature.trim().length > 0) {
-                            screened++;
-                        }
-                        employees++;
-
-                        return item;
-                    });
-
-                    details = temp;
-                }
-            }
-
-            //console.table(details);
-            this.setState({
-                data: details,
-                screened: screened,
-                employees: employees,
-                oranges: oranges
-            });
-
-            return {details}
-
-        } catch (e) {
-            throw e;
-        }
-
-    }
-
     render() {
 
         var dialog = <></>;
@@ -1029,13 +966,13 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                                 Today
                             </div>
                             <div className='filters'>
-                                <input type="text" name="search" className="search" placeholder="search by name or id" value={this.state.searchText} onChange={(event) => this.search(event)} />
+                                <input type="text" name="search" className="search" placeholder="search by name or id" value={this.state.searchText} onChange={(event) => this.setState({searchText: event.target.value})} />
                                 <div onClick={this.setSorting.bind(this, 'starred')} className={(this.state.sorting == 'starred' ? 'set' : '') + ' switch starred'}><span className="icon star"></span>starred</div>
                                 <div onClick={this.setSorting.bind(this, 'all')} className={(this.state.sorting == 'all' ? 'set' : '') + ' switch all'}>All {/* <span className="icon arrow"></span> */} </div>
 
                             </div>
                         </div>
-                        <ListWidget sorting={this.state.sorting} items={this.state.data} toggleStarred={this.toggleItemStarred} selected={this.state.selected} onSelectItem={this.onSelectItem} />
+                        <ListWidget sorting={this.state.sorting} searchText={this.state.searchText} items={this.state.data} toggleStarred={this.toggleItemStarred} selected={this.state.selected} onSelectItem={this.onSelectItem} />
                         <div className='footer'>
                             <div className='tip'>Learn more about this dashboard</div>
                             <div className='action' onClick={this.props.renderInfo}>Info</div>
