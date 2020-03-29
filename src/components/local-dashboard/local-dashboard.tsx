@@ -64,7 +64,8 @@ interface ILocalState {
     mapFilter: IStatType,
     scannData: IScanData,
     selected: IEmployeeDetails | null,
-    editForm: IEditFormData
+    editForm: IEditFormData,
+    searchText: string
 }
 
 interface IListWidgetProps {
@@ -250,7 +251,8 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 buttonText: "submit",
                 stateButtonText: "check-in",
                 feedback: ""
-            }
+            },
+            searchText: ""
         }
 
         this.submitForm = this.submitForm.bind(this);
@@ -263,6 +265,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         this.onCloseEditDialog = this.onCloseEditDialog.bind(this);
         this.submitEditForm = this.submitEditForm.bind(this);
         this.updateTempUnit = this.updateTempUnit.bind(this);
+        this.search = this.search.bind(this);
     }
 
     componentDidMount() {
@@ -895,6 +898,79 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         return C.toString();
     }
 
+    async search(event: React.ChangeEvent<HTMLInputElement>): Promise<{ details: IEmployeeDetails[] }> {
+
+        try {
+            let searchText = event.target.value;
+            this.setState({ searchText: searchText });
+
+            // filter
+            if(searchText.trim().length == 0) {
+                searchText = "__all__";
+            }
+            let searchParam = encodeURI(searchText.trim());
+            let response = await fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/search/" + searchParam , {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'APIKEY ' + this.props.apiKey,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (!response.ok) {
+                throw await response.text();
+            }
+
+            // update state
+            let details = [];
+            let rawFiltered = await response.json();
+
+            let screened = 0;
+            let employees = 0;
+            let oranges = 0;
+
+            if (rawFiltered) {
+                details = rawFiltered;
+
+                // get localstorage data
+                let starredItemsString = localStorage.getItem("starredItems");
+                let starredItems = JSON.parse(starredItemsString);
+
+
+
+                if (starredItems != null) {
+                    let temp = details.map((item: IEmployeeDetails) => {
+                        item.starred = (starredItems.indexOf(item._id) != -1);
+
+                        item.tempunit = "celsius";
+
+                        if (item.temperature != null && item.temperature.trim().length > 0) {
+                            screened++;
+                        }
+                        employees++;
+
+                        return item;
+                    });
+
+                    details = temp;
+                }
+            }
+
+            //console.table(details);
+            this.setState({
+                data: details,
+                screened: screened,
+                employees: employees,
+                oranges: oranges
+            });
+
+            return {details}
+
+        } catch (e) {
+            throw e;
+        }
+
+    }
+
     render() {
 
         var dialog = <></>;
@@ -953,6 +1029,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                                 Today
                             </div>
                             <div className='filters'>
+                                <input type="text" name="search" className="search" placeholder="search by name or id" value={this.state.searchText} onChange={(event) => this.search(event)} />
                                 <div onClick={this.setSorting.bind(this, 'starred')} className={(this.state.sorting == 'starred' ? 'set' : '') + ' switch starred'}><span className="icon star"></span>starred</div>
                                 <div onClick={this.setSorting.bind(this, 'all')} className={(this.state.sorting == 'all' ? 'set' : '') + ' switch all'}>All {/* <span className="icon arrow"></span> */} </div>
 
