@@ -101,8 +101,8 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
         return <div key={key} className={`item local-list ${cls} `}>
 
             <div className='c status' onClick={() => this.props.onSelectItem(item)}>
-                <div className={`label ${item.status} `}></div>
-                <div className='value'>{item.status}</div>
+                <div className={`label ${item.status == null ? "" : item.status} `}></div>
+                <div className='value'>{item.status == null ? "" : item.status}</div>
             </div>
             <div className=' c' onClick={() => this.props.onSelectItem(item)}>
                 <div className='label'>Location</div>
@@ -117,14 +117,14 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
                 <div className='value'>{item.name}</div>
             </div>
             <div className='last-country c' onClick={() => this.props.onSelectItem(item)}>
-                <div className='label'>Last Country Visited</div>
+                <div className='label'>Countries Visited</div>
                 <div className='value'>{item.countriesvisited}</div>
             </div>
             <div className='data-source c' onClick={() => this.props.onSelectItem(item)}>
                 <div className='label'>Data Source</div>
                 <div className='value'>
-                    {item.source}
-                    {/* <img src={item.dataSourceIcon} alt={item.dataSourceName} /> */}
+                    {/* {item.source} */}
+                    <img src={`./images/datasources/${item.source.toLowerCase()}.png`} alt={item.source} />
                 </div>
             </div>
             <div className={`c starred`}>
@@ -407,7 +407,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     </div>
 
                     <div className="form-group">
-                        <label className="label" >Last Country Visited </label>
+                        <label className="label" >Countries Visited </label>
                         <input type="text" name="lastvisited" className={`input ${this.state.scannData.lastVisitedCountry.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.lastVisitedCountry} placeholder="Example: Kenya" onChange={(event) => this.updateFormData(event, 'lastVisited')} />
                     </div>
 
@@ -465,7 +465,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         </div>
 
                         <div className="form-group">
-                            <label className="label" >Last Country Visited </label>
+                            <label className="label" >Countries Visited </label>
                             <input type="text" name="lastvisited" className={`input ${this.state.selected.countriesvisited.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.countriesvisited} placeholder="Example: Kenya" onChange={(event) => this.updateEditFormData(event, 'lastVisited')} />
                         </div>
 
@@ -598,7 +598,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 "name": this.state.scannData.name.trim(),
                 "location": this.state.scannData.location.trim(),
                 "temperature": this.state.scannData.temperature.trim(),
-                "source": "Manual",
+                "source": "Lucy",
                 "countriesvisited": this.state.scannData.lastVisitedCountry.trim(),
                 "tempunit": this.state.scannData.tempUnit
             });
@@ -870,7 +870,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         <div className='header'>
                             <div className='title local-list'>
                                 <span className="arrow"></span>
-                                Last scanned
+                                Today
                             </div>
                             <div className='filters'>
                                 <div onClick={this.setSorting.bind(this, 'starred')} className={(this.state.sorting == 'starred' ? 'set' : '') + ' switch starred'}><span className="icon star"></span>starred</div>
