@@ -6,7 +6,13 @@ declare const window: any;
 
 type IStatType = 'screened' | 'employees' | 'oranges';
 type IListFilter = 'starred' | 'all';
-
+function checkInStatusText(s:string) {
+    switch(s?.toLowerCase()) {
+        default: return 'Expected';
+        case 'check-in':return 'Checked In';
+        case 'check-out': return 'Checked Out';
+    }
+}
 interface IEmployeeDetails {
     _id: string,
     id: string,
@@ -104,7 +110,7 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
 
             <div className='c status' onClick={() => this.props.onSelectItem(item)}>
                 <div className={`label ${item.status == null ? "" : item.status} `}></div>
-                <div className='value'>{item.status == null ? "" : item.status}</div>
+                <div className='value'>{item.status == null ? "" : checkInStatusText(item.status)}</div>
             </div>
             <div className=' c' onClick={() => this.props.onSelectItem(item)}>
                 <div className='label'>Location</div>
