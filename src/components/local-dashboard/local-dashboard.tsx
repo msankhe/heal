@@ -529,22 +529,24 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
                         <div className="form-group">
                             <label className="label" >Name  </label>
-                            <input type="text" name="name" className={`input ${this.state.selected.name.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.name} placeholder="Example: John Doe" onChange={(event) => this.updateEditFormData(event, 'name')} />
+                            <input type="text" name="name" className={`input ${this.state.selected.name != null && this.state.selected.name.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.name} placeholder="Example: John Doe" onChange={(event) => this.updateEditFormData(event, 'name')} />
                         </div>
 
                         <div className="form-group">
                             <label className="label" >Location  </label>
-                            <input type="text" name="location" className={`input ${this.state.selected.location.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.location} placeholder="Example: Singapore" onChange={(event) => this.updateEditFormData(event, 'location')} />
+                            <input type="text" name="location" className={`input ${this.state.selected.location != null && this.state.selected.location.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.location} placeholder="Example: Singapore" onChange={(event) => this.updateEditFormData(event, 'location')} />
                         </div>
 
                         <div className="form-group">
                             <label className="label" >Countries Visited </label>
-                            <input type="text" name="lastvisited" className={`input ${this.state.selected.countriesvisited.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.countriesvisited} placeholder="Example: Kenya" onChange={(event) => this.updateEditFormData(event, 'lastVisited')} />
+                            <input type="text" name="lastvisited" className={`input ${this.state.selected.countriesvisited != null && this.state.selected.countriesvisited.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.countriesvisited} placeholder="Example: Kenya" onChange={(event) => this.updateEditFormData(event, 'lastVisited')} />
                         </div>
 
                         <div className="form-group">
                             <label className="label" >Data Source </label>
-                            <span className="value">{this.state.selected.source}</span>
+                            {
+                                this.state.selected.source == null ? "" : <img className="data-source-image" src={`./images/datasources/${this.state.selected.source.toLowerCase()}.png`} alt={this.state.selected.source} />
+                            }
                         </div>
 
                     </div>

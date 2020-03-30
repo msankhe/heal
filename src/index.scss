@@ -1540,6 +1540,12 @@ html {
             .form-group {
                 position: relative;
 
+                img {
+                    &.data-source-image {
+                        height: 30px;
+                    }
+                }
+
                 .temp-units {
                     position: absolute;
                     top: 50%;
