@@ -112,23 +112,23 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
                 <div className={`label ${item.status == null ? "" : item.status} `}></div>
                 <div className='value'>{item.status == null ? "" : checkInStatusText(item.status)}</div>
             </div>
-            <div className=' c' onClick={() => this.props.onSelectItem(item)}>
-                <div className='label'>Location</div>
-                <div className='value'>{item.location} </div>
-            </div>
-            <div className='temperature c' onClick={() => this.props.onSelectItem(item)}>
+            <div className='c temperature' onClick={() => this.props.onSelectItem(item)}>
                 <div className='label'>Temperature</div>
                 <div className={`value ${item.tempunit}`}>{item.temperature} </div>
             </div>
-            <div className='name c' onClick={() => this.props.onSelectItem(item)}>
+            <div className='c location' onClick={() => this.props.onSelectItem(item)}>
+                <div className='label'>Location</div>
+                <div className='value'>{item.location} </div>
+            </div>
+            <div className='c name' onClick={() => this.props.onSelectItem(item)}>
                 <div className='label'>Name</div>
                 <div className='value'>{item.name}</div>
             </div>
-            <div className='last-country c' onClick={() => this.props.onSelectItem(item)}>
+            <div className='c last-country' onClick={() => this.props.onSelectItem(item)}>
                 <div className='label'>Countries Visited</div>
                 <div className='value'>{item.countriesvisited}</div>
             </div>
-            <div className='data-source c' onClick={() => this.props.onSelectItem(item)}>
+            <div className='c data-source' onClick={() => this.props.onSelectItem(item)}>
                 <div className='label'>Data Source</div>
                 <div className='value'>
                     {/* {item.source} */}
@@ -952,9 +952,9 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     Precautions <span className="arrow"></span>
                 </div>
 
-                <div className="toolbar-button" onClick={() => this.setState({ dialog: '' })} >
+                {/* <div className="toolbar-button" onClick={() => this.setState({ dialog: '' })} >
                     All <span className="arrow"></span>
-                </div>
+                </div> */}
 
             </div>
 
