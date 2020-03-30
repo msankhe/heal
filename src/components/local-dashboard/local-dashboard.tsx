@@ -980,6 +980,17 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     </div>
                 </div>
 
+                <div className='map local-map'>
+                    <div className='map-widget'>
+                        <div className='filters'>
+                            <div onClick={this.setMapFilter.bind(this, 'screened')} className={(this.state.mapFilter == 'screened' ? 'set' : '') + ' switch screened'}><span className="icon"></span> screened</div>
+                            <div onClick={this.setMapFilter.bind(this, 'employees')} className={(this.state.mapFilter == 'employees' ? 'set' : '') + ' switch employees'}><span className="icon"></span>Expected</div>
+                            <div onClick={this.setMapFilter.bind(this, 'oranges')} className={(this.state.mapFilter == 'oranges' ? 'set' : '') + ' switch oranges'}><span className="icon"></span>oranges</div>
+                        </div>
+
+                        <MapWidget items={this.state.data} />
+                    </div>
+                </div>
 
                 <div className='data-list-container local-list'>
                     <div className='data-list'>
@@ -1003,17 +1014,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     </div>
                 </div>
 
-                <div className='map local-map'>
-                    <div className='map-widget'>
-                        <div className='filters'>
-                            <div onClick={this.setMapFilter.bind(this, 'screened')} className={(this.state.mapFilter == 'screened' ? 'set' : '') + ' switch screened'}><span className="icon"></span> screened</div>
-                            <div onClick={this.setMapFilter.bind(this, 'employees')} className={(this.state.mapFilter == 'employees' ? 'set' : '') + ' switch employees'}><span className="icon"></span>Expected</div>
-                            <div onClick={this.setMapFilter.bind(this, 'oranges')} className={(this.state.mapFilter == 'oranges' ? 'set' : '') + ' switch oranges'}><span className="icon"></span>oranges</div>
-                        </div>
-
-                        <MapWidget items={this.state.data} />
-                    </div>
-                </div>
+                
 
 
             </div>
