@@ -1720,12 +1720,12 @@ html {
             height: 100%;
 
             .stats {
-                &.stat-local {
-                    position: relative;
-                    height: auto;
-                    width: 100%;
-                    box-sizing: border-box;
+                position: relative;
+                height: auto;
+                width: 100%;
+                box-sizing: border-box;
 
+                &.stat-local {
                     .stats-header {
                         display: none;
                     }
@@ -1733,56 +1733,55 @@ html {
             }
 
             .map {
-                &.local-map {
-                    width: 100%;
-                    position: relative;
-                    top: 0;
-                    height: 400px;
-
-                    .map-widget {
-                    }
-                }
+                width: 100%;
+                position: relative;
+                top: 0;
+                height: 400px;
             }
 
             .data-list-container {
+                width: 100%;
+                position: relative;
+                margin: 0;
+                box-sizing: border-box;
+
                 &.local-list {
-                    width: 100%;
-                    position: relative;
-                    margin: 0;
-                    box-sizing: border-box;
                     margin-bottom: 80px;
 
                     .data-list {
-                        position: relative;
-                        box-sizing: border-box;
-                        margin: 0;
-                        display: block;
                         margin-bottom: 30px;
-                        height: fit-content;
+                    }
+                }
 
-                        .header {
-                            height: 120px;
-                            display: flex;
-                            flex-direction: row;
+                .data-list {
+                    position: relative;
+                    box-sizing: border-box;
+                    margin: 0;
+                    display: block;
+                    height: fit-content;
 
-                            .filters {
-                                .search {
-                                    min-width: 300px;
-                                }
+                    .header {
+                        height: 120px;
+                        display: flex;
+                        flex-direction: row;
+
+                        .filters {
+                            .search {
+                                min-width: 300px;
                             }
                         }
+                    }
 
-                        .list-widget {
+                    .list-widget {
+                        display: flex;
+                        flex-direction: column;
+                        height: 500px;
+                        overflow-y: auto;
+
+                        .item {
                             display: flex;
-                            flex-direction: column;
-                            height: 500px;
-                            overflow-y: auto;
-
-                            .item {
-                                &.local-list {
-                                    display: flex;
-                                    flex-direction: row;
-                                }
+                            flex-direction: row;
+                            &.local-list {
                             }
                         }
                     }
@@ -1887,6 +1886,12 @@ html {
             height: 100%;
 
             .stats {
+                position: relative;
+                height: auto;
+                width: 100%;
+                box-sizing: border-box;
+                padding-top: 40px;
+
                 &.stat-local {
                     position: relative;
                     height: auto;
@@ -1900,59 +1905,61 @@ html {
             }
 
             .map {
-                &.local-map {
-                    width: 100%;
-                    position: relative;
-                    top: 0;
-
-                    .map-widget {
-                    }
-                }
+                width: 100%;
+                position: relative;
+                top: 0;
+                height: 400px;
             }
 
             .data-list-container {
+                //&.local-list {
+                width: 100%;
+                position: relative;
+                margin: 0;
+                box-sizing: border-box;
+
                 &.local-list {
-                    width: 100%;
-                    position: relative;
-                    margin: 0;
-                    box-sizing: border-box;
                     margin-bottom: 80px;
 
                     .data-list {
-                        position: relative;
-                        box-sizing: border-box;
-                        margin: 0;
-                        display: block;
                         margin-bottom: 30px;
-                        height: fit-content;
+                    }
+                }
+                .data-list {
+                    position: relative;
+                    box-sizing: border-box;
+                    margin: 0;
+                    display: block;
+                    height: fit-content;
 
-                        .header {
-                            height: 120px;
+                    .header {
+                        height: 120px;
+                        display: flex;
+                        flex-direction: row;
+
+                        .filters {
+                            .search {
+                                min-width: 300px;
+                            }
+                        }
+                    }
+
+                    .list-widget {
+                        display: flex;
+                        flex-direction: column;
+                        height: 500px;
+                        overflow-y: auto;
+
+                        .item {
                             display: flex;
                             flex-direction: row;
 
-                            .filters {
-                                .search {
-                                    min-width: 300px;
-                                }
-                            }
-                        }
-
-                        .list-widget {
-                            display: flex;
-                            flex-direction: column;
-                            height: 500px;
-                            overflow-y: auto;
-
-                            .item {
-                                &.local-list {
-                                    display: flex;
-                                    flex-direction: row;
-                                }
+                            &.local-list {
                             }
                         }
                     }
                 }
+                //}
             }
         }
 
@@ -2036,7 +2043,7 @@ html {
     }
 }
 
-@media (max-width: 411px) {
+@media (max-width: 490px) {
     * {
         box-sizing: border-box;
     }
@@ -2095,11 +2102,11 @@ html {
                 margin: 0px auto;
             }
 
-            .countries{ 
+            .countries {
                 &.ddl {
                     margin: 0px auto;
+                }
             }
-        }
         }
 
         .data-section {
@@ -2107,19 +2114,18 @@ html {
             height: 100%;
 
             .stats {
+                position: relative;
+                height: auto;
+                width: 100%;
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
 
+                .stats-header {
                     position: relative;
-                    height: auto;
-                    width: 100%;
-                    box-sizing: border-box;
-                    display: flex;
-                    flex-direction: column;
+                }
 
-                    .stats-header {
-                        position: relative;
-                    }
-
-                    &.stat-local {
+                &.stat-local {
                     .stats-header {
                         display: none;
                     }
@@ -2131,62 +2137,60 @@ html {
                 position: relative;
                 top: 0;
                 height: 400px;
-
             }
 
             .data-list-container {
                 //&.local-list {
-                    width: 100%;
+                width: 100%;
+                position: relative;
+                margin: 0;
+                box-sizing: border-box;
+                margin-bottom: 80px;
+
+                .data-list {
                     position: relative;
-                    margin: 0;
                     box-sizing: border-box;
-                    margin-bottom: 80px;
+                    margin: 0;
+                    display: block;
+                    margin-bottom: 30px;
+                    height: fit-content;
 
-                    .data-list {
-                        position: relative;
-                        box-sizing: border-box;
-                        margin: 0;
-                        display: block;
-                        margin-bottom: 30px;
-                        height: fit-content;
+                    .header {
+                        height: 150px;
 
-                        .header {
-                            height: 150px;
+                        .filters {
+                            display: flex;
+                            justify-content: center;
+                            flex-wrap: wrap;
 
-                            .filters {
-                                display: flex;
-                                justify-content: center;
-                                flex-wrap: wrap;
-
-                                .search {
-                                    display: block;
-                                    width: 100%;
-                                    text-align: center;
-                                }
+                            .search {
+                                display: block;
+                                width: 100%;
+                                text-align: center;
                             }
                         }
+                    }
 
-                        .list-widget {
+                    .list-widget {
+                        display: flex;
+                        flex-direction: column;
+                        height: 500px;
+                        overflow-y: auto;
+
+                        .item {
                             display: flex;
-                            flex-direction: column;
-                            height: 500px;
-                            overflow-y: auto;
+                            flex-direction: row;
 
-                            .item {
-                                display: flex;
-                                    flex-direction: row;
-
-                                &.local-list {
-
-                                    .status,
-                                    .location,
-                                    .data-source {
-                                        display: none;
-                                    }
+                            &.local-list {
+                                .status,
+                                .location,
+                                .data-source {
+                                    display: none;
                                 }
                             }
                         }
                     }
+                }
                 //}
             }
         }
