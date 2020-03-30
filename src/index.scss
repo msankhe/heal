@@ -1303,6 +1303,7 @@ html {
                 border-radius: 35px;
                 background-color: #F8F8F8;
                 border: 0;
+                outline: none;
 
                 &.filled {
                     @include employees-gradient();

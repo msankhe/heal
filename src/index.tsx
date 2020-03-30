@@ -5,9 +5,9 @@ import LocalDashBoard from './components/local-dashboard/local-dashboard';
 
 import "./index.scss"
 
-const API_URL = "https://staywoke.lucy.servicedeskhq.com/hook/Covid19";
-const Local_Data_URL = "https://staywoke.lucy.servicedeskhq.com"
-const APIKey = "SC:staywoke:f543c530b15de66a";
+const API_URL = "http://staywoke.v4.iviva.cloud/hook/Covid19";
+const Local_Data_URL = "http://staywoke.v4.iviva.cloud"
+const APIKey = "SC:staywoke:529c20cd6c187259";
 
 interface IProps {
 

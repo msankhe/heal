@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Map, Marker, TileLayer } from "react-leaflet";
 import { divIcon, Map as LeafletMap, LatLngBoundsExpression } from 'leaflet';
-
+import {getCountryDetails,ICountry} from './countries';
 declare const window: any;
-
+const ORANGE_TEMP_C = 37.3;
 type IStatType = 'screened' | 'employees' | 'oranges';
 type IListFilter = 'starred' | 'all';
 function checkInStatusText(s:string) {
@@ -60,9 +60,9 @@ interface ILocalProps {
 
 interface ILocalState {
     userId: string,
-    screened: number,
-    employees: number,
-    oranges: number,
+    // screened: number,
+    // employees: number,
+    // oranges: number,
     lastUpdated: string,
     sorting: IListFilter,
     data: IEmployeeDetails[],
@@ -204,9 +204,19 @@ class MapWidget extends React.Component<IMapWidgetProps, {}> {
         if (zoom < 3) {
             size = 'tiny';
         }
+        let availableCountries:any = {};
+        for(var i in this.props.items) {
+            let countries = this.props.items[i].countriesvisited?.split(',');
+            for(var c in countries) {
+                let country = countries[c]?.trim() || '';
+                if (!country) continue;
+                availableCountries[country] = 1;
+            }
+        }
+        let countryData = getCountryDetails(Object.keys(availableCountries));
 
         return <div className='gmap' >
-            <Map center={[45.4, -75.7]} zoom={2}
+            <Map center={[45.4, -75.7]} zoom={1}
                 ref={(el) => {
                     if (!!el) {
                         this.map = el.leafletElement;
@@ -216,24 +226,24 @@ class MapWidget extends React.Component<IMapWidgetProps, {}> {
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 {
-                    //this.props.items.map((item, key) => this.renderMarker(item, key, size))
+                    countryData.map((item, key) => this.renderMarker(item, key, size))
                 }
             </Map>
 
         </div>;
     }
 
-    renderMarker(item: IEmployeeDetails, key: number, size: string) {
+    renderMarker(item: ICountry, key: number, size: string) {
         //let stat = shortenNumber(item[this.props.stat]);
         //console.log(stat);
-        let markerClass = `micon screened selected ${size}`;
+        let markerClass = `micon screened -selected ${size}`;
 
-        // return <Marker
-        //     //onClick={() => this.props.onItemSelected(item)}
-        //     position={[item.lat, item.long]}
-        //     key={key}
-        //     icon={divIcon({ className: markerClass, 'html': '<div><div class="inner"></div><div class="outer"></div><div class="txt"></div></div>' })}
-        // />;
+        return <Marker
+            //onClick={() => this.props.onItemSelected(item)}
+            position={[item.lat, item.lon]}
+            key={key}
+            icon={divIcon({ className: markerClass, 'html': '<div><div class="inner"></div><div class="outer"></div><div class="txt"></div></div>' })}
+        />;
     }
 }
 
@@ -244,9 +254,9 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
         this.state = {
             userId: "user_01",
-            screened: 0,
-            employees: 0,
-            oranges: 0,
+            // screened: 0,
+            // employees: 0,
+            // oranges: 0,
             lastUpdated: null,
             sorting: 'all',
             data: [],
@@ -296,22 +306,24 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     // update status
                     var dataSet = this.state.data;
                     let NewRecord: IEmployeeDetails = JSON.parse(value);
-                    dataSet.push(NewRecord);
 
-                    let screened = this.state.screened;
-                    let employees = this.state.employees;
-                    let oranges = this.state.oranges;
+                    /* keep it on the top */
+                    dataSet.unshift(NewRecord);
+
+                    // let screened = this.state.screened;
+                    // let employees = this.state.employees;
+                    // let oranges = this.state.oranges;
 
                     if (NewRecord.temperature != null && NewRecord.temperature.trim().length > 0) {
-                        screened++;
+                        // screened++;
                     }
-                    employees++;
+                    // employees++;
 
                     this.setState({
                         data: dataSet,
-                        screened: screened,
-                        employees: employees,
-                        oranges: oranges
+                        // screened: screened,
+                        // employees: employees,
+                        // oranges: oranges
                     });
                 });
             });
@@ -382,9 +394,9 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             this.setState({
                 data: details,
                 lastUpdated: lastUpdate,
-                screened: screened,
-                employees: employees,
-                oranges: oranges
+                // screened: screened,
+                // employees: employees,
+                // oranges: oranges
             });
 
             return { details };
@@ -448,21 +460,21 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 <div className='body'>
 
                     <div className="form-group">
-                        <label className="label" >Temperature</label>
-                        <input type="text" name="temperature" className={`input ${this.state.scannData.temperature.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.temperature} placeholder="Example: 23" onChange={(event) => this.updateFormData(event, 'temperature')} />
-                    </div>
-
-                    <div className="form-group">
-                        <label className="label" >Id  </label>
-                        <input type="text" name="id" className={`input ${this.state.scannData.id.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.id} placeholder="Example: E123" onChange={(event) => this.updateFormData(event, 'id')} />
-                    </div>
-
-                    <div className="form-group">
                         <label className="label" >Name  </label>
                         <input type="text" name="name" className={`input ${this.state.scannData.name.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.name} placeholder="Example: John Doe" onChange={(event) => this.updateFormData(event, 'name')} />
                     </div>
 
                     <div className="form-group">
+                        <label className="label" >Id (if available) </label>
+                        <input type="text" name="id" className={`input ${this.state.scannData.id.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.id} placeholder="Example: E123" onChange={(event) => this.updateFormData(event, 'id')} />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="label" >Temperature</label>
+                        <input type="text" name="temperature" className={`input ${this.state.scannData.temperature.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.temperature} placeholder="Example: 23" onChange={(event) => this.updateFormData(event, 'temperature')} />
+                    </div>
+
+                    <div className="form-group" style={{display:'none'}}>
                         <label className="label" >Location  </label>
                         <input type="text" name="location" className={`input ${this.state.scannData.location.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.location} placeholder="Example: Singapore" onChange={(event) => this.updateFormData(event, 'location')} />
                     </div>
@@ -609,7 +621,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 break;
         }
 
-        scannedData.isValid = scannedData.id.trim().length > 0 && scannedData.name.trim().length > 0 && scannedData.location.trim().length > 0 && scannedData.temperature.trim().length > 0 && scannedData.lastVisitedCountry.trim().length > 0;
+        scannedData.isValid =  scannedData.name.trim().length > 0 && scannedData.temperature.trim().length > 0;
 
         this.setState({ scannData: scannedData });
     }
@@ -647,7 +659,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
     submitForm() {
 
         let scanData = this.state.scannData;
-        scanData.feedback = <span className="feedback info" >Your data is submitting...Please wait...</span>;
+        scanData.feedback = <span className="feedback info" >Submitting...</span>;
         scanData.buttonText = "Submitting...";
 
         this.setState({ scannData: scanData });
@@ -665,9 +677,9 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 "id": this.state.scannData.id.trim(),
                 "name": this.state.scannData.name.trim(),
                 "location": this.state.scannData.location.trim(),
-                "temperature": this.state.scannData.temperature.trim(),
+                "temperature": temperature,
                 "source": "Lucy",
-                "countriesvisited": temperature
+                "countriesvisited": this.state.scannData.lastVisitedCountry.trim(),
             });
 
             fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users", {
@@ -692,7 +704,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         scannedData.lastVisitedCountry = "";
                         scannedData.location = "";
                         scannedData.isValid = false;
-                        scannedData.feedback = <span className="feedback success">Record Added Successfully!</span>;
+                        scannedData.feedback = <span className="feedback success">Done</span>;
                         scanData.buttonText = "Submit";
 
                         this.setState({ scannData: scannedData });
@@ -713,7 +725,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
     updateUserState() {
         let editForm = this.state.editForm;
-        editForm.feedback = <span className="feedback info" >Your data is submitting...Please wait...</span>;
+        editForm.feedback = <span className="feedback info" >Submitting...</span>;
         editForm.stateButtonText = "Submitting...";
 
         this.setState({ editForm: editForm });
@@ -723,7 +735,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
     submitEditForm(type: string) {
         let editForm = this.state.editForm;
-        editForm.feedback = <span className="feedback info" >Your data is submitting...Please wait...</span>;
+        editForm.feedback = <span className="feedback info" >Submitting...</span>;
 
         if (type == "status") {
             editForm.stateButtonText = "Submitting...";
@@ -776,7 +788,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     let selected = response;
 
                     let editForm = this.state.editForm;
-                    editForm.feedback = <span className="feedback success">Your changes saved successfully</span>;
+                    editForm.feedback = <span className="feedback success">Saved</span>;
                     editForm.buttonText = "Submit";
                     editForm.stateButtonText = selected.status == "check-in" ? "check-out" : "check-in";
 
@@ -815,9 +827,9 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         editForm: editForm,
                         data: updated,
                         selected: selected,
-                        screened: screened,
-                        employees: employees,
-                        oranges: oranges
+                        // screened: screened,
+                        // employees: employees,
+                        // oranges: oranges
                     });
                 })
                 .catch(err => {
@@ -928,6 +940,11 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             dialog = this.renderEditForm();
         }
 
+        let screened = this.state.data.filter(e => e?.temperature?.length>0).length;
+        let employees = this.state.data.length;
+        let oranges = this.state.data.filter(e => Number(e.temperature)>ORANGE_TEMP_C).length;
+
+
         return (<>
             <div className='toolbar'>
 
@@ -950,15 +967,15 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         </div>
                     </div>
                     <div className='stat screened'>
-                        <div className='metric'>{this.state.screened}</div>
+                        <div className='metric'>{screened}</div>
                         <div className='title'>screened</div>
                     </div>
                     <div className='stat employees'>
-                        <div className='metric'>{this.state.employees}</div>
+                        <div className='metric'>{employees}</div>
                         <div className='title'>Expected</div>
                     </div>
                     <div className='stat oranges'>
-                        <div className='metric'>{this.state.oranges}</div>
+                        <div className='metric'>{oranges}</div>
                         <div className='title'>oranges</div>
                     </div>
                 </div>
