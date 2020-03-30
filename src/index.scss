@@ -1669,8 +1669,8 @@ html {
     }
 }
 
-// and (orientation: landscape) 
-@media (max-width: 1024px)  {
+// and (orientation: landscape)
+@media (max-width: 1024px) {
     * {
         box-sizing: border-box;
     }
@@ -1737,6 +1737,7 @@ html {
                     width: 100%;
                     position: relative;
                     top: 0;
+                    height: 400px;
 
                     .map-widget {
                     }
@@ -1765,11 +1766,9 @@ html {
                             flex-direction: row;
 
                             .filters {
-
                                 .search {
                                     min-width: 300px;
                                 }
-
                             }
                         }
 
@@ -1783,8 +1782,6 @@ html {
                                 &.local-list {
                                     display: flex;
                                     flex-direction: row;
-
-                                
                                 }
                             }
                         }
@@ -1820,7 +1817,6 @@ html {
                 right: 0;
                 transform: translateY(0%);
                 top: 10%;
-        
             }
 
             &.info {
@@ -1936,11 +1932,9 @@ html {
                             flex-direction: row;
 
                             .filters {
-
                                 .search {
                                     min-width: 300px;
                                 }
-
                             }
                         }
 
@@ -1954,8 +1948,6 @@ html {
                                 &.local-list {
                                     display: flex;
                                     flex-direction: row;
-
-                                
                                 }
                             }
                         }
@@ -1991,7 +1983,6 @@ html {
                 right: 0;
                 transform: translateY(0%);
                 top: 10%;
-            
 
                 .body {
                     .left {
@@ -2000,8 +1991,8 @@ html {
                         .form-group {
                             label,
                             input {
-                               // text-align: left;
-                              //  width: 100%;
+                                // text-align: left;
+                                //  width: 100%;
                             }
 
                             .temp-units {
@@ -2103,6 +2094,12 @@ html {
             .toolbar-button {
                 margin: 0px auto;
             }
+
+            .countries{ 
+                &.ddl {
+                    margin: 0px auto;
+            }
+        }
         }
 
         .data-section {
@@ -2110,7 +2107,7 @@ html {
             height: 100%;
 
             .stats {
-                &.stat-local {
+
                     position: relative;
                     height: auto;
                     width: 100%;
@@ -2119,24 +2116,26 @@ html {
                     flex-direction: column;
 
                     .stats-header {
+                        position: relative;
+                    }
+
+                    &.stat-local {
+                    .stats-header {
                         display: none;
                     }
                 }
             }
 
             .map {
-                &.local-map {
-                    width: 100%;
-                    position: relative;
-                    top: 0;
+                width: 100%;
+                position: relative;
+                top: 0;
+                height: 400px;
 
-                    .map-widget {
-                    }
-                }
             }
 
             .data-list-container {
-                &.local-list {
+                //&.local-list {
                     width: 100%;
                     position: relative;
                     margin: 0;
@@ -2174,9 +2173,10 @@ html {
                             overflow-y: auto;
 
                             .item {
-                                &.local-list {
-                                    display: flex;
+                                display: flex;
                                     flex-direction: row;
+
+                                &.local-list {
 
                                     .status,
                                     .location,
@@ -2187,7 +2187,7 @@ html {
                             }
                         }
                     }
-                }
+                //}
             }
         }
 
