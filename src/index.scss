@@ -1669,6 +1669,382 @@ html {
     }
 }
 
+// and (orientation: landscape) 
+@media (max-width: 1024px)  {
+    * {
+        box-sizing: border-box;
+    }
+
+    html,
+    body {
+        height: 100%;
+    }
+
+    #root {
+        position: relative;
+        box-sizing: border-box;
+        height: 100%;
+    }
+
+    .root {
+        position: relative;
+
+        .header {
+            height: 100px;
+            display: flex;
+            flex-direction: row;
+
+            .logo {
+            }
+            .title {
+            }
+
+            .padder {
+            }
+        }
+
+        .header-buttons {
+            width: auto;
+            height: 31px;
+            box-sizing: border-box;
+            display: block;
+        }
+
+        .toolbar {
+            .toolbar-button {
+            }
+        }
+
+        .data-section {
+            position: relative;
+            height: 100%;
+
+            .stats {
+                &.stat-local {
+                    position: relative;
+                    height: auto;
+                    width: 100%;
+                    box-sizing: border-box;
+
+                    .stats-header {
+                        display: none;
+                    }
+                }
+            }
+
+            .map {
+                &.local-map {
+                    width: 100%;
+                    position: relative;
+                    top: 0;
+
+                    .map-widget {
+                    }
+                }
+            }
+
+            .data-list-container {
+                &.local-list {
+                    width: 100%;
+                    position: relative;
+                    margin: 0;
+                    box-sizing: border-box;
+                    margin-bottom: 80px;
+
+                    .data-list {
+                        position: relative;
+                        box-sizing: border-box;
+                        margin: 0;
+                        display: block;
+                        margin-bottom: 30px;
+                        height: fit-content;
+
+                        .header {
+                            height: 120px;
+                            display: flex;
+                            flex-direction: row;
+
+                            .filters {
+
+                                .search {
+                                    min-width: 300px;
+                                }
+
+                            }
+                        }
+
+                        .list-widget {
+                            display: flex;
+                            flex-direction: column;
+                            height: 500px;
+                            overflow-y: auto;
+
+                            .item {
+                                &.local-list {
+                                    display: flex;
+                                    flex-direction: row;
+
+                                
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+        }
+
+        .dialog {
+            .header {
+                .first {
+                    display: none;
+                }
+
+                .title {
+                    margin-top: 30px;
+                }
+
+                .last {
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+                }
+            }
+
+            &.scann-form {
+                left: 0;
+                right: 0;
+                transform: translateY(0%);
+                top: 10%;
+        
+            }
+
+            &.info {
+                .body {
+                    .items {
+                        li {
+                            display: flex;
+                            flex-direction: column;
+
+                            .text,
+                            .action-container {
+                                width: 100%;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+@media (max-width: 768px) {
+    * {
+        box-sizing: border-box;
+    }
+
+    html,
+    body {
+        height: 100%;
+    }
+
+    #root {
+        position: relative;
+        box-sizing: border-box;
+        height: 100%;
+    }
+
+    .root {
+        position: relative;
+
+        .header {
+            height: 100px;
+            display: flex;
+            flex-direction: row;
+
+            .logo {
+            }
+            .title {
+            }
+
+            .padder {
+            }
+        }
+
+        .header-buttons {
+            width: auto;
+            height: 31px;
+            box-sizing: border-box;
+            display: block;
+        }
+
+        .toolbar {
+            .toolbar-button {
+            }
+        }
+
+        .data-section {
+            position: relative;
+            height: 100%;
+
+            .stats {
+                &.stat-local {
+                    position: relative;
+                    height: auto;
+                    width: 100%;
+                    box-sizing: border-box;
+
+                    .stats-header {
+                        display: none;
+                    }
+                }
+            }
+
+            .map {
+                &.local-map {
+                    width: 100%;
+                    position: relative;
+                    top: 0;
+
+                    .map-widget {
+                    }
+                }
+            }
+
+            .data-list-container {
+                &.local-list {
+                    width: 100%;
+                    position: relative;
+                    margin: 0;
+                    box-sizing: border-box;
+                    margin-bottom: 80px;
+
+                    .data-list {
+                        position: relative;
+                        box-sizing: border-box;
+                        margin: 0;
+                        display: block;
+                        margin-bottom: 30px;
+                        height: fit-content;
+
+                        .header {
+                            height: 120px;
+                            display: flex;
+                            flex-direction: row;
+
+                            .filters {
+
+                                .search {
+                                    min-width: 300px;
+                                }
+
+                            }
+                        }
+
+                        .list-widget {
+                            display: flex;
+                            flex-direction: column;
+                            height: 500px;
+                            overflow-y: auto;
+
+                            .item {
+                                &.local-list {
+                                    display: flex;
+                                    flex-direction: row;
+
+                                
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+        }
+
+        .dialog {
+            .header {
+                .first {
+                    display: none;
+                }
+
+                .title {
+                    margin-top: 30px;
+                }
+
+                .last {
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+                }
+            }
+
+            &.scann-form {
+                left: 0;
+                right: 0;
+                transform: translateY(0%);
+                top: 10%;
+            
+
+                .body {
+                    .left {
+                        //width: 100%;
+
+                        .form-group {
+                            label,
+                            input {
+                               // text-align: left;
+                              //  width: 100%;
+                            }
+
+                            .temp-units {
+                                // top: 0;
+                                // right: 0;
+                                // transform: translate(-15px, 50%);
+
+                                // .temp-label {
+                                //     margin: 6px;
+                                // }
+                            }
+                        }
+                    }
+
+                    .middle {
+                        // display: none;
+                    }
+
+                    .right {
+                        // width: 100%;
+                    }
+                }
+            }
+
+            &.info {
+                .body {
+                    .items {
+                        li {
+                            display: flex;
+                            flex-direction: column;
+
+                            .text,
+                            .action-container {
+                                width: 100%;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 @media (max-width: 411px) {
     * {
         box-sizing: border-box;
@@ -1849,12 +2225,13 @@ html {
                         width: 100%;
 
                         .form-group {
-                            label, input {
+                            label,
+                            input {
                                 text-align: left;
                                 width: 100%;
                             }
 
-                            .temp-units{
+                            .temp-units {
                                 top: 0;
                                 right: 0;
                                 transform: translate(-15px, 50%);
@@ -1866,7 +2243,7 @@ html {
                         }
                     }
 
-                    .middle{
+                    .middle {
                         display: none;
                     }
 
@@ -1883,11 +2260,11 @@ html {
                             display: flex;
                             flex-direction: column;
 
-                            .text, .action-container {
+                            .text,
+                            .action-container {
                                 width: 100%;
                             }
                         }
-
                     }
                 }
             }
