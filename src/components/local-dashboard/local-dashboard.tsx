@@ -933,9 +933,9 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         if (this.state.dialog == "precautions") {
             dialog = this.renderPrecautions();
         }
-        else if (this.state.dialog == "scann") {
-            dialog = this.renderScanningForm();
-        }
+        // else if (this.state.dialog == "scann") {
+        //     dialog = this.renderScanningForm();
+        // }
         else if (this.state.dialog == "edit") {
             dialog = this.renderEditForm();
         }
@@ -1019,7 +1019,26 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             </div>
 
             <div className={`bottom-bar`} >
-                <div className={`scanning-button`} onClick={() => this.setState({ dialog: "scann" })}></div>
+                {
+                    this.state.dialog == "scann" ?
+                    <div className={`qr-code-holder`} >
+                        <div className="qr-code-box" >
+                            <div className="header">
+                                <div className="closeButton" onClick={() => this.setState({dialog: ""})}></div>
+                            </div>
+                            <img src="./images/qr-code.png" alt="qr-code" className="qr-code-image" />
+
+                            <p>Scan to start screening</p>
+                            <h3>new screening</h3>
+                        </div>
+                        <img src="./images/footer-hover.svg" alt="qr-code-button" className={`qr-code-handle`} />
+                    </div>
+
+                    :
+                    <div className="scanning-button">
+                    <img src="./images/footer-icon.svg" alt="qr-code-button" className={``} onClick={() => this.setState({dialog: "scann"})} />
+                    </div>
+                }
             </div>
 
             {dialog}

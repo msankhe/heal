@@ -18,6 +18,10 @@ $defaultPadding: 40px;
     background-color: white;
 }
 
+@mixin deaths-filter-gradient {
+    background: linear-gradient(20deg, #940031 0%, #ff8a0f 77%);
+}
+
 @mixin screened-gradient {
     background: linear-gradient(37deg, #640d0d 20%, #2a38ff 100%);
 }
@@ -49,6 +53,14 @@ $defaultPadding: 40px;
 @mixin deaths {
     color: #424242;
     @include deaths-gradient();
+    &::before {
+        background-image: url(../images/deaths.svg);
+    }
+}
+
+@mixin deathsFilter {
+    color: white;
+    @include deaths-filter-gradient();
     &::before {
         background-image: url(../images/deaths.svg);
     }
@@ -173,6 +185,11 @@ html {
                 top: 0px;
                 bottom: 0px;
                 width: 100%; // this is required for <select> ?
+            }
+
+            &:hover {
+                @include toggleBtnGradient();
+                color: white;
             }
         }
     }
@@ -319,15 +336,27 @@ html {
                         &.set {
                             @include confirmed();
                         }
+
+                        &:hover {
+                            @include confirmed();
+                        }
                     }
                     &.recovered {
                         &.set {
                             @include recovered();
                         }
+
+                        &:hover {
+                            @include recovered();
+                        }
                     }
                     &.deaths {
                         &.set {
-                            @include deaths();
+                            @include deathsFilter();
+                        }
+
+                        &:hover {
+                            @include deathsFilter();
                         }
                     }
 
@@ -573,9 +602,10 @@ html {
         }
         &.deaths {
             .txt {
-                color: #424242;
-                background: linear-gradient(90deg, #efefef, #f8f8f8);
+                color: white;
+                //@extend: linear-gradient(90deg, #efefef, #f8f8f8);
                 border: 1px solid #eee;
+                @include deaths-filter-gradient();
             }
         }
 
@@ -776,15 +806,27 @@ html {
                             &.set {
                                 @include confirmed();
                             }
+
+                            &:hover {
+                                @include confirmed();
+                            }
                         }
                         &.recovered {
                             &.set {
                                 @include recovered();
                             }
+
+                            &:hover {
+                                @include recovered();
+                            }
                         }
                         &.deaths {
                             &.set {
-                                @include deaths();
+                                @include deathsFilter();
+                            }
+
+                            &:hover {
+                                @include deathsFilter();
                             }
                         }
 
@@ -957,8 +999,6 @@ html {
                         padding-top: 15px;
                         padding-bottom: 15px;
 
-
-
                         .c {
                             .label {
                                 font-size: 9px;
@@ -972,7 +1012,7 @@ html {
                     }
 
                     &:hover {
-                        background-color: rgba(0,102,255, 0.04);
+                        background-color: rgba(0, 102, 255, 0.04);
                     }
 
                     .c {
@@ -1139,25 +1179,96 @@ html {
 
     .bottom-bar {
         width: 100%;
-        height: 80px;
+        height: 40px;
+        z-index: 999;
 
         .scanning-button {
-            height: 100%;
-            width: 20%;
-            margin: 0px auto;
-            background-image: url("../images/footer-icon.svg");
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-position: 12px 21px;
-            z-index: 1;
-            cursor: pointer;
+            position: absolute;
+            bottom: 0;
+            height: 60px;
+            width: 100%;
+            overflow: hidden;
 
-            &:hover {
-                background: url("../images/footer-hover.svg");
-                background-repeat: no-repeat;
-                background-size: contain;
-                background-position: center;
-                z-index: 1;
+            img {
+                height: 100px;
+                position: absolute;
+                left: 50%;
+                bottom: -20px;
+                transform: translateX(-50%);
+                cursor: pointer;
+            }
+        }
+
+        .qr-code-holder {
+            min-width: 360px;
+            height: 390px;
+            background-color: transparent;
+            position: absolute;
+            left: 50%;
+            bottom: 0px;
+            transform: translateX(-50%);
+            cursor: pointer;
+            overflow: hidden;
+
+            .qr-code-box {
+                width: 280px;
+                height: 280px;
+                background-color: white;
+                position: absolute;
+                bottom: 78px;
+                left: 46%;
+                transform: translateX(-50%);
+                border-radius: 15px;
+                border: 2px solid #201547;
+
+                .header {
+                    width: 100%;
+                    height: 40px;
+                    position: relative;
+
+                    .closeButton {
+                        background-image: url(../images/close.svg);
+                        background-repeat: no-repeat;
+                        background-position: center;
+                        background-size: contain;
+                        width: 15px;
+                        height: 15px;
+                        cursor: pointer;
+                        position: absolute;
+                        top: 15px;
+                        right: 15px;
+                    }
+                }
+
+                .qr-code-image {
+                    width: 120px;
+                    height: 120px;
+                    display: block;
+                    margin: 10px auto;
+                }
+
+                p {
+                    text-align: center;
+                    font-size: 11px;
+                    margin-top: 10px;
+                }
+
+                h3 {
+                    text-align: center;
+                    font-size: 13px;
+                    text-transform: uppercase;
+                    margin: 0;
+                    margin-top: 40px;
+                }
+            }
+
+            .qr-code-handle {
+                height: 100px;
+                position: absolute;
+                left: 50%;
+                bottom: -22px;
+                transform: translateX(-50%);
+                cursor: pointer;
             }
         }
     }
