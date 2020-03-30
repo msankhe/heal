@@ -618,10 +618,10 @@ class HealthDashboard extends React.Component<IHealthDashboardProps, IHealthDash
                 country: item['Country/Region'],
                 region: item['Province/State'],
                 confirmed: Number(item['Confirmed']),
-                recovered: Number(item['Recovered']),
+                recovered: Number(item['Recovered']),   
                 deaths: Number(item['Deaths']),
-                lat: Number(item['lat'] || item['Latitude']),
-                lon: Number(item['lon'] || item['Longitude']),
+                lat: Number(item['lat'] || item['Latitude']) || null,
+                lon: Number(item['lon'] || item['Longitude']) || null,
                 id: item['Country/Region'] + '/' + item['Province/State'],
             }));
             localStorage.setItem('raw', JSON.stringify(data));
