@@ -1055,12 +1055,12 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                             <p>Scan to start screening</p>
                             <h3 onClick={()=>this.setState({dialog:'scan-dialog'})}>new screening</h3>
                         </div>
-                        <img src="./images/footer-hover.svg" alt="qr-code-button" className={`qr-code-handle`} />
+                        <img src="http://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/images/footer-hover.svg" alt="qr-code-button" className={`qr-code-handle`} />
                     </div>
 
                     :
                     <div className="scanning-button">
-                    <img src="./images/footer-icon.svg" alt="qr-code-button" className={``} onClick={() => this.setState({dialog: "scann"})} />
+                    <img src="http://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/images/footer-icon.svg" alt="qr-code-button" className={``} onClick={() => this.setState({dialog: "scann"})} />
                     </div>
                 }
             </div>
