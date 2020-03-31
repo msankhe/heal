@@ -701,6 +701,16 @@ class HealthDashboard extends React.Component<IHealthDashboardProps, IHealthDash
                         <div className='title'>recovered</div>
                     </div>
                 </div>
+                <div className='map'>
+                    <div className='map-widget'>
+                        <div className='filters'>
+                            <div onClick={this.setMapFilter.bind(this, 'confirmed')} className={(this.state.mapFilter == 'confirmed' ? 'set' : '') + ' switch confirmed'}>Confirmed</div>
+                            <div onClick={this.setMapFilter.bind(this, 'deaths')} className={(this.state.mapFilter == 'deaths' ? 'set' : '') + ' switch deaths'}>Deaths</div>
+                            <div onClick={this.setMapFilter.bind(this, 'recovered')} className={(this.state.mapFilter == 'recovered' ? 'set' : '') + ' switch recovered'}>Recovered</div>
+                        </div>
+                        <MapWidget stat={this.state.mapFilter} items={items} selectedItem={selectedItem} onItemSelected={this.onItemSelected.bind(this)} />
+                    </div>
+                </div>
                 <div className='data-list-container'>
                     <div className='data-list'>
                         <div className='header'>
@@ -724,16 +734,7 @@ class HealthDashboard extends React.Component<IHealthDashboardProps, IHealthDash
                         </div>
                     </div>
                 </div>
-                <div className='map'>
-                    <div className='map-widget'>
-                        <div className='filters'>
-                            <div onClick={this.setMapFilter.bind(this, 'confirmed')} className={(this.state.mapFilter == 'confirmed' ? 'set' : '') + ' switch confirmed'}>Confirmed</div>
-                            <div onClick={this.setMapFilter.bind(this, 'deaths')} className={(this.state.mapFilter == 'deaths' ? 'set' : '') + ' switch deaths'}>Deaths</div>
-                            <div onClick={this.setMapFilter.bind(this, 'recovered')} className={(this.state.mapFilter == 'recovered' ? 'set' : '') + ' switch recovered'}>Recovered</div>
-                        </div>
-                        <MapWidget stat={this.state.mapFilter} items={items} selectedItem={selectedItem} onItemSelected={this.onItemSelected.bind(this)} />
-                    </div>
-                </div>
+                
 
             </div>
         

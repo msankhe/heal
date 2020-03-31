@@ -66,7 +66,7 @@ interface ILocalState {
     lastUpdated: string,
     sorting: IListFilter,
     data: IEmployeeDetails[],
-    dialog: 'info' | 'precautions' | 'scann' | 'edit' | '',
+    dialog: ''|'info' | 'precautions' | 'scann' | 'edit' | 'scan-dialog',
     mapFilter: IStatType,
     scannData: IScanData,
     selected: IEmployeeDetails | null,
@@ -540,22 +540,24 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
                         <div className="form-group">
                             <label className="label" >Name  </label>
-                            <input type="text" name="name" className={`input ${this.state.selected.name.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.name} placeholder="Example: John Doe" onChange={(event) => this.updateEditFormData(event, 'name')} />
+                            <input type="text" name="name" className={`input ${this.state.selected.name != null && this.state.selected.name.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.name} placeholder="Example: John Doe" onChange={(event) => this.updateEditFormData(event, 'name')} />
                         </div>
 
                         <div className="form-group">
                             <label className="label" >Location  </label>
-                            <input type="text" name="location" className={`input ${this.state.selected.location?.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.location} placeholder="Example: Singapore" onChange={(event) => this.updateEditFormData(event, 'location')} />
+                            <input type="text" name="location" className={`input ${this.state.selected.location != null && this.state.selected.location.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.location} placeholder="Example: Singapore" onChange={(event) => this.updateEditFormData(event, 'location')} />
                         </div>
 
                         <div className="form-group">
                             <label className="label" >Countries Visited </label>
-                            <input type="text" name="lastvisited" className={`input ${this.state.selected.countriesvisited?.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.countriesvisited} placeholder="Example: Kenya" onChange={(event) => this.updateEditFormData(event, 'lastVisited')} />
+                            <input type="text" name="lastvisited" className={`input ${this.state.selected.countriesvisited != null && this.state.selected.countriesvisited.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.countriesvisited} placeholder="Example: Kenya" onChange={(event) => this.updateEditFormData(event, 'lastVisited')} />
                         </div>
 
                         <div className="form-group">
                             <label className="label" >Data Source </label>
-                            <span className="value">{this.state.selected.source}</span>
+                            {
+                                this.state.selected.source == null ? "" : <img className="data-source-image" src={`./images/datasources/${this.state.selected.source.toLowerCase()}.png`} alt={this.state.selected.source} />
+                            }
                         </div>
 
                     </div>
@@ -944,7 +946,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         if (this.state.dialog == "precautions") {
             dialog = this.renderPrecautions();
         }
-        else if (this.state.dialog == "scann") {
+        else if (this.state.dialog == "scan-dialog") {
             dialog = this.renderScanningForm();
         }
         else if (this.state.dialog == "edit") {
@@ -991,6 +993,17 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     </div>
                 </div>
 
+                <div className='map local-map'>
+                    <div className='map-widget'>
+                        <div className='filters'>
+                            <div onClick={this.setMapFilter.bind(this, 'screened')} className={(this.state.mapFilter == 'screened' ? 'set' : '') + ' switch screened'}><span className="icon"></span> screened</div>
+                            <div onClick={this.setMapFilter.bind(this, 'employees')} className={(this.state.mapFilter == 'employees' ? 'set' : '') + ' switch employees'}><span className="icon"></span>Expected</div>
+                            <div onClick={this.setMapFilter.bind(this, 'oranges')} className={(this.state.mapFilter == 'oranges' ? 'set' : '') + ' switch oranges'}><span className="icon"></span>oranges</div>
+                        </div>
+
+                        <MapWidget items={this.state.data} />
+                    </div>
+                </div>
 
                 <div className='data-list-container local-list'>
                     <div className='data-list'>
@@ -1030,7 +1043,26 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             </div>
 
             <div className={`bottom-bar`} >
-                <div className={`scanning-button`} onClick={() => this.setState({ dialog: "scann" })}></div>
+                {
+                    this.state.dialog == "scann" ?
+                    <div className={`qr-code-holder`} >
+                        <div className="qr-code-box" >
+                            <div className="header">
+                                <div className="closeButton" onClick={() => this.setState({dialog: ""})}></div>
+                            </div>
+                            <img src="http://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/qrcodes/qr-lobby.png" alt="qr-code" className="qr-code-image" />
+
+                            <p>Scan to start screening</p>
+                            <h3 onClick={()=>this.setState({dialog:'scan-dialog'})}>new screening</h3>
+                        </div>
+                        <img src="./images/footer-hover.svg" alt="qr-code-button" className={`qr-code-handle`} />
+                    </div>
+
+                    :
+                    <div className="scanning-button">
+                    <img src="./images/footer-icon.svg" alt="qr-code-button" className={``} onClick={() => this.setState({dialog: "scann"})} />
+                    </div>
+                }
             </div>
 
             {dialog}
