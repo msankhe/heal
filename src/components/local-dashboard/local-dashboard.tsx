@@ -117,11 +117,11 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
                 <div className={`value ${item.tempunit}`}>{item.temperature} </div>
             </div>
             <div className='c location' onClick={() => this.props.onSelectItem(item)}>
-                <div className='label'>Location</div>
+                <div className='label'>Location <span className="icon"></span></div>
                 <div className='value'>{item.location} </div>
             </div>
             <div className='c name' onClick={() => this.props.onSelectItem(item)}>
-                <div className='label'>Name</div>
+                <div className='label'><span className="icon"></span>Name</div>
                 <div className='value'>{item.name}</div>
             </div>
             <div className='c last-country' onClick={() => this.props.onSelectItem(item)}>
@@ -167,6 +167,9 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
                 return ((item.id == searchText) || (regExp.test(item.name)) );
             });
         }
+
+        // sort items
+
 
 
         return <div className='list-widget'>
@@ -556,7 +559,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         <div className="form-group">
                             <label className="label" >Data Source </label>
                             {
-                                this.state.selected.source == null ? "" : <img className="data-source-image" src={`./images/datasources/${this.state.selected.source.toLowerCase()}.png`} alt={this.state.selected.source} />
+                                this.state.selected.source == null ? "" : <img className="data-source-image" src={`https://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/datasources/${this.state.selected.source.toLowerCase()}.png`} alt={this.state.selected.source} />
                             }
                         </div>
 
@@ -959,7 +962,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
 
         return (<>
-            <div className='toolbar'>
+            {/* <div className='toolbar'> */}
 
                 {/* <div className="toolbar-button" onClick={() => this.setState({ dialog: 'precautions' })} >
                     Precautions <span className="arrow"></span>
@@ -969,7 +972,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     All <span className="arrow"></span>
                 </div> */}
 
-            </div>
+            {/* </div> */}
 
             <div className='data-section'>
 
@@ -1026,20 +1029,6 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         </div>
                     </div>
                 </div>
-
-                <div className='map local-map'>
-                    <div className='map-widget'>
-                        <div className='filters' style={{display:'none'}}>
-                            <div onClick={this.setMapFilter.bind(this, 'screened')} className={(this.state.mapFilter == 'screened' ? 'set' : '') + ' switch screened'}><span className="icon"></span> screened</div>
-                            <div onClick={this.setMapFilter.bind(this, 'employees')} className={(this.state.mapFilter == 'employees' ? 'set' : '') + ' switch employees'}><span className="icon"></span>Expected</div>
-                            <div onClick={this.setMapFilter.bind(this, 'oranges')} className={(this.state.mapFilter == 'oranges' ? 'set' : '') + ' switch oranges'}><span className="icon"></span>oranges</div>
-                        </div>
-
-                        <MapWidget items={this.state.data} />
-                    </div>
-                </div>
-
-
             </div>
 
             <div className={`bottom-bar`} >
