@@ -43,7 +43,7 @@ class Layout extends React.Component<IProps, IState>{
         if (this.state.dashboard == "global") {
             this.setState({
                 dashboard: "local",
-                title: <span><span className="highlight">Employee </span> health management</span>,
+                title: <span><span className="highlight">Registration </span> Employees and Guests</span>,
                 userName: "User 01"
             });
         }

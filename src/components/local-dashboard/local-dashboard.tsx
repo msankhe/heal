@@ -133,7 +133,7 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
                 <div className='value'>
                     {/* {item.source} */}
                     {
-                        item.source == null ? "" : <img src={`./images/datasources/${item.source.toLowerCase()}.png`} alt={item.source} />
+                        item.source == null ? "" : <img src={`https://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/datasources/${item.source.toLowerCase()}.png`} alt={item.source} />
                     }
                 </div>
             </div>
@@ -495,6 +495,17 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         </button>
                     </div>
 
+                    <div className='qrcodes'>
+                        <div className='code'>
+                            <img src='http://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/qrcodes/qr-lobby.png' />
+                            <div className='caption'>Scan for Lobby Staff</div>
+                        </div>
+                        <div className='code'>
+                            <img src='http://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/qrcodes/qr-user.png' />
+                            <div className='caption'>Scan for Users and Guests</div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -534,12 +545,12 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
                         <div className="form-group">
                             <label className="label" >Location  </label>
-                            <input type="text" name="location" className={`input ${this.state.selected.location.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.location} placeholder="Example: Singapore" onChange={(event) => this.updateEditFormData(event, 'location')} />
+                            <input type="text" name="location" className={`input ${this.state.selected.location?.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.location} placeholder="Example: Singapore" onChange={(event) => this.updateEditFormData(event, 'location')} />
                         </div>
 
                         <div className="form-group">
                             <label className="label" >Countries Visited </label>
-                            <input type="text" name="lastvisited" className={`input ${this.state.selected.countriesvisited.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.countriesvisited} placeholder="Example: Kenya" onChange={(event) => this.updateEditFormData(event, 'lastVisited')} />
+                            <input type="text" name="lastvisited" className={`input ${this.state.selected.countriesvisited?.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.countriesvisited} placeholder="Example: Kenya" onChange={(event) => this.updateEditFormData(event, 'lastVisited')} />
                         </div>
 
                         <div className="form-group">
@@ -948,9 +959,9 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         return (<>
             <div className='toolbar'>
 
-                <div className="toolbar-button" onClick={() => this.setState({ dialog: 'precautions' })} >
+                {/* <div className="toolbar-button" onClick={() => this.setState({ dialog: 'precautions' })} >
                     Precautions <span className="arrow"></span>
-                </div>
+                </div> */}
 
                 {/* <div className="toolbar-button" onClick={() => this.setState({ dialog: '' })} >
                     All <span className="arrow"></span>
@@ -1005,7 +1016,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
                 <div className='map local-map'>
                     <div className='map-widget'>
-                        <div className='filters'>
+                        <div className='filters' style={{display:'none'}}>
                             <div onClick={this.setMapFilter.bind(this, 'screened')} className={(this.state.mapFilter == 'screened' ? 'set' : '') + ' switch screened'}><span className="icon"></span> screened</div>
                             <div onClick={this.setMapFilter.bind(this, 'employees')} className={(this.state.mapFilter == 'employees' ? 'set' : '') + ' switch employees'}><span className="icon"></span>Expected</div>
                             <div onClick={this.setMapFilter.bind(this, 'oranges')} className={(this.state.mapFilter == 'oranges' ? 'set' : '') + ' switch oranges'}><span className="icon"></span>oranges</div>

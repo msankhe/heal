@@ -311,7 +311,7 @@ html {
                     border-radius: 20px;
                     @include boxshadow();
                     cursor: pointer;
-                    font-size: 9px;
+                    font-size: 11px;
                     text-transform: uppercase;
                     background-color: #efefef;
                     color: #424242;
@@ -768,7 +768,7 @@ html {
                         padding: 10px 10px 10px 10px;
                         border-radius: 20px;
                         cursor: pointer;
-                        font-size: 9px;
+                        font-size: 11px;
                         text-transform: uppercase;
                         background-color: #efefef;
                         color: #424242;
@@ -961,7 +961,7 @@ html {
 
                         .c {
                             .label {
-                                font-size: 9px;
+                                font-size: 11px;
                                 font-weight: bolder;
                             }
 
@@ -1020,7 +1020,7 @@ html {
                             .value {
                                 text-transform: uppercase;
                                 text-align: center;
-                                font-size: 9px;
+                                font-size: 11px;
                             }
                         }
 
@@ -1341,6 +1341,17 @@ html {
             box-sizing: border-box;
             vertical-align: top;
         }
+        .qrcodes {
+            display:flex;
+            justify-content: space-evenly;
+            img {
+                height:150px;
+            }
+            .caption {
+                font-size:12px;
+                text-transform: uppercase;
+            }
+        }
 
         .form-group {
             position: relative;
@@ -1381,7 +1392,7 @@ html {
 
             &.buttons {
                 text-align: center;
-                margin-top: 30px;
+                margin-top: 10px;
 
                 .submit-button {
                     width: auto;
