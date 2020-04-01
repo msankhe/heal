@@ -1372,6 +1372,10 @@ html {
         height: fit-content;
         top: 50%;
         transform: translateY(-50%);
+
+        .header {
+            height: 30px;
+        }
     }
 
     .header {
@@ -1389,6 +1393,7 @@ html {
 
             &.edit {
                 text-align: left;
+                padding-top: 10px;
 
                 .check-out {
                     position: relative;
@@ -1453,14 +1458,19 @@ html {
             flex-grow: 0;
             width: 100px;
         }
-        .closer {
-            background-image: url(../images/close.svg);
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: contain;
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
+
+        .last {
+            padding-top: 10px;
+            padding-left: 10px;
+            .closer {
+                background-image: url(../images/close.svg);
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: contain;
+                width: 20px;
+                height: 12px;
+                cursor: pointer;
+            }
         }
     }
     .body {
@@ -1624,7 +1634,7 @@ html {
 
                 img {
                     &.data-source-image {
-                        height: 30px;
+                        height: 28px;
                     }
                 }
 
