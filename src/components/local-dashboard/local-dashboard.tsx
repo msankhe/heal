@@ -110,7 +110,7 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
 
             <div className='c status' onClick={() => this.props.onSelectItem(item)}>
                 <div className={`label ${item.status == null ? "" : item.status} `}></div>
-                <div className='value'>{item.status == null ? "" : checkInStatusText(item.status)}</div>
+                <div className='value'>{item.status == null ? "Expected" : checkInStatusText(item.status)}</div>
             </div>
             <div className='c temperature' onClick={() => this.props.onSelectItem(item)}>
                 <div className='label'>Temperature</div>
@@ -168,13 +168,26 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
             });
         }
 
-        // sort items
+        // group items
+        let labels = ["check-in", "check-out", "expected"];
+        let grouped:IEmployeeDetails[] = [];
 
+        labels.forEach(label => {
+            let temp = items.filter(item => {
 
+                if(label == "expected") {
+                    return (item.status == null || item.status == "");
+                }
+
+                return (item.status == label);
+            });
+
+            grouped = grouped.concat(temp);
+        });
 
         return <div className='list-widget'>
             {
-                items.map((item, key) => this.renderItem(item, key))
+                grouped.map((item, key) => this.renderItem(item, key))
             }
 
         </div>;

@@ -1071,6 +1071,7 @@ html {
                                 position: absolute;
                                 top: 50%;
                                 transform: translateY(-50%);
+                                background-image: url("../images/arriving.svg");
 
                                 &.check-out {
                                     background-image: url("../images/left.svg");
