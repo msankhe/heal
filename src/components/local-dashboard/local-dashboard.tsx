@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { Map, Marker, TileLayer } from "react-leaflet";
 import { divIcon, Map as LeafletMap, LatLngBoundsExpression } from 'leaflet';
-import {getCountryDetails,ICountry} from './countries';
+import { getCountryDetails, ICountry } from './countries';
 declare const window: any;
 const ORANGE_TEMP_C = 37.3;
 type IStatType = 'screened' | 'employees' | 'oranges';
 type IListFilter = 'starred' | 'all';
-function checkInStatusText(s:string) {
-    switch(s?.toLowerCase()) {
+function checkInStatusText(s: string) {
+    switch (s?.toLowerCase()) {
         default: return 'Expected';
-        case 'check-in':return 'Checked In';
+        case 'check-in': return 'Checked In';
         case 'check-out': return 'Checked Out';
     }
 }
@@ -25,6 +25,7 @@ interface IEmployeeDetails {
     status: string,
     starred: boolean,
     tempunit: string,
+    email: string,
 
     lat: number,
     long: number,
@@ -66,7 +67,7 @@ interface ILocalState {
     lastUpdated: string,
     sorting: IListFilter,
     data: IEmployeeDetails[],
-    dialog: ''|'info' | 'precautions' | 'scann' | 'edit' | 'scan-dialog',
+    dialog: '' | 'info' | 'precautions' | 'scann' | 'edit' | 'scan-dialog',
     mapFilter: IStatType,
     scannData: IScanData,
     selected: IEmployeeDetails | null,
@@ -114,7 +115,7 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
             </div>
             <div className='c temperature' onClick={() => this.props.onSelectItem(item)}>
                 <div className='label'>Temperature</div>
-                <div className={`value ${item.tempunit}`}>{item.temperature} </div>
+                <div className={`value ${item.temperature != null ? item.temperature !== "" ? item.tempunit : "" : ""}`}>{item.temperature} </div>
             </div>
             <div className='c location' onClick={() => this.props.onSelectItem(item)}>
                 <div className='label'>Location <span className="icon"></span></div>
@@ -160,22 +161,22 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
         }
 
         let searchText = this.props.searchText;
-        
-        if(searchText != null && searchText.trim().length > 0) {
-            items = items.filter((item:IEmployeeDetails) => {
+
+        if (searchText != null && searchText.trim().length > 0) {
+            items = items.filter((item: IEmployeeDetails) => {
                 let regExp = new RegExp(searchText, "i");
-                return ((item.id == searchText) || (regExp.test(item.name)) );
+                return ((item.id == searchText) || (regExp.test(item.name)));
             });
         }
 
         // group items
         let labels = ["check-in", "check-out", "expected"];
-        let grouped:IEmployeeDetails[] = [];
+        let grouped: IEmployeeDetails[] = [];
 
         labels.forEach(label => {
             let temp = items.filter(item => {
 
-                if(label == "expected") {
+                if (label == "expected") {
                     return (item.status == null || item.status == "");
                 }
 
@@ -220,10 +221,10 @@ class MapWidget extends React.Component<IMapWidgetProps, {}> {
         if (zoom < 3) {
             size = 'tiny';
         }
-        let availableCountries:any = {};
-        for(var i in this.props.items) {
+        let availableCountries: any = {};
+        for (var i in this.props.items) {
             let countries = this.props.items[i].countriesvisited?.split(',');
-            for(var c in countries) {
+            for (var c in countries) {
                 let country = countries[c]?.trim() || '';
                 if (!country) continue;
                 availableCountries[country] = 1;
@@ -490,7 +491,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         <input type="text" name="temperature" className={`input ${this.state.scannData.temperature.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.temperature} placeholder="Example: 23" onChange={(event) => this.updateFormData(event, 'temperature')} />
                     </div>
 
-                    <div className="form-group" style={{display:'none'}}>
+                    <div className="form-group" style={{ display: 'none' }}>
                         <label className="label" >Location  </label>
                         <input type="text" name="location" className={`input ${this.state.scannData.location.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.location} placeholder="Example: Singapore" onChange={(event) => this.updateFormData(event, 'location')} />
                     </div>
@@ -567,6 +568,11 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         <div className="form-group">
                             <label className="label" >Countries Visited </label>
                             <input type="text" name="lastvisited" className={`input ${this.state.selected.countriesvisited != null && this.state.selected.countriesvisited.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.countriesvisited} placeholder="Example: Kenya" onChange={(event) => this.updateEditFormData(event, 'lastVisited')} />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="label" >Email </label>
+                            <input type="text" name="email" className={`input ${this.state.selected.email != null && this.state.selected.email.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.email} placeholder="Example: abc@abc.com" onChange={(event) => this.updateEditFormData(event, 'email')} />
                         </div>
 
                         <div className="form-group">
@@ -650,7 +656,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 break;
         }
 
-        scannedData.isValid =  scannedData.name.trim().length > 0 && scannedData.temperature.trim().length > 0;
+        scannedData.isValid = scannedData.name.trim().length > 0 && scannedData.temperature.trim().length > 0;
 
         this.setState({ scannData: scannedData });
     }
@@ -671,6 +677,9 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 break;
             case "lastVisited":
                 selected.countriesvisited = newValue;
+                break;
+            case "email":
+                selected.email = newValue;
                 break;
         }
 
@@ -776,7 +785,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
 
         let selected = this.state.selected;
-        let isValid = selected.temperature.trim().length > 0 && selected.name.trim().length > 0 && selected.countriesvisited.trim().length > 0 && selected.location.trim().length > 0;
+        let isValid = selected.temperature.trim().length > 0 && selected.name.trim().length > 0 && selected.location.trim().length > 0;
 
         if (isValid) {
 
@@ -800,7 +809,8 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 "countriesvisited": selected.countriesvisited.trim(),
                 "_id": selected._id,
                 "id": selected.id,
-                "status": status
+                "status": status,
+                'email': selected.email
             });
 
             fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/update", {
@@ -969,19 +979,19 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             dialog = this.renderEditForm();
         }
 
-        let screened = this.state.data.filter(e => e?.temperature?.length>0).length;
+        let screened = this.state.data.filter(e => e?.temperature?.length > 0).length;
         let employees = this.state.data.length;
-        let oranges = this.state.data.filter(e => Number(e.temperature)>ORANGE_TEMP_C).length;
+        let oranges = this.state.data.filter(e => Number(e.temperature) > ORANGE_TEMP_C).length;
 
 
         return (<>
             {/* <div className='toolbar'> */}
 
-                {/* <div className="toolbar-button" onClick={() => this.setState({ dialog: 'precautions' })} >
+            {/* <div className="toolbar-button" onClick={() => this.setState({ dialog: 'precautions' })} >
                     Precautions <span className="arrow"></span>
                 </div> */}
 
-                {/* <div className="toolbar-button" onClick={() => this.setState({ dialog: '' })} >
+            {/* <div className="toolbar-button" onClick={() => this.setState({ dialog: '' })} >
                     All <span className="arrow"></span>
                 </div> */}
 
@@ -1029,7 +1039,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                                 Today
                             </div>
                             <div className='filters'>
-                                <input type="text" name="search" className="search" placeholder="search by name or id" value={this.state.searchText} onChange={(event) => this.setState({searchText: event.target.value})} />
+                                <input type="text" name="search" className="search" placeholder="search by name or id" value={this.state.searchText} onChange={(event) => this.setState({ searchText: event.target.value })} />
                                 <div onClick={this.setSorting.bind(this, 'starred')} className={(this.state.sorting == 'starred' ? 'set' : '') + ' switch starred'}><span className="icon star"></span>starred</div>
                                 <div onClick={this.setSorting.bind(this, 'all')} className={(this.state.sorting == 'all' ? 'set' : '') + ' switch all'}>All {/* <span className="icon arrow"></span> */} </div>
 
@@ -1047,23 +1057,23 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             <div className={`bottom-bar`} >
                 {
                     this.state.dialog == "scann" ?
-                    <div className={`qr-code-holder`} >
-                        <div className="qr-code-box" >
-                            <div className="header">
-                                <div className="closeButton" onClick={() => this.setState({dialog: ""})}></div>
+                        <div className={`qr-code-holder`} >
+                            <div className="qr-code-box" >
+                                <div className="header">
+                                    <div className="closeButton" onClick={() => this.setState({ dialog: "" })}></div>
+                                </div>
+                                <img src="http://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/qrcodes/qr-lobby.png" alt="qr-code" className="qr-code-image" />
+
+                                <p>Scan to start screening</p>
+                                <h3 onClick={() => this.setState({ dialog: 'scan-dialog' })}>new screening</h3>
                             </div>
-                            <img src="http://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/qrcodes/qr-lobby.png" alt="qr-code" className="qr-code-image" />
-
-                            <p>Scan to start screening</p>
-                            <h3 onClick={()=>this.setState({dialog:'scan-dialog'})}>new screening</h3>
+                            <img src="http://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/images/footer-hover.svg" alt="qr-code-button" className={`qr-code-handle`} />
                         </div>
-                        <img src="http://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/images/footer-hover.svg" alt="qr-code-button" className={`qr-code-handle`} />
-                    </div>
 
-                    :
-                    <div className="scanning-button">
-                    <img src="http://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/images/footer-icon.svg" alt="qr-code-button" className={``} onClick={() => this.setState({dialog: "scann"})} />
-                    </div>
+                        :
+                        <div className="scanning-button">
+                            <img src="http://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/images/footer-icon.svg" alt="qr-code-button" className={``} onClick={() => this.setState({ dialog: "scann" })} />
+                        </div>
                 }
             </div>
 
