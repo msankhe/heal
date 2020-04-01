@@ -309,6 +309,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         this.onCloseEditDialog = this.onCloseEditDialog.bind(this);
         this.submitEditForm = this.submitEditForm.bind(this);
         this.updateTempUnit = this.updateTempUnit.bind(this);
+        this.onSearch = this.onSearch.bind(this);
     }
 
     componentDidMount() {
@@ -965,6 +966,15 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         return C.toString();
     }
 
+    onSearch(event: React.ChangeEvent<HTMLInputElement>) {
+        let seatchText = event.target.value;
+
+        let regExp = /[^\w\s+-]/gi;
+        let cleanedSearchText = seatchText.replace(regExp, "");
+
+        this.setState({searchText: cleanedSearchText});
+    }
+
     render() {
 
         var dialog = <></>;
@@ -1039,7 +1049,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                                 Today
                             </div>
                             <div className='filters'>
-                                <input type="text" name="search" className="search" placeholder="search by name or id" value={this.state.searchText} onChange={(event) => this.setState({ searchText: event.target.value })} />
+                                <input type="text" name="search" className="search" placeholder="search by name or id" value={this.state.searchText} onChange={(event) => this.onSearch(event)} />
                                 <div onClick={this.setSorting.bind(this, 'starred')} className={(this.state.sorting == 'starred' ? 'set' : '') + ' switch starred'}><span className="icon star"></span>starred</div>
                                 <div onClick={this.setSorting.bind(this, 'all')} className={(this.state.sorting == 'all' ? 'set' : '') + ' switch all'}>All {/* <span className="icon arrow"></span> */} </div>
 
