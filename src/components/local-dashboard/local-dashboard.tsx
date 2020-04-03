@@ -72,7 +72,8 @@ interface ILocalState {
     scannData: IScanData,
     selected: IEmployeeDetails | null,
     editForm: IEditFormData,
-    searchText: string
+    searchText: string,
+    newItems: IEmployeeDetails[]
 }
 
 interface IListWidgetProps {
@@ -107,7 +108,7 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
             cls = "selected"
         }
 
-        return <div key={key} className={`item local-list ${cls} `}>
+        return <div key={key} className={`item local-list ${cls} `} id={`emp-${item._id}`}>
 
             <div className='c status' onClick={() => this.props.onSelectItem(item)}>
                 <div className={`label ${item.status == null ? "" : item.status} `}></div>
@@ -296,7 +297,8 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 stateButtonText: "check-in",
                 feedback: ""
             },
-            searchText: ""
+            searchText: "",
+            newItems: []
         }
 
         this.submitForm = this.submitForm.bind(this);
@@ -310,6 +312,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         this.submitEditForm = this.submitEditForm.bind(this);
         this.updateTempUnit = this.updateTempUnit.bind(this);
         this.onSearch = this.onSearch.bind(this);
+        this.closeMessage = this.closeMessage.bind(this);
     }
 
     componentDidMount() {
@@ -336,12 +339,15 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         // screened++;
                     }
                     // employees++;
+                    let NewRecords = this.state.newItems;
+                    NewRecords.unshift(NewRecord);
 
                     this.setState({
                         data: dataSet,
                         // screened: screened,
                         // employees: employees,
                         // oranges: oranges
+                        newItems:NewRecords
                     });
                 });
             });
@@ -972,7 +978,40 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         let regExp = /[^\w\s+-]/gi;
         let cleanedSearchText = seatchText.replace(regExp, "");
 
-        this.setState({searchText: cleanedSearchText});
+        this.setState({ searchText: cleanedSearchText });
+    }
+
+    renderNotification(item: IEmployeeDetails, key: number) {
+        
+        setTimeout(() => {
+            this.closeMessage(item);
+        }, 10000);
+
+        return (
+            <div className="message-box" id={`message-${item._id}`} key={key}>
+                New Registration <a href={`#emp-${item._id}`} onClick={() => this.viewNewRecord(item)}>view</a>
+                <div className="close" onClick={() => this.closeMessage(item)}></div>
+            </div>
+        );
+    }
+
+    viewNewRecord(item:IEmployeeDetails) {
+        let element = document.getElementById("emp-" + item._id );
+        element.classList.add("preview");
+
+        setTimeout(() => {
+            element.classList.remove('preview');
+           this.closeMessage(item);
+        }, 5000);
+    }
+
+    closeMessage(item:IEmployeeDetails) {
+        let newItems = this.state.newItems;
+        let updatedItems = newItems.filter(newItem => {
+            return !(newItem._id == item._id);
+        })
+
+        this.setState({newItems: updatedItems});
     }
 
     render() {
@@ -1088,6 +1127,13 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             </div>
 
             {dialog}
+
+            <div className="message-container">
+                {
+                    this.state.newItems.map((item, key) => this.renderNotification(item, key))
+                }
+            </div>
+
 
         </>);
     }
