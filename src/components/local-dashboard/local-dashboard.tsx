@@ -3,7 +3,7 @@ import { Map, Marker, TileLayer } from "react-leaflet";
 import { divIcon, Map as LeafletMap, LatLngBoundsExpression } from 'leaflet';
 import { getCountryDetails, ICountry } from './countries';
 declare const window: any;
-const ORANGE_TEMP_C = 37.3;
+//const ORANGE_TEMP_C = 37.3;
 type IStatType = 'screened' | 'employees' | 'oranges';
 type IListFilter = 'starred' | 'all';
 function checkInStatusText(s: string) {
@@ -26,6 +26,7 @@ interface IEmployeeDetails {
     starred: boolean,
     tempunit: string,
     email: string,
+    healthflag: string,
 
     lat: number,
     long: number,
@@ -106,6 +107,9 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
         let cls = "";
         if (this.props.selected != null && this.props.selected._id == item._id) {
             cls = "selected"
+        }
+        if(parseInt(item.healthflag) == 1) {
+            cls += " warning";
         }
 
         return <div key={key} className={`item local-list ${cls} `} id={`emp-${item._id}`}>
@@ -347,7 +351,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         // screened: screened,
                         // employees: employees,
                         // oranges: oranges
-                        newItems:NewRecords
+                        newItems: NewRecords
                     });
                 });
             });
@@ -396,22 +400,25 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
 
 
-                if (starredItems != null) {
-                    let temp = details.map((item: IEmployeeDetails) => {
+
+                let temp = details.map((item: IEmployeeDetails) => {
+
+                    if (starredItems != null) {
                         item.starred = (starredItems.indexOf(item._id) != -1);
+                    }
 
-                        item.tempunit = "celsius";
+                    item.tempunit = "celsius";
 
-                        if (item.temperature != null && item.temperature.trim().length > 0) {
-                            screened++;
-                        }
-                        employees++;
+                    if (item.temperature != null && item.temperature.trim().length > 0) {
+                        screened++;
+                    }
+                    employees++;
 
-                        return item;
-                    });
+                    return item;
+                });
 
-                    details = temp;
-                }
+                details = temp;
+
             }
 
             //console.table(details);
@@ -942,6 +949,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
     }
 
     onSelectItem(item: IEmployeeDetails) {
+        item.tempunit = "celsius";
         this.setState({
             selected: item,
             dialog: "edit",
@@ -982,7 +990,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
     }
 
     renderNotification(item: IEmployeeDetails, key: number) {
-        
+
         setTimeout(() => {
             this.closeMessage(item);
         }, 10000);
@@ -995,23 +1003,23 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         );
     }
 
-    viewNewRecord(item:IEmployeeDetails) {
-        let element = document.getElementById("emp-" + item._id );
+    viewNewRecord(item: IEmployeeDetails) {
+        let element = document.getElementById("emp-" + item._id);
         element.classList.add("preview");
 
         setTimeout(() => {
             element.classList.remove('preview');
-           this.closeMessage(item);
+            this.closeMessage(item);
         }, 5000);
     }
 
-    closeMessage(item:IEmployeeDetails) {
+    closeMessage(item: IEmployeeDetails) {
         let newItems = this.state.newItems;
         let updatedItems = newItems.filter(newItem => {
             return !(newItem._id == item._id);
         })
 
-        this.setState({newItems: updatedItems});
+        this.setState({ newItems: updatedItems });
     }
 
     render() {
@@ -1030,7 +1038,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
         let screened = this.state.data.filter(e => e?.temperature?.length > 0).length;
         let employees = this.state.data.length;
-        let oranges = this.state.data.filter(e => Number(e.temperature) > ORANGE_TEMP_C).length;
+        let oranges = this.state.data.filter(e => Number(e.healthflag) == 1).length;
 
 
         return (<>

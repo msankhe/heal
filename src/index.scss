@@ -1036,6 +1036,10 @@ html {
                                 font-size: 10px;
                             }
                         }
+
+                        &.warning {
+                            background-color: rgba(255, 138, 15, 0.08);
+                        }
                     }
 
                     &:hover {
@@ -1379,7 +1383,6 @@ html {
             background: #555;
         }
 
-
         .message-box {
             display: block;
             width: 100%;
@@ -1393,7 +1396,6 @@ html {
             border-radius: 15px;
             padding: 20px 40px 20px 20px;
             font-size: 0.8rem;
-            
 
             a {
                 float: right;
