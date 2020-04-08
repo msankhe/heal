@@ -38,7 +38,7 @@ interface ISearchResultProps {
 }
 
 interface ISearchResultState {
-
+    selected: IEmployeeDetails
 }
 
 class SearchResult extends React.Component<ISearchResultProps, ISearchResultState>{
@@ -48,7 +48,7 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
         super(props);
 
         this.state = {
-
+            selected: null
         }
     }
 
@@ -62,7 +62,7 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
         return (
             <div className={`result-item`} key={key}>
                 <div className={`column status ${item.status == null ? "" : item.status}`}>
-                    
+
                 </div>
                 <div className={`column name`}>
                     {item.name}
@@ -77,12 +77,12 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
                     }
                 </div>
                 <div className={`column details`}>
-                <span className="time">08.00 AM {item.location == null ? "" : item.location}</span>
+                    <span className="time">08.00 AM {item.location == null ? "" : item.location}</span>
                     <span className="connector"></span>
                     <span className="contacted">Contacted "Jamie Thompson"</span>
                 </div>
                 <div className={`column trace`}>
-                    <div className="trace-button">
+                    <div className="trace-button" onClick={() => this.setState({ selected: item })}>
                         Trace
                     </div>
                 </div>
@@ -94,16 +94,182 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
         );
     }
 
+    renderSearchResult() {
+        return <div className="search-result-container">
+            {
+                this.props.items.map((item, key) => this.renderItems(item, key))
+            }
+        </div>;
+    }
+
+    renderTracing() {
+        return <>
+            <div className="tracing-container">
+                <div className="tracing-details">
+
+                    <div className="details-block">
+                        <div className="header">
+                            <span className="email">jamieT@iviva.com</span>
+                            <span className="tel">+1(504)43227645</span>
+
+                            <span className="star"></span>
+                        </div>
+
+                        <div className="sub-header">
+                            <div className="name">Jannet Lauren Smith</div>
+                            <div className="temperature celsius">37.6</div>
+                        </div>
+
+                        <div className="details">
+                            <div className="title">10.00 AM Meeting</div>
+
+                            <div className="item">
+                                <div className="name">Jamie Thompson</div>
+                                <div className="other">
+                                    <span className="email">jamieT@iviva.com</span>
+                                    <span className="tel">+1(504)43227645</span>
+
+                                    <span className="star"></span>
+                                </div>
+                            </div>
+
+                            <div className="item">
+                                <div className="name">Jamie Thompson</div>
+                                <div className="other">
+                                    <span className="email">jamieT@iviva.com</span>
+                                    <span className="tel">+1(504)43227645</span>
+
+                                    <span className="star"></span>
+                                </div>
+                            </div>
+
+                            <div className="item">
+                                <div className="name">Jamie Thompson</div>
+                                <div className="other">
+                                    <span className="email">jamieT@iviva.com</span>
+                                    <span className="tel">+1(504)43227645</span>
+
+                                    <span className="star"></span>
+                                </div>
+                            </div>
+
+                            <div className="item">
+                                <div className="name">Jamie Thompson</div>
+                                <div className="other">
+                                    <span className="email">jamieT@iviva.com</span>
+                                    <span className="tel">+1(504)43227645</span>
+
+                                    <span className="star"></span>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                    <div className="details-block">
+                        <div className="header">
+
+                            <span className="star"></span>
+                        </div>
+
+                        <div className="details">
+                            <div className="title">01.00 PM cafeteria</div>
+
+                            <div className="item">
+                                <div className="name">Jamie Thompson</div>
+                                <div className="other">
+                                    <span className="email">jamieT@iviva.com</span>
+                                    <span className="tel">+1(504)43227645</span>
+
+                                    <span className="star"></span>
+                                </div>
+                            </div>
+
+                            <div className="item">
+                                <div className="name">Jamie Thompson</div>
+                                <div className="other">
+                                    <span className="email">jamieT@iviva.com</span>
+                                    <span className="tel">+1(504)43227645</span>
+
+                                    <span className="star"></span>
+                                </div>
+                            </div>
+
+                            <div className="item">
+                                <div className="name">Jamie Thompson</div>
+                                <div className="other">
+                                    <span className="email">jamieT@iviva.com</span>
+                                    <span className="tel">+1(504)43227645</span>
+
+                                    <span className="star"></span>
+                                </div>
+                            </div>
+
+                            <div className="item">
+                                <div className="name">Jamie Thompson</div>
+                                <div className="other">
+                                    <span className="email">jamieT@iviva.com</span>
+                                    <span className="tel">+1(504)43227645</span>
+
+                                    <span className="star"></span>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+                <div className="tracing-nav">
+                    <div className="nav-item">
+                        10.00 am Meeting
+                    </div>
+                    <div className="nav-item">
+                        10.00 am Meeting
+                    </div>
+                    <div className="nav-item">
+                        10.00 am Meeting
+                    </div>
+                    <div className="nav-item">
+                        10.00 am Meeting
+                    </div>
+                    <div className="nav-item">
+                        10.00 am Meeting
+                    </div>
+                    <div className="nav-item">
+                        10.00 am Meeting
+                    </div>
+                    <div className="nav-item">
+                        10.00 am Meeting
+                    </div>
+                    <div className="nav-item">
+                        10.00 am Meeting
+                    </div>
+                    <div className="nav-item">
+                        10.00 am Meeting
+                    </div>
+                </div>
+            </div>
+        </>;
+    }
+
     render() {
 
 
-        return (
-            <div className="search-result-container">
-                {
-                    this.props.items.map((item, key) => this.renderItems(item, key))
-                }
-            </div>
-        );
+        return (<>
+
+            {
+                this.state.selected == null ?
+                    this.renderSearchResult()
+                    :
+                    this.renderTracing()
+            }
+
+
+        </>);
     }
 }
 
@@ -130,8 +296,7 @@ class ContactTracing extends React.Component<IProps, IState> {
         let tempSearchText = this.state.tempSearchText;
 
         this.setState({
-            searchText: tempSearchText,
-            tempSearchText: ""
+            searchText: tempSearchText
         });
     }
 
@@ -141,7 +306,6 @@ class ContactTracing extends React.Component<IProps, IState> {
             <div className="contact-tracing-block">
 
                 {
-
                     this.state.searchText.length > 0 ?
                         <SearchResult items={this.props.items} />
                         :
