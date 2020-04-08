@@ -3,7 +3,6 @@ import { Map, Marker, TileLayer } from "react-leaflet";
 import { divIcon, Map as LeafletMap, LatLngBoundsExpression } from 'leaflet';
 import { getCountryDetails, ICountry } from './countries';
 declare const window: any;
-//const ORANGE_TEMP_C = 37.3;
 type IStatType = 'screened' | 'employees' | 'oranges';
 type IListFilter = 'starred' | 'all';
 function checkInStatusText(s: string) {
@@ -62,9 +61,6 @@ interface ILocalProps {
 
 interface ILocalState {
     userId: string,
-    // screened: number,
-    // employees: number,
-    // oranges: number,
     lastUpdated: string,
     sorting: IListFilter,
     data: IEmployeeDetails[],
@@ -137,7 +133,6 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
             <div className='c data-source' onClick={() => this.props.onSelectItem(item)}>
                 <div className='label'>Data Source</div>
                 <div className='value'>
-                    {/* {item.source} */}
                     {
                         item.source == null ? "" : <img src={`https://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/datasources/${item.source.toLowerCase()}.png`} alt={item.source} />
                     }
@@ -276,9 +271,6 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
         this.state = {
             userId: "user_01",
-            // screened: 0,
-            // employees: 0,
-            // oranges: 0,
             lastUpdated: null,
             sorting: 'all',
             data: [],
@@ -330,27 +322,15 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 window.Lucy.MessageBus.subscribe('situation-dashboard', (value: string, channel: string) => {
                     // update status
                     var dataSet = this.state.data;
+                    let NewRecords = this.state.newItems;
                     let NewRecord: IEmployeeDetails = JSON.parse(value);
 
                     /* keep it on the top */
                     dataSet.unshift(NewRecord);
-
-                    // let screened = this.state.screened;
-                    // let employees = this.state.employees;
-                    // let oranges = this.state.oranges;
-
-                    if (NewRecord.temperature != null && NewRecord.temperature.trim().length > 0) {
-                        // screened++;
-                    }
-                    // employees++;
-                    let NewRecords = this.state.newItems;
                     NewRecords.unshift(NewRecord);
 
                     this.setState({
                         data: dataSet,
-                        // screened: screened,
-                        // employees: employees,
-                        // oranges: oranges
                         newItems: NewRecords
                     });
                 });
@@ -359,8 +339,6 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
     async loadRemoteData(): Promise<{ details: IEmployeeDetails[] }> {
         try {
-            console.log('fetching data...');
-
             let response = await fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/today", {
                 method: 'GET',
                 headers: {
@@ -375,16 +353,6 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             let lastUpdate = rawData.lastUpdated;
             localStorage.setItem('locallastUpdated', lastUpdate);
 
-            // console.log(rawData);
-
-            // if (rawData.stats) {
-            //     this.setState({
-            //         screened: rawData.stats.screened,
-            //         employees: rawData.stats.employees,
-            //         oranges: rawData.stats.oranges
-            //     })
-            // }
-
             let details = [];
 
             let screened = 0;
@@ -397,9 +365,6 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 // get localstorage data
                 let starredItemsString = localStorage.getItem("starredItems");
                 let starredItems = JSON.parse(starredItemsString);
-
-
-
 
                 let temp = details.map((item: IEmployeeDetails) => {
 
@@ -421,13 +386,9 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
             }
 
-            //console.table(details);
             this.setState({
                 data: details,
                 lastUpdated: lastUpdate,
-                // screened: screened,
-                // employees: employees,
-                // oranges: oranges
             });
 
             return { details };
@@ -697,8 +658,6 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 break;
         }
 
-        //scannedData.isValid = scannedData.id.trim().length > 0 && scannedData.name.trim().length > 0 && scannedData.location.trim().length > 0 && scannedData.temperature.trim().length > 0 && scannedData.lastVisitedCountry.trim().length > 0;
-
         this.setState({ selected: selected });
     }
 
@@ -744,8 +703,6 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             })
                 .then((res) => res.json())
                 .then(response => {
-
-                    //console.log(response);
 
                     if (response._id) {
                         let scannedData = this.state.scannData;
@@ -804,7 +761,6 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         if (isValid) {
 
             status = selected.status == null ? "" : selected.status;
-            //console.log(typeof status);
             if (type == "status") {
                 status = status == "check-in" ? "check-out" : "check-in";
             }
@@ -879,10 +835,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     this.setState({
                         editForm: editForm,
                         data: updated,
-                        selected: selected,
-                        // screened: screened,
-                        // employees: employees,
-                        // oranges: oranges
+                        selected: selected
                     });
                 })
                 .catch(err => {
@@ -925,7 +878,6 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
         // check if item exist in localstorage
         let index = starredItems.indexOf(_id);
-        //console.log("index-" + index);
 
         if (index == -1) {
             starredItems.push(_id);
