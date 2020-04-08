@@ -76,8 +76,8 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
                         temperatue == null ? "" : <span className={`temp ${item.temperature != null ? item.temperature !== "" ? item.tempunit : "" : ""}`}>{temperatue} </span>
                     }
                 </div>
-                <div className={`column time`}>
-                    <span className="time">08.00 AM</span>
+                <div className={`column details`}>
+                <span className="time">08.00 AM {item.location == null ? "" : item.location}</span>
                     <span className="connector"></span>
                     <span className="contacted">Contacted "Jamie Thompson"</span>
                 </div>
