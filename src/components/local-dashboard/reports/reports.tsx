@@ -1,7 +1,32 @@
 import * as React from 'react';
 
-interface IProps {
+import ContactTracing from './contact-tracing';
 
+
+interface IEmployeeDetails {
+    _id: string,
+    id: string,
+    name: string,
+    location: string,
+    source: string,
+    countriesvisited: string,
+    created: Date,
+    temperature: string,
+    status: string,
+    starred: boolean,
+    tempunit: string,
+    email: string,
+    healthflag: string,
+
+    lat: number,
+    long: number,
+    locationName: string,
+    dataSourceIcon: string,
+    lastScanned: string
+}
+
+interface IProps {
+    items: IEmployeeDetails[]
 }
 
 interface IState {
@@ -69,7 +94,7 @@ class Reports extends React.Component<IProps, IState> {
 
         switch (this.state.selectedReport) {
             case "contact-tracking":
-                content = <></>;
+                content = <ContactTracing items={this.props.items} onSearch={this.onSearch} />;
                 break;
 
             default:
@@ -93,7 +118,7 @@ class Reports extends React.Component<IProps, IState> {
                     </div>
 
                     <div className="body">
-                        <div className="back-button-container">
+                        <div className={`back-button-container ${this.state.selectedReport == null ? "hide" : ""}`}>
                             <div className="back-button" onClick={() => this.onSelectReport(null)}>Reports Home</div>
                         </div>
 
