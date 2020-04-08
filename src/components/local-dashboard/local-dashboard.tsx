@@ -3,7 +3,7 @@ import { Map, Marker, TileLayer } from "react-leaflet";
 import { divIcon, Map as LeafletMap, LatLngBoundsExpression } from 'leaflet';
 import { getCountryDetails, ICountry } from './countries';
 
-import ContactTracing from "./contact-tracing"
+import Reports from "./reports/reports"
 
 declare const window: any;
 type IStatType = 'screened' | 'employees' | 'oranges';
@@ -76,7 +76,7 @@ interface ILocalState {
     editForm: IEditFormData,
     searchText: string,
     newItems: IEmployeeDetails[],
-    view: 'all' | 'tracing';
+    view: 'all' | 'reports';
 }
 
 interface IListWidgetProps {
@@ -1003,8 +1003,8 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         return (<>
             <div className='toolbar'>
 
-                <div className={`toolbar-button ${this.state.view == "tracing" ? "selected" : ""} `} onClick={() => this.setState({ view: 'tracing' })} >
-                    Contact Tracing <span className="arrow"></span>
+                <div className={`toolbar-button ${this.state.view == "reports" ? "selected" : ""} `} onClick={() => this.setState({ view: 'reports' })} >
+                    Reports <span className="arrow"></span>
                 </div>
 
                 {/* <div className="toolbar-button" onClick={() => this.setState({ dialog: 'precautions' })} >
@@ -1077,7 +1077,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         </div>
                     </div>
                     :
-                    <ContactTracing />
+                    <Reports />
             }
 
             <div className={`bottom-bar`} >

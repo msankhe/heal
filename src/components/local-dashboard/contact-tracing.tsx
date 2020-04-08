@@ -28,8 +28,45 @@ interface IProps {
 
 interface IState {
     searchText: string,
-    tempSearchText: string
+    tempSearchText: string,
+    data: IEmployeeDetails[],
+    selected: IEmployeeDetails
+}
 
+interface ISearchResultProps {
+    items: IEmployeeDetails[]
+}
+
+interface ISearchResultState {
+
+}
+
+class SearchResult extends React.Component<ISearchResultProps, ISearchResultState>{
+
+    
+    constructor(props: ISearchResultProps){
+        super(props);
+
+        this.state = {
+
+        }
+    }
+
+    renderItems(item: IEmployeeDetails) {
+        return <div>dsddsd</div>;
+    }
+
+    render() {
+
+
+        return (
+            <div className="search-result-container">
+                {
+                    this.props.items.map((item) => {this.renderItems(item)}) 
+                }
+            </div>
+        );
+    }
 }
 
 class ContactTracing extends React.Component<IProps, IState> {
@@ -39,7 +76,9 @@ class ContactTracing extends React.Component<IProps, IState> {
 
         this.state = {
             searchText: "",
-            tempSearchText: ""
+            tempSearchText: "",
+            data: [],
+            selected: null
         }
 
         this.onSearch = this.onSearch.bind(this);
@@ -81,6 +120,10 @@ class ContactTracing extends React.Component<IProps, IState> {
                                     <input type="text" name="search" className="search" placeholder="search by name or email" value={this.state.tempSearchText} onChange={(event) => {this.setState({tempSearchText: event.target.value})}}  />
                                     <span className={`search-button`} onClick={this.onClickSearchbutton} ></span>
                                 </div>
+                                :
+
+                                this.state.selected == null ? 
+                                    <div></div>
                                 :
                                 <div></div>
                         }

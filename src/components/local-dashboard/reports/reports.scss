@@ -1,0 +1,206 @@
+.report-section {
+    position: relative;
+    display: block;
+    height: 100%;
+    box-sizing: border-box;
+    margin-top: 20px;
+
+    .report-container {
+        position: absolute;
+        width: auto;
+        top: 0px;
+        bottom: 0px;
+        left: 40px;
+        right: 40px;
+        overflow: hidden;
+        font-size: 11px;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 20px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+
+        .header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #efefef;
+
+            .title {
+                font-weight: bold;
+                text-transform: uppercase;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+
+                .arrow {
+                    &.hide {
+                        display: none;
+                    }
+                }
+            }
+
+            .last-updated {
+                font-size: 9px;
+                i {
+                    font-style: italic;
+                }
+
+                span {
+                    font-weight: 700;
+                }
+            }
+
+            .filters {
+                .search-box {
+                    width: auto;
+                    position: relative;
+                    display: block;
+                    box-sizing: border-box;
+                    padding: 1px 20px 0px 30px;
+                    border-radius: 55px;
+                    border: 0;
+                    background: #efefef;
+                    color: black;
+                    font-size: 13px;
+                    outline: none;
+                    margin-right: 10px;
+
+                    &.hide {
+                        display: none;
+                    }
+
+                    .search {
+                        min-width: 160px;
+                        position: relative;
+                        display: block;
+                        padding: 8px;
+                        border-radius: 0;
+                        border: 0;
+                        background: #efefef;
+                        color: black;
+                        font-size: 13px;
+                        outline: none;
+                    }
+
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        top: 50%;
+                        left: 10px;
+                        width: 20px;
+                        height: 12px;
+                        transform: translateY(-50%);
+                        background-image: url(../images/report/search-gray.svg);
+                        background-repeat: no-repeat;
+                        background-position: center;
+                        background-size: contain;
+                    }
+                }
+            }
+        }
+
+        .body {
+            display: block;
+            position: relative;
+            width: 100%;
+            height: auto;
+            overflow-y: auto;
+
+            &::-webkit-scrollbar {
+                width: 2px;
+            }
+
+            /* Track */
+            &::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+
+            /* Handle */
+            &::-webkit-scrollbar-thumb {
+                background: #888;
+            }
+
+            /* Handle on hover */
+            &::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+
+            .back-button-container {
+                display: block;
+                box-sizing: border-box;
+                /* height: 15px; */
+                position: relative;
+                padding: 15px;
+                text-transform: uppercase;
+                font-size: 9px;
+                font-weight: 800;
+
+                &.hide {
+                    display: none;
+                }
+
+                .back-button {
+                    position: relative;
+                    padding-left: 30px;
+
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        height: 10px;
+                        width: 15px;
+                        top: 50%;
+                        left: 8px;
+                        transform: translateY(-50%);
+                        background-image: url(../images/report/back.svg);
+                        background-position: center;
+                        background-repeat: no-repeat;
+                        background-size: contain;
+                    }
+                }
+            }
+
+            .reports {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: flex-start;
+                padding: 20px 20px 80px 20px;
+
+                .report-card {
+                    width: 220px;
+                    height: 220px;
+                    border-radius: 15px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 20px;
+                    box-sizing: border-box;
+                    background-color: #efefef;
+                    cursor: pointer;
+
+                    img {
+                        &.report-img {
+                            width: 80px;
+                            height: auto;
+                            margin: 20px;
+                        }
+                    }
+
+                    .report-name {
+                        margin-top: 10px;
+                        text-transform: uppercase;
+                        font-weight: 800;
+                    }
+
+                    &:hover {
+                        background-color: white;
+                        box-shadow: 0px 0px 1px 4px rgba(0, 0, 0, 0.05);
+                    }
+                }
+            }
+        }
+    }
+}
