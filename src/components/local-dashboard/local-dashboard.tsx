@@ -2,9 +2,13 @@ import * as React from 'react';
 import { Map, Marker, TileLayer } from "react-leaflet";
 import { divIcon, Map as LeafletMap, LatLngBoundsExpression } from 'leaflet';
 import { getCountryDetails, ICountry } from './countries';
+
+import ContactTracing from "./contact-tracing"
+
 declare const window: any;
 type IStatType = 'screened' | 'employees' | 'oranges';
 type IListFilter = 'starred' | 'all';
+
 function checkInStatusText(s: string) {
     switch (s?.toLowerCase()) {
         default: return 'Expected';
@@ -12,6 +16,7 @@ function checkInStatusText(s: string) {
         case 'check-out': return 'Checked Out';
     }
 }
+
 interface IEmployeeDetails {
     _id: string,
     id: string,
@@ -70,7 +75,8 @@ interface ILocalState {
     selected: IEmployeeDetails | null,
     editForm: IEditFormData,
     searchText: string,
-    newItems: IEmployeeDetails[]
+    newItems: IEmployeeDetails[],
+    view: 'all' | 'tracing';
 }
 
 interface IListWidgetProps {
@@ -81,6 +87,7 @@ interface IListWidgetProps {
     onSelectItem: any,
     searchText: string
 }
+
 interface IListWidgetState {
 }
 
@@ -104,7 +111,7 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
         if (this.props.selected != null && this.props.selected._id == item._id) {
             cls = "selected"
         }
-        if(parseInt(item.healthflag) == 1) {
+        if (parseInt(item.healthflag) == 1) {
             cls += " warning";
         }
 
@@ -294,7 +301,8 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 feedback: ""
             },
             searchText: "",
-            newItems: []
+            newItems: [],
+            view: "all"
         }
 
         this.submitForm = this.submitForm.bind(this);
@@ -992,76 +1000,85 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         let employees = this.state.data.length;
         let oranges = this.state.data.filter(e => Number(e.healthflag) == 1).length;
 
-
         return (<>
-            {/* <div className='toolbar'> */}
+            <div className='toolbar'>
 
-            {/* <div className="toolbar-button" onClick={() => this.setState({ dialog: 'precautions' })} >
+                <div className={`toolbar-button ${this.state.view == "tracing" ? "selected" : ""} `} onClick={() => this.setState({ view: 'tracing' })} >
+                    Contact Tracing <span className="arrow"></span>
+                </div>
+
+                {/* <div className="toolbar-button" onClick={() => this.setState({ dialog: 'precautions' })} >
                     Precautions <span className="arrow"></span>
                 </div> */}
 
-            {/* <div className="toolbar-button" onClick={() => this.setState({ dialog: '' })} >
+                <div className={`toolbar-button ${this.state.view == "all" ? "selected" : ""} `} onClick={() => this.setState({ view: 'all' })} >
                     All <span className="arrow"></span>
-                </div> */}
-
-            {/* </div> */}
-
-            <div className='data-section'>
-
-                <div className='stats stat-local'>
-                    <div className='stats-header'>
-                        <div className='dt'>
-
-                        </div>
-                    </div>
-                    <div className='stat screened'>
-                        <div className='metric'>{screened}</div>
-                        <div className='title'>screened</div>
-                    </div>
-                    <div className='stat employees'>
-                        <div className='metric'>{employees}</div>
-                        <div className='title'>Expected</div>
-                    </div>
-                    <div className='stat oranges'>
-                        <div className='metric'>{oranges}</div>
-                        <div className='title'>oranges</div>
-                    </div>
                 </div>
 
-                <div className='map local-map'>
-                    <div className='map-widget'>
-                        <div className='filters'>
-                            {/* <div onClick={this.setMapFilter.bind(this, 'screened')} className={(this.state.mapFilter == 'screened' ? 'set' : '') + ' switch screened'}><span className="icon"></span> screened</div>
+            </div>
+
+            {
+                this.state.view == "all" ?
+
+                    <div className='data-section'>
+
+                        <div className='stats stat-local'>
+                            <div className='stats-header'>
+                                <div className='dt'>
+
+                                </div>
+                            </div>
+                            <div className='stat screened'>
+                                <div className='metric'>{screened}</div>
+                                <div className='title'>screened</div>
+                            </div>
+                            <div className='stat employees'>
+                                <div className='metric'>{employees}</div>
+                                <div className='title'>Expected</div>
+                            </div>
+                            <div className='stat oranges'>
+                                <div className='metric'>{oranges}</div>
+                                <div className='title'>oranges</div>
+                            </div>
+                        </div>
+
+                        <div className='map local-map'>
+                            <div className='map-widget'>
+                                <div className='filters'>
+                                    {/* <div onClick={this.setMapFilter.bind(this, 'screened')} className={(this.state.mapFilter == 'screened' ? 'set' : '') + ' switch screened'}><span className="icon"></span> screened</div>
                             <div onClick={this.setMapFilter.bind(this, 'employees')} className={(this.state.mapFilter == 'employees' ? 'set' : '') + ' switch employees'}><span className="icon"></span>Expected</div>
                             <div onClick={this.setMapFilter.bind(this, 'oranges')} className={(this.state.mapFilter == 'oranges' ? 'set' : '') + ' switch oranges'}><span className="icon"></span>oranges</div> */}
+                                </div>
+
+                                <MapWidget items={this.state.data} />
+                            </div>
                         </div>
 
-                        <MapWidget items={this.state.data} />
-                    </div>
-                </div>
-
-                <div className='data-list-container local-list'>
-                    <div className='data-list'>
-                        <div className='header'>
-                            <div className='title local-list'>
-                                <span className="arrow"></span>
+                        <div className='data-list-container local-list'>
+                            <div className='data-list'>
+                                <div className='header'>
+                                    <div className='title local-list'>
+                                        <span className="arrow"></span>
                                 Today
                             </div>
-                            <div className='filters'>
-                                <input type="text" name="search" className="search" placeholder="search by name or id" value={this.state.searchText} onChange={(event) => this.onSearch(event)} />
-                                <div onClick={this.setSorting.bind(this, 'starred')} className={(this.state.sorting == 'starred' ? 'set' : '') + ' switch starred'}><span className="icon star"></span>starred</div>
-                                <div onClick={this.setSorting.bind(this, 'all')} className={(this.state.sorting == 'all' ? 'set' : '') + ' switch all'}>All {/* <span className="icon arrow"></span> */} </div>
+                                    <div className='filters'>
+                                        <input type="text" name="search" className="search" placeholder="search by name or id" value={this.state.searchText} onChange={(event) => this.onSearch(event)} />
+                                        <div onClick={this.setSorting.bind(this, 'starred')} className={(this.state.sorting == 'starred' ? 'set' : '') + ' switch starred'}><span className="icon star"></span>starred</div>
+                                        <div onClick={this.setSorting.bind(this, 'all')} className={(this.state.sorting == 'all' ? 'set' : '') + ' switch all'}>All {/* <span className="icon arrow"></span> */} </div>
 
+                                    </div>
+                                </div>
+                                <ListWidget sorting={this.state.sorting} searchText={this.state.searchText} items={this.state.data} toggleStarred={this.toggleItemStarred} selected={this.state.selected} onSelectItem={this.onSelectItem} />
+                                <div className='footer'>
+                                    <div className='tip'>Learn more about this dashboard</div>
+                                    <div className='action' onClick={this.props.renderInfo}>Info</div>
+                                </div>
                             </div>
                         </div>
-                        <ListWidget sorting={this.state.sorting} searchText={this.state.searchText} items={this.state.data} toggleStarred={this.toggleItemStarred} selected={this.state.selected} onSelectItem={this.onSelectItem} />
-                        <div className='footer'>
-                            <div className='tip'>Learn more about this dashboard</div>
-                            <div className='action' onClick={this.props.renderInfo}>Info</div>
-                        </div>
                     </div>
-                </div>
-            </div>
+                    :
+                    <ContactTracing />
+            }
 
             <div className={`bottom-bar`} >
                 {
