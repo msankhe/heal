@@ -23,8 +23,11 @@ interface IEmployeeDetails {
 }
 
 interface IProps {
+    apiUrl: string,
+    apiKey: string,
     onSearch: any,
-    items: IEmployeeDetails[]
+    items: IEmployeeDetails[],
+    searchText: string
 }
 
 interface IState {
@@ -34,11 +37,20 @@ interface IState {
 }
 
 interface ISearchResultProps {
+    apiUrl: string,
+    apiKey: string,
     items: IEmployeeDetails[]
 }
 
+interface ITracing {
+    location: string,
+    time: string,
+    people: IEmployeeDetails[]
+}
+
 interface ISearchResultState {
-    selected: IEmployeeDetails
+    selected: IEmployeeDetails,
+    tracingDetails: ITracing[]
 }
 
 class SearchResult extends React.Component<ISearchResultProps, ISearchResultState>{
@@ -48,8 +60,31 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
         super(props);
 
         this.state = {
-            selected: null
+            selected: null,
+            tracingDetails: []
         }
+    }
+
+    getTracingDetails(item: IEmployeeDetails) {
+        this.setState({ selected: item });
+
+        // get tracing 
+        fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/reports/contact-tracing", {
+            method: 'GET',
+            headers: {
+                'Authorization': 'APIKEY ' + this.props.apiKey,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(res => res.json())
+            .then(res => {
+                this.setState({ tracingDetails: res });
+            })
+            .catch(err => {
+                console.log(err);
+
+                throw err;
+            })
     }
 
     renderItems(item: IEmployeeDetails, key: number) {
@@ -82,7 +117,7 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
                     <span className="contacted">Contacted "Jamie Thompson"</span>
                 </div>
                 <div className={`column trace`}>
-                    <div className="trace-button" onClick={() => this.setState({ selected: item })}>
+                    <div className="trace-button" onClick={() => this.getTracingDetails(item)}>
                         Trace
                     </div>
                 </div>
@@ -102,155 +137,86 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
         </div>;
     }
 
+
+    renderEmployeeDetails(employ: IEmployeeDetails, key: number) {
+
+        return (
+            <div className="item" key={key}>
+                <div className="name">{employ.name}</div>
+                <div className="other">
+                    <span className="email">{employ.email}</span>
+                    <span className="tel">+1(504)43227645</span>
+
+                    <span className="star"></span>
+                </div>
+            </div>
+        );
+
+    }
+    renderTracingDetails(item: ITracing, key: number) {
+
+        let header = <div className="header">
+            <span className="star"></span>
+        </div>;
+
+        if (key == 0) {
+            header = <>
+                <div className="header">
+                    <span className="email">{this.state.selected.email}</span>
+                    <span className="tel"></span>
+
+                    <span className="star"></span>
+                </div>;
+
+                <div className="sub-header">
+                    <div className="name">{this.state.selected.name}</div>
+                    <div className="temperature celsius">{this.state.selected.temperature}</div>
+                </div>
+            </>
+        }
+
+        return (
+            <div className="details-block" key={key} id={`tracing-block-${key}`} >
+
+                {header}
+
+                <div className="details">
+                    <div className="title">{item.time}  {item.location}</div>
+
+                    {
+                        item.people.map((emp, key) => this.renderEmployeeDetails(emp, key))
+                    }
+
+                </div>
+
+
+            </div>
+        );
+    }
+
+    renderTracingNavItem(item: ITracing, key: number) {
+
+        return (
+            <a className="nav-item" key={key} href={`#tracing-block-${key}`} >
+                {item.time} {item.location}
+            </a>
+        );
+    }
+
     renderTracing() {
         return <>
             <div className="tracing-container">
                 <div className="tracing-details">
 
-                    <div className="details-block">
-                        <div className="header">
-                            <span className="email">jamieT@iviva.com</span>
-                            <span className="tel">+1(504)43227645</span>
-
-                            <span className="star"></span>
-                        </div>
-
-                        <div className="sub-header">
-                            <div className="name">Jannet Lauren Smith</div>
-                            <div className="temperature celsius">37.6</div>
-                        </div>
-
-                        <div className="details">
-                            <div className="title">10.00 AM Meeting</div>
-
-                            <div className="item">
-                                <div className="name">Jamie Thompson</div>
-                                <div className="other">
-                                    <span className="email">jamieT@iviva.com</span>
-                                    <span className="tel">+1(504)43227645</span>
-
-                                    <span className="star"></span>
-                                </div>
-                            </div>
-
-                            <div className="item">
-                                <div className="name">Jamie Thompson</div>
-                                <div className="other">
-                                    <span className="email">jamieT@iviva.com</span>
-                                    <span className="tel">+1(504)43227645</span>
-
-                                    <span className="star"></span>
-                                </div>
-                            </div>
-
-                            <div className="item">
-                                <div className="name">Jamie Thompson</div>
-                                <div className="other">
-                                    <span className="email">jamieT@iviva.com</span>
-                                    <span className="tel">+1(504)43227645</span>
-
-                                    <span className="star"></span>
-                                </div>
-                            </div>
-
-                            <div className="item">
-                                <div className="name">Jamie Thompson</div>
-                                <div className="other">
-                                    <span className="email">jamieT@iviva.com</span>
-                                    <span className="tel">+1(504)43227645</span>
-
-                                    <span className="star"></span>
-                                </div>
-                            </div>
-
-                        </div>
-
-
-                    </div>
-
-                    <div className="details-block">
-                        <div className="header">
-
-                            <span className="star"></span>
-                        </div>
-
-                        <div className="details">
-                            <div className="title">01.00 PM cafeteria</div>
-
-                            <div className="item">
-                                <div className="name">Jamie Thompson</div>
-                                <div className="other">
-                                    <span className="email">jamieT@iviva.com</span>
-                                    <span className="tel">+1(504)43227645</span>
-
-                                    <span className="star"></span>
-                                </div>
-                            </div>
-
-                            <div className="item">
-                                <div className="name">Jamie Thompson</div>
-                                <div className="other">
-                                    <span className="email">jamieT@iviva.com</span>
-                                    <span className="tel">+1(504)43227645</span>
-
-                                    <span className="star"></span>
-                                </div>
-                            </div>
-
-                            <div className="item">
-                                <div className="name">Jamie Thompson</div>
-                                <div className="other">
-                                    <span className="email">jamieT@iviva.com</span>
-                                    <span className="tel">+1(504)43227645</span>
-
-                                    <span className="star"></span>
-                                </div>
-                            </div>
-
-                            <div className="item">
-                                <div className="name">Jamie Thompson</div>
-                                <div className="other">
-                                    <span className="email">jamieT@iviva.com</span>
-                                    <span className="tel">+1(504)43227645</span>
-
-                                    <span className="star"></span>
-                                </div>
-                            </div>
-
-                        </div>
-
-
-                    </div>
+                    {
+                        this.state.tracingDetails.map((item, key) => this.renderTracingDetails(item, key))
+                    }
 
                 </div>
                 <div className="tracing-nav">
-                    <div className="nav-item">
-                        10.00 am Meeting
-                    </div>
-                    <div className="nav-item">
-                        10.00 am Meeting
-                    </div>
-                    <div className="nav-item">
-                        10.00 am Meeting
-                    </div>
-                    <div className="nav-item">
-                        10.00 am Meeting
-                    </div>
-                    <div className="nav-item">
-                        10.00 am Meeting
-                    </div>
-                    <div className="nav-item">
-                        10.00 am Meeting
-                    </div>
-                    <div className="nav-item">
-                        10.00 am Meeting
-                    </div>
-                    <div className="nav-item">
-                        10.00 am Meeting
-                    </div>
-                    <div className="nav-item">
-                        10.00 am Meeting
-                    </div>
+                    {
+                        this.state.tracingDetails.map((item, key) => this.renderTracingNavItem(item,key))
+                    }
                 </div>
             </div>
         </>;
@@ -304,7 +270,7 @@ class ContactTracing extends React.Component<IProps, IState> {
 
                 {
                     this.state.searchText.length > 0 ?
-                        <SearchResult items={this.props.items} />
+                        <SearchResult items={this.props.items} apiUrl={this.props.apiUrl} apiKey={this.props.apiKey} />
                         :
 
                         <div className="search-box">

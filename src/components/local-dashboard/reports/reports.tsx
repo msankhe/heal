@@ -127,7 +127,7 @@ class Reports extends React.Component<IProps, IState> {
 
         switch (this.state.selectedReport) {
             case "contact-tracking":
-                content = <ContactTracing items={this.state.searchResult} onSearch={this.searchCallback} />;
+                content = <ContactTracing items={this.state.searchResult} onSearch={this.searchCallback} searchText={this.state.searchText} apiUrl={this.props.apiUrl} apiKey={this.props.apiKey} />;
                 break;
 
             default:

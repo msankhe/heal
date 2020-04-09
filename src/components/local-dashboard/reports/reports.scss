@@ -727,6 +727,8 @@
                             display: inline-block;
                             margin: 4px;
                             cursor: pointer;
+                            text-transform: uppercase;
+                            text-decoration: none;
 
                             &:hover {
                                 background-color: #efefef;
