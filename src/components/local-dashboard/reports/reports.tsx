@@ -26,14 +26,15 @@ interface IEmployeeDetails {
 }
 
 interface IProps {
-    items: IEmployeeDetails[]
+    apiUrl: string,
+    apiKey: string
 }
 
 interface IState {
     title: string,
     selectedReport: string,
     searchText: string,
-
+    searchResult: IEmployeeDetails[]
 }
 
 class Reports extends React.Component<IProps, IState> {
@@ -43,14 +44,46 @@ class Reports extends React.Component<IProps, IState> {
         this.state = {
             title: "Health Reports",
             selectedReport: null,
-            searchText: ""
+            searchText: "",
+            searchResult: []
         }
 
         this.renderReports = this.renderReports.bind(this);
+        this.searchCallback = this.searchCallback.bind(this);
+        this.searchUsers = this.searchUsers.bind(this);
+        this.onSearch = this.onSearch.bind(this);
     }
 
-    onSearch(event: React.ChangeEvent<HTMLElement>) {
+    onSearch(event: React.ChangeEvent<HTMLInputElement>) {
+        this.setState({ searchText: event.target.value });
+        this.searchUsers(event.target.value);
+    }
 
+    searchCallback(searchText: string) {
+        this.setState({ searchText: searchText });
+        this.searchUsers(searchText);
+    }
+
+    searchUsers(searchText: string) {
+        let _data = JSON.stringify({
+            searchtext: searchText
+        });
+        fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/search", {
+            method: 'POST',
+            headers: {
+                'Authorization': 'APIKEY ' + this.props.apiKey,
+                'Content-Type': 'application/json'
+            },
+            body: _data
+        })
+        .then(res => res.json()) 
+        .then(res => {
+            this.setState({searchResult: res});
+        })
+        .catch(err => {
+            console.log(err);
+            throw err;
+        });
     }
 
     renderReports() {
@@ -76,7 +109,7 @@ class Reports extends React.Component<IProps, IState> {
     onSelectReport(report: string) {
 
         let title = "Health Reports";
-        switch(report) {
+        switch (report) {
             case "contact-tracking":
                 title = "Contact Tracing";
                 break;
@@ -94,7 +127,7 @@ class Reports extends React.Component<IProps, IState> {
 
         switch (this.state.selectedReport) {
             case "contact-tracking":
-                content = <ContactTracing items={this.props.items} onSearch={this.onSearch} />;
+                content = <ContactTracing items={this.state.searchResult} onSearch={this.searchCallback} />;
                 break;
 
             default:

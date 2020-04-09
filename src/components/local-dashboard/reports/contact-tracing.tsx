@@ -283,12 +283,7 @@ class ContactTracing extends React.Component<IProps, IState> {
             tempSearchText: ""
         }
 
-        this.onSearch = this.onSearch.bind(this);
         this.onClickSearchbutton = this.onClickSearchbutton.bind(this);
-
-    }
-
-    onSearch(event: React.ChangeEvent<HTMLElement>) {
 
     }
 
@@ -298,6 +293,8 @@ class ContactTracing extends React.Component<IProps, IState> {
         this.setState({
             searchText: tempSearchText
         });
+
+        this.props.onSearch(tempSearchText);
     }
 
     render() {

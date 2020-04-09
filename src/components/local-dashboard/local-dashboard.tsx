@@ -1077,7 +1077,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         </div>
                     </div>
                     :
-                    <Reports items={this.state.data} />
+                    <Reports apiUrl={this.props.apiUrl} apiKey={this.props.apiKey} />
             }
 
             <div className={`bottom-bar`} >
