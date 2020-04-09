@@ -5,15 +5,20 @@ interface IEmployeeDetails {
     id: string,
     name: string,
     location: string,
+    temperature: string,
     source: string,
     countriesvisited: string,
-    created: Date,
-    temperature: string,
+    currentstatus: string,
+    checkinat: Date,
+    checkoutat: Date,
+    createdat: Date,
+    email: string,
+    expectedat: Date,
+    healthflag: string,
     status: string,
+    contactnumber: string,
     starred: boolean,
     tempunit: string,
-    email: string,
-    healthflag: string,
 
     lat: number,
     long: number,
@@ -145,7 +150,7 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
                 <div className="name">{employ.name}</div>
                 <div className="other">
                     <span className="email">{employ.email}</span>
-                    <span className="tel">+1(504)43227645</span>
+                    <span className="tel">{employ.contactnumber}</span>
 
                     <span className="star"></span>
                 </div>
@@ -163,7 +168,7 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
             header = <>
                 <div className="header">
                     <span className="email">{this.state.selected.email}</span>
-                    <span className="tel"></span>
+                    <span className="tel">{this.state.selected.contactnumber}</span>
 
                     <span className="star"></span>
                 </div>;
@@ -215,7 +220,7 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
                 </div>
                 <div className="tracing-nav">
                     {
-                        this.state.tracingDetails.map((item, key) => this.renderTracingNavItem(item,key))
+                        this.state.tracingDetails.map((item, key) => this.renderTracingNavItem(item, key))
                     }
                 </div>
             </div>

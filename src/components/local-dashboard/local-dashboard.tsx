@@ -22,15 +22,20 @@ interface IEmployeeDetails {
     id: string,
     name: string,
     location: string,
+    temperature: string,
     source: string,
     countriesvisited: string,
-    created: Date,
-    temperature: string,
+    currentstatus: string,
+    checkinat: Date,
+    checkoutat: Date,
+    createdat: Date,
+    email: string,
+    expectedat: Date,
+    healthflag: string,
     status: string,
+    contactnumber: string,
     starred: boolean,
     tempunit: string,
-    email: string,
-    healthflag: string,
 
     lat: number,
     long: number,
@@ -530,7 +535,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     <div className={`left`}>
                         <div className="form-group">
                             <label className="label" >Temperature</label>
-                            <input type="text" name="temperature" className={`input ${this.state.selected.temperature != null && this.state.selected.temperature.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.temperature} placeholder="Example: 23" onChange={(event) => this.updateEditFormData(event, 'temperature')} />
+                            <input type="text" name="temperature" className={`input ${this.state.selected.temperature != null && this.state.selected.temperature.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.temperature} placeholder="Ex: 23" onChange={(event) => this.updateEditFormData(event, 'temperature')} />
 
                             <span className="temp-units">
                                 <span className={`temp-label ${this.state.selected.tempunit == "celsius" ? "selected" : ""}`} onClick={() => this.updateTempUnit("celsius")}>&#8451;</span>
@@ -540,22 +545,27 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
                         <div className="form-group">
                             <label className="label" >Name  </label>
-                            <input type="text" name="name" className={`input ${this.state.selected.name != null && this.state.selected.name.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.name} placeholder="Example: John Doe" onChange={(event) => this.updateEditFormData(event, 'name')} />
+                            <input type="text" name="name" className={`input ${this.state.selected.name != null && this.state.selected.name.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.name} placeholder="Ex: John Doe" onChange={(event) => this.updateEditFormData(event, 'name')} />
                         </div>
 
                         <div className="form-group">
                             <label className="label" >Location  </label>
-                            <input type="text" name="location" className={`input ${this.state.selected.location != null && this.state.selected.location.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.location} placeholder="Example: Singapore" onChange={(event) => this.updateEditFormData(event, 'location')} />
+                            <input type="text" name="location" className={`input ${this.state.selected.location != null && this.state.selected.location.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.location} placeholder="Ex: Singapore" onChange={(event) => this.updateEditFormData(event, 'location')} />
                         </div>
 
                         <div className="form-group">
                             <label className="label" >Countries Visited </label>
-                            <input type="text" name="lastvisited" className={`input ${this.state.selected.countriesvisited != null && this.state.selected.countriesvisited.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.countriesvisited} placeholder="Example: Kenya" onChange={(event) => this.updateEditFormData(event, 'lastVisited')} />
+                            <input type="text" name="lastvisited" className={`input ${this.state.selected.countriesvisited != null && this.state.selected.countriesvisited.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.countriesvisited} placeholder="Ex: Kenya" onChange={(event) => this.updateEditFormData(event, 'lastVisited')} />
                         </div>
 
                         <div className="form-group">
                             <label className="label" >Email </label>
-                            <input type="text" name="email" className={`input ${this.state.selected.email != null && this.state.selected.email.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.email} placeholder="Example: abc@abc.com" onChange={(event) => this.updateEditFormData(event, 'email')} />
+                            <input type="text" name="email" className={`input ${this.state.selected.email != null && this.state.selected.email.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.email} placeholder="Ex: abc@abc.com" onChange={(event) => this.updateEditFormData(event, 'email')} />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="label" >Contact Number </label>
+                            <input type="text" name="contactnumber" className={`input ${this.state.selected.contactnumber != null && this.state.selected.contactnumber.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.contactnumber} placeholder="Ex: +1(504)43227645" onChange={(event) => this.updateEditFormData(event, 'contactnnumber')} />
                         </div>
 
                         <div className="form-group">
@@ -663,6 +673,9 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 break;
             case "email":
                 selected.email = newValue;
+                break;
+            case "contactnnumber":
+                selected.contactnumber = newValue;
                 break;
         }
 
@@ -788,7 +801,8 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 "_id": selected._id,
                 "id": selected.id,
                 "status": status,
-                'email': selected.email
+                'email': selected.email,
+                "contactnumber": selected.contactnumber
             });
 
             fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/update", {
