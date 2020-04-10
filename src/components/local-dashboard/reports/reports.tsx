@@ -81,14 +81,14 @@ class Reports extends React.Component<IProps, IState> {
             },
             body: _data
         })
-        .then(res => res.json()) 
-        .then(res => {
-            this.setState({searchResult: res});
-        })
-        .catch(err => {
-            console.log(err);
-            throw err;
-        });
+            .then(res => res.json())
+            .then(res => {
+                this.setState({ searchResult: res });
+            })
+            .catch(err => {
+                console.log(err);
+                throw err;
+            });
     }
 
     renderReports() {
@@ -145,7 +145,13 @@ class Reports extends React.Component<IProps, IState> {
                     <div className="header">
                         <div className="title"><span className={`arrow ${this.state.selectedReport == null ? "hide" : ""}`}></span> {this.state.title}</div>
                         <div className="last-updated">
-                            <i>Last updated </i> <span>06.00 AM</span>
+                            {
+                                this.state.searchText.length > 0 ?
+                            <><i>Showing Results for&nbsp;&nbsp;</i> <span>"{this.state.searchText}"</span></>
+                                    :
+                                    ""
+                            }
+
                         </div>
 
                         <div className="filters">
