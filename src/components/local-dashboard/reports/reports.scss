@@ -790,6 +790,59 @@
     }
 }
 
+@media (max-width: 1088px) {
+    .report-section {
+        .report-container {
+            .body {
+                .contact-tracing-block {
+                    .search-box {
+                        width: 400px;
+
+                        &::before {
+                            left: -200px;
+                            width: 150px;
+                            height: 150px;
+                        }
+
+                        &::after {
+                            right: -200px;
+                            width: 150px;
+                            height: 150px;
+                        }
+                    }
+
+
+                    .search-result-container {
+                        .result-item{
+                            width: 85%;
+
+                            .column {
+                                &.name {
+                                    width: 18%;
+                                }
+                            }
+                        }
+                    }
+
+                    .tracing-container{
+
+                        .tracing-details {
+                            width: 55%;
+                            left: 5%;
+                        }
+
+                        .tracing-nav {
+                            width: 30%;
+                            right: 5%;
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+}
+
 @keyframes fadeIn {
     0% {
         opacity: 0;
