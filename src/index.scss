@@ -133,12 +133,6 @@ html {
             cursor: pointer;
             color: gray;
 
-            &:hover,
-            &.selected {
-                @include toggleBtnGradient();
-                color: white;
-            }
-
             .arrow {
                 width: 10px;
                 height: 10px;
@@ -148,6 +142,22 @@ html {
                 background-position: center;
                 background-repeat: no-repeat;
                 background-size: contain;
+            }
+
+            &:hover,
+            &.selected {
+                @include toggleBtnGradient();
+                color: white;
+
+                .arrow {
+                    background-image: url(../images/down-whitet.svg);
+                }
+            }
+
+            &.selected {
+                .arrow {
+                    transform: rotate(180deg);
+                }
             }
         }
 
