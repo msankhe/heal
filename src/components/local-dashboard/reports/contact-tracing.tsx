@@ -303,6 +303,11 @@ class ContactTracing extends React.Component<IProps, IState> {
 
     render() {
 
+        let searchBoxClass = "search-box";
+        if(this.state.searchText.length > 0 || this.state.tempSearchText.length > 0) {
+            searchBoxClass += " filled";
+        }
+
         return (
             <div className="contact-tracing-block">
 
@@ -314,7 +319,7 @@ class ContactTracing extends React.Component<IProps, IState> {
                             <div className={`back-button-container`}>
                                 <div className="back-button" onClick={() => this.props.goBack()}>Reports Home</div>
                             </div>
-                            <div className="search-box">
+                            <div className={searchBoxClass}>
                                 <input type="text" name="search" className="search" placeholder="search by name or email" value={this.state.tempSearchText} onChange={(event) => { this.setState({ tempSearchText: event.target.value }) }} onKeyDown={(event) => this.onKeyPress(event)} />
                                 <span className={`search-button`} onClick={this.onClickSearchbutton} ></span>
                             </div>

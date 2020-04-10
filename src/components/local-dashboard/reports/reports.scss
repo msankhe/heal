@@ -12,7 +12,7 @@
         right: 40px;
         overflow: hidden;
         font-size: 11px;
-        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0px 4px 11px 0px rgba(0, 0, 0, 0.13);
         border-radius: 20px;
         box-sizing: border-box;
         display: flex;
@@ -47,6 +47,8 @@
 
                 span {
                     font-weight: 700;
+                    max-width: 250px;
+                    overflow: hidden;
                 }
             }
 
@@ -56,7 +58,7 @@
                     position: relative;
                     display: block;
                     box-sizing: border-box;
-                    padding: 1px 20px 0px 30px;
+                    padding: 0px 30px;
                     border-radius: 55px;
                     border: 0;
                     background: #efefef;
@@ -80,6 +82,11 @@
                         color: black;
                         font-size: 13px;
                         outline: none;
+                        font-family: "Raleway";
+                    }
+
+                    .close-button {
+                        display: none;
                     }
 
                     &::before {
@@ -94,6 +101,30 @@
                         background-repeat: no-repeat;
                         background-position: center;
                         background-size: contain;
+                    }
+
+                    &:focus-within,
+                    &.filled {
+                        .search {
+                            background-color: white;
+                        }
+                        background-color: white;
+                        box-shadow: 0px 4px 11px 0px rgba(0, 0, 0, 0.13);
+
+                        .close-button {
+                            display: block;
+                            position: absolute;
+                            top: 50%;
+                            right: 10px;
+                            width: 20px;
+                            height: 8px;
+                            transform: translateY(-50%);
+                            background-image: url(../images/close.svg);
+                            background-repeat: no-repeat;
+                            background-position: center;
+                            background-size: contain;
+                            cursor: pointer;
+                        }
                     }
                 }
             }
@@ -130,7 +161,7 @@
                 box-sizing: border-box;
                 /* height: 15px; */
                 position: relative;
-                padding: 15px;
+                padding: 30px 15px 15px 15px;
                 text-transform: uppercase;
                 font-size: 9px;
                 font-weight: 800;
@@ -196,7 +227,7 @@
 
                     &:hover {
                         background-color: white;
-                        box-shadow: 0px 0px 1px 4px rgba(0, 0, 0, 0.05);
+                        box-shadow: 0px 4px 11px 0px rgba(0, 0, 0, 0.13);
                     }
                 }
             }
@@ -234,6 +265,7 @@
                         color: black;
                         font-size: 15px;
                         outline: none;
+                        font-family: "Raleway";
                     }
 
                     .search-button {
@@ -276,6 +308,15 @@
                         background-repeat: no-repeat;
                         background-position: center;
                         background-size: contain;
+                    }
+
+                    &:focus-within,
+                    &.filled {
+                        .search {
+                            background-color: white;
+                        }
+                        background-color: white;
+                        box-shadow: 0px 4px 11px 0px rgba(0, 0, 0, 0.13);
                     }
                 }
 
@@ -455,7 +496,7 @@
                                         padding: 13px 16px 10px 44px;
                                         /* text-align: right; */
                                         position: relative;
-                                        box-shadow: 0px 2px 2px 2px rgba(0, 0, 0, 0.1);
+                                        box-shadow: 0px 4px 11px 0px rgba(0, 0, 0, 0.13);
                                         cursor: pointer;
                                         text-transform: uppercase;
                                         width: 110px;
@@ -491,7 +532,7 @@
                         }
                     }
 
-                    .no-result{
+                    .no-result {
                         display: block;
                         padding: 40px;
                         text-align: center;
@@ -508,7 +549,7 @@
                     .tracing-details {
                         width: 45%;
                         position: absolute;
-                        top: 40px;
+                        top: 50px;
                         bottom: 0;
                         left: 15%;
                         overflow-y: auto;
@@ -701,7 +742,7 @@
                     }
 
                     .tracing-nav {
-                        width: 20%;    
+                        width: 20%;
                         height: auto;
                         max-height: 250px;
                         position: absolute;
@@ -713,22 +754,21 @@
                         &::-webkit-scrollbar {
                             width: 2px;
                         }
-            
+
                         /* Track */
                         &::-webkit-scrollbar-track {
                             background: #f1f1f1;
                         }
-            
+
                         /* Handle */
                         &::-webkit-scrollbar-thumb {
                             background: #888;
                         }
-            
+
                         /* Handle on hover */
                         &::-webkit-scrollbar-thumb:hover {
                             background: #555;
                         }
-            
 
                         .nav-item {
                             padding: 10px 20px;
@@ -758,4 +798,3 @@
         opacity: 1;
     }
 }
-
