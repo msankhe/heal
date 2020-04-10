@@ -57,6 +57,7 @@ class Reports extends React.Component<IProps, IState> {
         this.searchCallback = this.searchCallback.bind(this);
         this.searchUsers = this.searchUsers.bind(this);
         this.onSearch = this.onSearch.bind(this);
+        this.showReportsView = this.showReportsView.bind(this);
     }
 
     onSearch(event: React.ChangeEvent<HTMLInputElement>) {
@@ -89,6 +90,10 @@ class Reports extends React.Component<IProps, IState> {
                 console.log(err);
                 throw err;
             });
+    }
+
+    showReportsView() {
+        this.setState({selectedReport: null});
     }
 
     renderReports() {
@@ -132,7 +137,7 @@ class Reports extends React.Component<IProps, IState> {
 
         switch (this.state.selectedReport) {
             case "contact-tracking":
-                content = <ContactTracing items={this.state.searchResult} onSearch={this.searchCallback} searchText={this.state.searchText} apiUrl={this.props.apiUrl} apiKey={this.props.apiKey} />;
+                content = <ContactTracing items={this.state.searchResult} onSearch={this.searchCallback} searchText={this.state.searchText} apiUrl={this.props.apiUrl} apiKey={this.props.apiKey} goBack={this.showReportsView} />;
                 break;
 
             default:
@@ -147,7 +152,7 @@ class Reports extends React.Component<IProps, IState> {
                         <div className="last-updated">
                             {
                                 this.state.searchText.length > 0 ?
-                            <><i>Showing Results for&nbsp;&nbsp;</i> <span>"{this.state.searchText}"</span></>
+                                    <><i>Showing Results for&nbsp;&nbsp;</i> <span>"{this.state.searchText}"</span></>
                                     :
                                     ""
                             }
@@ -162,9 +167,6 @@ class Reports extends React.Component<IProps, IState> {
                     </div>
 
                     <div className="body">
-                        <div className={`back-button-container ${this.state.selectedReport == null ? "hide" : ""}`}>
-                            <div className="back-button" onClick={() => this.onSelectReport(null)}>Reports Home</div>
-                        </div>
 
                         {content}
 

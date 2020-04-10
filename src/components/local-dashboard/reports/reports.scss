@@ -500,8 +500,7 @@
                     .tracing-details {
                         width: 45%;
                         position: absolute;
-                        /* overflow: auto; */
-                        top: 0;
+                        top: 40px;
                         bottom: 0;
                         left: 15%;
                         overflow-y: auto;
@@ -694,8 +693,9 @@
                     }
 
                     .tracing-nav {
-                        width: 20%;
-                        height: 250px;
+                        width: 20%;    
+                        height: auto;
+                        max-height: 250px;
                         position: absolute;
                         top: 50%;
                         right: 15%;

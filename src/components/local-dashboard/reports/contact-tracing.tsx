@@ -32,7 +32,8 @@ interface IProps {
     apiKey: string,
     onSearch: any,
     items: IEmployeeDetails[],
-    searchText: string
+    searchText: string,
+    goBack: any
 }
 
 interface IState {
@@ -44,7 +45,8 @@ interface IState {
 interface ISearchResultProps {
     apiUrl: string,
     apiKey: string,
-    items: IEmployeeDetails[]
+    items: IEmployeeDetails[],
+    goBack: any
 }
 
 interface ITracing {
@@ -135,11 +137,16 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
     }
 
     renderSearchResult() {
-        return <div className="search-result-container">
-            {
-                this.props.items.map((item, key) => this.renderItems(item, key))
-            }
-        </div>;
+        return <>
+            <div className={`back-button-container`}>
+                <div className="back-button" onClick={() => this.props.goBack()}>Back to search</div>
+            </div>
+            <div className="search-result-container">
+                {
+                    this.props.items.map((item, key) => this.renderItems(item, key))
+                }
+            </div>
+        </>;
     }
 
 
@@ -210,6 +217,9 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
 
     renderTracing() {
         return <>
+            <div className={`back-button-container`}>
+                <div className="back-button" onClick={() => this.setState({selected: null})}>Back to search results</div>
+            </div>
             <div className="tracing-container">
                 <div className="tracing-details">
 
@@ -255,6 +265,7 @@ class ContactTracing extends React.Component<IProps, IState> {
         }
 
         this.onClickSearchbutton = this.onClickSearchbutton.bind(this);
+        this.showSearchView = this.showSearchView.bind(this);
 
     }
 
@@ -268,6 +279,10 @@ class ContactTracing extends React.Component<IProps, IState> {
         this.props.onSearch(tempSearchText);
     }
 
+    showSearchView() {
+        this.setState({searchText: ""});
+    }
+
     render() {
 
         return (
@@ -275,14 +290,17 @@ class ContactTracing extends React.Component<IProps, IState> {
 
                 {
                     this.state.searchText.length > 0 ?
-                        <SearchResult items={this.props.items} apiUrl={this.props.apiUrl} apiKey={this.props.apiKey} />
+                        <SearchResult items={this.props.items} apiUrl={this.props.apiUrl} apiKey={this.props.apiKey} goBack={this.showSearchView} />
                         :
-
-                        <div className="search-box">
-                            <input type="text" name="search" className="search" placeholder="search by name or email" value={this.state.tempSearchText} onChange={(event) => { this.setState({ tempSearchText: event.target.value }) }} />
-                            <span className={`search-button`} onClick={this.onClickSearchbutton} ></span>
-                        </div>
-
+                        <>
+                            <div className={`back-button-container`}>
+                                <div className="back-button" onClick={() => this.props.goBack()}>Reports Home</div>
+                            </div>
+                            <div className="search-box">
+                                <input type="text" name="search" className="search" placeholder="search by name or email" value={this.state.tempSearchText} onChange={(event) => { this.setState({ tempSearchText: event.target.value }) }} />
+                                <span className={`search-button`} onClick={this.onClickSearchbutton} ></span>
+                            </div>
+                        </>
                 }
             </div>
         );
