@@ -266,6 +266,7 @@ class ContactTracing extends React.Component<IProps, IState> {
 
         this.onClickSearchbutton = this.onClickSearchbutton.bind(this);
         this.showSearchView = this.showSearchView.bind(this);
+        this.onKeyPress = this.onKeyPress.bind(this);
 
     }
 
@@ -277,6 +278,12 @@ class ContactTracing extends React.Component<IProps, IState> {
         });
 
         this.props.onSearch(tempSearchText);
+    }
+
+    onKeyPress(event: React.KeyboardEvent) {
+        if(event.keyCode == 13) {
+            this.onClickSearchbutton();
+        }
     }
 
     showSearchView() {
@@ -297,7 +304,7 @@ class ContactTracing extends React.Component<IProps, IState> {
                                 <div className="back-button" onClick={() => this.props.goBack()}>Reports Home</div>
                             </div>
                             <div className="search-box">
-                                <input type="text" name="search" className="search" placeholder="search by name or email" value={this.state.tempSearchText} onChange={(event) => { this.setState({ tempSearchText: event.target.value }) }} />
+                                <input type="text" name="search" className="search" placeholder="search by name or email" value={this.state.tempSearchText} onChange={(event) => { this.setState({ tempSearchText: event.target.value }) }} onKeyDown={(event) => this.onKeyPress(event)} />
                                 <span className={`search-button`} onClick={this.onClickSearchbutton} ></span>
                             </div>
                         </>
