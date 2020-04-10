@@ -143,7 +143,10 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
             </div>
             <div className="search-result-container">
                 {
+                    this.props.items.length > 0 ?
                     this.props.items.map((item, key) => this.renderItems(item, key))
+                    :
+                    <div className="no-result">No record found</div>
                 }
             </div>
         </>;
@@ -218,7 +221,7 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
     renderTracing() {
         return <>
             <div className={`back-button-container`}>
-                <div className="back-button" onClick={() => this.setState({selected: null})}>Back to search results</div>
+                <div className="back-button" onClick={() => this.setState({ selected: null })}>Back to search results</div>
             </div>
             <div className="tracing-container">
                 <div className="tracing-details">
@@ -281,13 +284,13 @@ class ContactTracing extends React.Component<IProps, IState> {
     }
 
     onKeyPress(event: React.KeyboardEvent) {
-        if(event.keyCode == 13) {
+        if (event.keyCode == 13) {
             this.onClickSearchbutton();
         }
     }
 
     showSearchView() {
-        this.setState({searchText: ""});
+        this.setState({ searchText: "" });
     }
 
     render() {

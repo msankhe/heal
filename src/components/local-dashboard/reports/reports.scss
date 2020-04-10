@@ -487,6 +487,13 @@
                             }
                         }
                     }
+
+                    .no-result{
+                        display: block;
+                        padding: 40px;
+                        text-align: center;
+                        font-weight: 700;
+                    }
                 }
 
                 .tracing-container {
