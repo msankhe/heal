@@ -295,6 +295,8 @@
                         border-radius: 10px;
                         width: 75%;
                         margin: 4px auto;
+                        //animation: fadeIn ease-in-out 0.8s;
+                        transition: ease-in-out 0.8s;
 
                         .column {
                             padding: 20px 10px;
@@ -417,6 +419,7 @@
                         }
 
                         &:hover {
+                            animation: fadeIn ease-in-out 0.8s;
                             .column {
                                 padding: 30px 10px;
 
@@ -746,3 +749,13 @@
         }
     }
 }
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+

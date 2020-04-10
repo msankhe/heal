@@ -46,7 +46,8 @@ interface ISearchResultProps {
     apiUrl: string,
     apiKey: string,
     items: IEmployeeDetails[],
-    goBack: any
+    goBack: any,
+    searchText: string
 }
 
 interface ITracing {
@@ -69,6 +70,12 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
         this.state = {
             selected: null,
             tracingDetails: []
+        }
+    }
+
+    componentDidUpdate(prevProps: ISearchResultProps) {
+        if (prevProps.searchText.length != this.props.searchText.length) {
+            this.setState({ selected: null });
         }
     }
 
@@ -144,9 +151,9 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
             <div className="search-result-container">
                 {
                     this.props.items.length > 0 ?
-                    this.props.items.map((item, key) => this.renderItems(item, key))
-                    :
-                    <div className="no-result">No record found</div>
+                        this.props.items.map((item, key) => this.renderItems(item, key))
+                        :
+                        <div className="no-result">No record found</div>
                 }
             </div>
         </>;
@@ -291,6 +298,7 @@ class ContactTracing extends React.Component<IProps, IState> {
 
     showSearchView() {
         this.setState({ searchText: "" });
+        this.props.onSearch("");
     }
 
     render() {
@@ -299,8 +307,8 @@ class ContactTracing extends React.Component<IProps, IState> {
             <div className="contact-tracing-block">
 
                 {
-                    this.state.searchText.length > 0 ?
-                        <SearchResult items={this.props.items} apiUrl={this.props.apiUrl} apiKey={this.props.apiKey} goBack={this.showSearchView} />
+                    this.state.searchText.length > 0 || this.props.searchText.length > 0 ?
+                        <SearchResult searchText={this.props.searchText} items={this.props.items} apiUrl={this.props.apiUrl} apiKey={this.props.apiKey} goBack={this.showSearchView} />
                         :
                         <>
                             <div className={`back-button-container`}>
