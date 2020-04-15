@@ -116,6 +116,10 @@ html {
     }
 
     .toolbar {
+        position: absolute;
+        top: 90px;
+        right: 0px;
+
         flex-grow: 0;
         height: $toolbarHeight;
         display: flex;
@@ -1051,6 +1055,18 @@ html {
                         &.warning {
                             background-color: rgba(255, 138, 15, 0.08);
                         }
+
+                        // &.check-out:nth-child(1){
+                        //         border-bottom: 4px solid #ededed;
+                        //         border-top: 4px solid #ededed;
+                        //     }
+
+                        // &.arriving {
+                        //     &:nth-child(1) {
+                        //         border-bottom: 4px solid red;
+                        //         border-top: 4px solid red;
+                        //     }
+                        // }
                     }
 
                     &:hover {

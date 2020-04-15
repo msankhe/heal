@@ -312,7 +312,7 @@ class ContactTracing extends React.Component<IProps, IState> {
             <div className="contact-tracing-block">
 
                 {
-                    this.state.searchText.length > 0 || this.props.searchText.length > 0 ?
+                    this.props.searchText.length > 0 ?
                         <SearchResult searchText={this.props.searchText} items={this.props.items} apiUrl={this.props.apiUrl} apiKey={this.props.apiKey} goBack={this.showSearchView} />
                         :
                         <>
