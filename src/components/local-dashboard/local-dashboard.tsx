@@ -322,6 +322,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         this.updateTempUnit = this.updateTempUnit.bind(this);
         this.onSearch = this.onSearch.bind(this);
         this.closeMessage = this.closeMessage.bind(this);
+        this.toggleReportsView = this.toggleReportsView.bind(this);
     }
 
     componentDidMount() {
@@ -996,6 +997,15 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         this.setState({ newItems: updatedItems });
     }
 
+    toggleReportsView() {
+        if (this.state.view == "all") {
+        this.setState({view: "reports"});
+        }
+        else {
+            this.setState({view: "all"})
+        }
+    }
+
     render() {
 
         var dialog = <></>;
@@ -1017,7 +1027,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         return (<>
             <div className='toolbar'>
 
-                <div className={`toolbar-button ${this.state.view == "reports" ? "selected" : ""} `} onClick={() => this.setState({ view: 'reports' })} >
+                <div className={`toolbar-button ${this.state.view == "reports" ? "selected" : ""} `} onClick={this.toggleReportsView} >
                     Reports <span className="arrow"></span>
                 </div>
 
@@ -1025,9 +1035,9 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     Precautions <span className="arrow"></span>
                 </div> */}
 
-                <div className={`toolbar-button ${this.state.view == "all" ? "selected" : ""} `} onClick={() => this.setState({ view: 'all' })} >
+                {/* <div className={`toolbar-button ${this.state.view == "all" ? "selected" : ""} `} onClick={() => this.setState({ view: 'all' })} >
                     All <span className="arrow"></span>
-                </div>
+                </div> */}
 
             </div>
 
