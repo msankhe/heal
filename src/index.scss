@@ -1056,17 +1056,25 @@ html {
                             background-color: rgba(255, 138, 15, 0.08);
                         }
 
-                        // &.check-out:nth-child(1){
-                        //         border-bottom: 4px solid #ededed;
-                        //         border-top: 4px solid #ededed;
-                        //     }
+                        @mixin listBorder {
+                            border-top: 6px solid #ededed;
+                        }
+                        &.check-in {
+                            & + .check-out {
+                                @include listBorder();
+                            }
+    
+                            & + .arriving {
+                                @include listBorder();
+                            }
+                        }
 
-                        // &.arriving {
-                        //     &:nth-child(1) {
-                        //         border-bottom: 4px solid red;
-                        //         border-top: 4px solid red;
-                        //     }
-                        // }
+                        &.check-out {
+                            & + .arriving {
+                                @include listBorder();
+                            }
+                        }
+
                     }
 
                     &:hover {
@@ -1889,7 +1897,7 @@ html {
 
     .root {
         position: relative;
-    height: 90%;
+        height: 90%;
 
         .header {
             height: 100px;
@@ -2478,5 +2486,4 @@ html {
     }
 }
 
-
-@import './components/local-dashboard/reports/reports.scss';
+@import "./components/local-dashboard/reports/reports.scss";

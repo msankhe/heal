@@ -120,10 +120,10 @@ class ListWidget extends React.Component<IListWidgetProps, IListWidgetState> {
             cls += " warning";
         }
 
-        return <div key={key} className={`item local-list ${cls} `} id={`emp-${item._id}`}>
+        return <div key={key} className={`item local-list ${cls} ${item.status == null || item.status == "" ? "arriving" : item.status} `} id={`emp-${item._id}`}>
 
             <div className='c status' onClick={() => this.props.onSelectItem(item)}>
-                <div className={`label ${item.status == null ? "" : item.status} `}></div>
+                <div className={`label ${item.status == null || item.status == "" ? "arriving" : item.status} `}></div>
                 <div className='value'>{item.status == null ? "Expected" : checkInStatusText(item.status)}</div>
             </div>
             <div className='c temperature' onClick={() => this.props.onSelectItem(item)}>
