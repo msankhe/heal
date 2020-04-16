@@ -554,11 +554,11 @@
                     justify-content: center;
 
                     .tracing-details {
-                        width: 45%;
+                        width: 35%;
                         position: absolute;
                         top: 50px;
                         bottom: 0;
-                        left: 15%;
+                        left: 20%;
                         overflow-y: auto;
                         overflow-x: hidden;
 
@@ -763,7 +763,7 @@
                         max-height: 250px;
                         position: absolute;
                         top: 50%;
-                        right: 15%;
+                        right: 20%;
                         overflow: auto;
                         transform: translateY(-50%);
 
@@ -795,7 +795,7 @@
                             text-decoration: none;
                             color: #424242;
 
-                            &:hover {
+                            &:hover, &.active {
                                 background-color: #efefef;
                                 border-radius: 30px;
                                 color: purple;

@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+declare const window: any;
+
 interface IEmployeeDetails {
     _id: string,
     id: string,
@@ -169,7 +171,7 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
                     <span className="email">{employ.email}</span>
                     <span className="tel">{employ.contactnumber}</span>
 
-                    <span className="star"></span>
+                    {/* <span className="star"></span> */}
                 </div>
             </div>
         );
@@ -178,7 +180,7 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
     renderTracingDetails(item: ITracing, key: number) {
 
         let header = <div className="header">
-            <span className="star"></span>
+            {/* <span className="star"></span> */}
         </div>;
 
         if (key == 0) {
@@ -187,7 +189,7 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
                     <span className="email">{this.state.selected.email}</span>
                     <span className="tel">{this.state.selected.contactnumber}</span>
 
-                    <span className="star"></span>
+                    {/* <span className="star"></span> */}
                 </div>;
 
                 <div className="sub-header">
@@ -225,13 +227,17 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
         );
     }
 
+    onScroll() {
+        console.log("scroll");
+    }
+
     renderTracing() {
         return <>
             <div className={`back-button-container`}>
                 <div className="back-button" onClick={() => this.setState({ selected: null })}>Back to search results</div>
             </div>
             <div className="tracing-container">
-                <div className="tracing-details">
+                <div className="tracing-details" onScroll={this.onScroll}>
 
                     {
                         this.state.tracingDetails.map((item, key) => this.renderTracingDetails(item, key))
@@ -278,6 +284,15 @@ class ContactTracing extends React.Component<IProps, IState> {
         this.showSearchView = this.showSearchView.bind(this);
         this.onKeyPress = this.onKeyPress.bind(this);
 
+    }
+
+    componentDidMount() {
+        window.addEventListener("scroll", this.handleScroll, true);
+    }
+
+    handleScroll () {
+        //console.log("scrolled");
+        //console.log(window.scrollY);
     }
 
     onClickSearchbutton() {
