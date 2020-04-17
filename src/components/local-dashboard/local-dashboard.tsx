@@ -451,7 +451,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
     renderScanningForm() {
         return <>
-            <div className='dialog-sheet' onClick={this.closeScanningForm} />
+            {/* <div className='dialog-sheet' onClick={this.closeScanningForm} />
             <div className='dialog scann-form'>
                 <div className='header'>
 
@@ -513,7 +513,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     </div>
 
                 </div>
-            </div>
+            </div> */}
 
         </>;
     }
@@ -539,8 +539,8 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                             <input type="text" name="temperature" className={`input ${this.state.selected.temperature != null && this.state.selected.temperature.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.temperature} placeholder="Ex: 23" onChange={(event) => this.updateEditFormData(event, 'temperature')} />
 
                             <span className="temp-units">
-                                <span className={`temp-label ${this.state.selected.tempunit == "celsius" ? "selected" : ""}`} onClick={() => this.updateTempUnit("celsius")}>&#8451;</span>
-                                <span className={`temp-label ${this.state.selected.tempunit == "fahrenheit" ? "selected" : ""} `} onClick={() => this.updateTempUnit("fahrenheit")}>&#8457;</span>
+                                <span className={`temp-label ${this.state.selected.tempunit == "celsius" ? "selected" : ""}`} onClick={() => this.updateTempUnit("celsius")}><span>&#8451;</span></span>
+                                <span className={`temp-label ${this.state.selected.tempunit == "fahrenheit" ? "selected" : ""} `} onClick={() => this.updateTempUnit("fahrenheit")}><span>&#8457;</span></span>
                             </span>
                         </div>
 
@@ -582,7 +582,9 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
                         <div className="form-group">
                             <label className="label full-width" >Capture Image </label>
-                            <div className="placeholder"></div>
+                            <div className="placeholder">
+                                <img src="images/camera.png" alt="camera"/>
+                            </div>
                             <button className={`take-photo`}><span className={`icon`}></span> Take Photo </button>
                         </div>
 
