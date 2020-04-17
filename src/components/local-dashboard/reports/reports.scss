@@ -795,7 +795,13 @@
                             text-decoration: none;
                             color: #424242;
 
-                            &:hover, &.active {
+                            &:hover{
+                                background-color: #7000CB;
+                                border-radius: 30px;
+                                color: white;
+                            }
+
+                            &.active {
                                 background-color: #efefef;
                                 border-radius: 30px;
                                 color: purple;
