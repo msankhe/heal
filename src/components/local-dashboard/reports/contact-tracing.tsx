@@ -73,12 +73,16 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
             selected: null,
             tracingDetails: []
         }
+
+        this.onScroll = this.onScroll.bind(this);
     }
 
     componentDidUpdate(prevProps: ISearchResultProps) {
         if (prevProps.searchText.length != this.props.searchText.length) {
             this.setState({ selected: null });
         }
+
+        this.onScroll();
     }
 
     getTracingDetails(item: IEmployeeDetails) {
@@ -221,15 +225,45 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
     renderTracingNavItem(item: ITracing, key: number) {
 
         return (
-            <a className="nav-item" key={key} href={`#tracing-block-${key}`} >
+            <a className="nav-item" id={`nav-item-${key}`} key={key} href={`#tracing-block-${key}`} >
                 {item.time} {item.location}
             </a>
         );
     }
 
     onScroll() {
-        console.log("scroll");
+
+        for (let i = 0; i < this.state.tracingDetails.length; i++) {
+            let element = document.getElementById("tracing-block-" + i);
+            let inView = this.isInView(element);
+
+            console.log("tracing-block-" + i + " :: " + inView);
+
+
+            if (inView) {
+                // remove active class
+                let navItems = document.getElementsByClassName("nav-item");
+                for (let j = 0; j < navItems.length; j++) {
+                    navItems[j].classList.remove("active");
+                }
+
+                // add active class
+                document.getElementById("nav-item-" + i).classList.add("active");
+                break;
+            }
+        }
     }
+
+    private isInView = (element: HTMLElement) => {
+
+        if (!element) {
+            return false;
+        }
+        const offset = 20;
+        const rect = element.getBoundingClientRect();
+
+        return rect.top >= 0 - offset && rect.bottom <= window.innerHeight + offset;
+    };
 
     renderTracing() {
         return <>
@@ -237,7 +271,7 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
                 <div className="back-button" onClick={() => this.setState({ selected: null })}>Back to search results</div>
             </div>
             <div className="tracing-container">
-                <div className="tracing-details" onScroll={this.onScroll}>
+                <div className="tracing-details" id="tracing-details" onScroll={this.onScroll}>
 
                     {
                         this.state.tracingDetails.map((item, key) => this.renderTracingDetails(item, key))
@@ -290,7 +324,7 @@ class ContactTracing extends React.Component<IProps, IState> {
         window.addEventListener("scroll", this.handleScroll, true);
     }
 
-    handleScroll () {
+    handleScroll() {
         //console.log("scrolled");
         //console.log(window.scrollY);
     }
@@ -319,7 +353,7 @@ class ContactTracing extends React.Component<IProps, IState> {
     render() {
 
         let searchBoxClass = "search-box";
-        if(this.state.searchText.length > 0 || this.state.tempSearchText.length > 0) {
+        if (this.state.searchText.length > 0 || this.state.tempSearchText.length > 0) {
             searchBoxClass += " filled";
         }
 
