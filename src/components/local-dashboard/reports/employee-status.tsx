@@ -128,7 +128,7 @@ export class EmployeeStatus extends React.Component<IEmployeeStatusProps, IEmplo
         let users = this.state.users;
         return <>
         <div className={`back-button-container`}>
-            <div className="back-button" onClick={() => this.props.goBack()}>Back</div>
+            <div className="back-button" onClick={() => this.setState({mode:''})}>Back</div>
         </div>
         <div className="e-users search-result-container">
             {
