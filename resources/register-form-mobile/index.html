@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <link rel="icon" href="https://static.iviva.com/favicon.ico" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+    <title>Check-In</title>
+
+    <link href="https://static.iviva.com/v2/all.css" type="text/css" rel="stylesheet">
+
+    <link rel="stylesheet" href="datepicker/css/pikaday.css">
+    <link rel="stylesheet" href="datepicker/css/triangle.css">
+
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+
+    <div class="container">
+        <div class="header"></div>
+        <div class='form-done invisible'>
+            Submitted. Thanks!
+        </div>
+        <div class="form-container">
+            <h1 class="title">Register Visit</h1>
+
+            <div class="form">
+
+                <div class="form-group temp-group" style='display:none;'>
+                    <label for="temperature" >Temperature</label>
+                    <input class="input" type="text" name="temperature" id="temperature" value="" placeholder="In &#8451;" onkeyup="validateInput(this)" >
+                </div>
+
+                <div class="form-group">
+                    <label for="name" >Name</label>
+                    <input class="input" type="text" name="name" id="name" value="" placeholder="Example: Jane Doe" onkeyup="validateInput(this)" >
+                </div>
+
+                <div class="form-group">
+                    <label for="id" >Id</label>
+                    <input class="input" type="text" name="id" id="id" value="" placeholder="Example: VCF2019101" onkeyup="validateInput(this)" >
+                </div>
+
+                <div class="form-group">
+                    <label for="location" >Location</label>
+                    <input class="input" type="text" name="location" id="location" value="" placeholder="Ex: Loby" onkeyup="validateInput(this)" >
+                </div>
+
+                <div class="form-group">
+                    <label for="countriesVisited" >Countries Visited</label>
+                    <input class="input" type="text" name="countriesVisited" id="countriesVisited" value="" placeholder="Ex: Singapore, Australia" onkeyup="validateInput(this)" >
+                </div>
+
+                <div class="form-group">
+                    <label for="email" >Email</label>
+                    <input class="input" type="text" name="email" id="email" value="" placeholder="Ex: abc@abc.com" onkeyup="validateInput(this)" >
+                </div>
+
+                <div class="form-group">
+                    <label for="contact" >Contact Number</label>
+                    <input class="input" type="text" name="contact" id="contact" value="" placeholder="Ex: +1(504)43227645" onkeyup="validateInput(this)" >
+                </div>
+
+                <div class="form-group">
+                    <label for="expected" >Expected Arrival</label>
+                    <input class="input" type="text" name="expected" id="expected" value="" onkeyup="validateInput(this)" >
+                </div>
+
+
+                <div class="form-group" id="feedback">
+
+                </div>
+
+                <div class="button-container">
+                    <button type="button" class="submit-btn" name="submit" id="submit">submit</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
+    <script src="datepicker/pikaday.js"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>
