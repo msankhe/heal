@@ -32,23 +32,20 @@ interface IEmployeeDetails {
 interface IProps {
     apiUrl: string,
     apiKey: string,
-    onSearch: any,
-    items: IEmployeeDetails[],
-    searchText: string,
-    goBack: ()=>void;
+    goBack: () => void;
 }
 
 interface IState {
     searchText: string,
     tempSearchText: string
-
+    searchResult: IEmployeeDetails[]
 }
 
 interface ISearchResultProps {
     apiUrl: string,
     apiKey: string,
     items: IEmployeeDetails[],
-    goBack: ()=>void,
+    goBack: () => void,
     searchText: string
 }
 
@@ -311,33 +308,18 @@ class ContactTracing extends React.Component<IProps, IState> {
 
         this.state = {
             searchText: "",
-            tempSearchText: ""
+            tempSearchText: "",
+            searchResult: []
         }
 
         this.onClickSearchbutton = this.onClickSearchbutton.bind(this);
         this.showSearchView = this.showSearchView.bind(this);
         this.onKeyPress = this.onKeyPress.bind(this);
+        this.searchUsers = this.searchUsers.bind(this);
 
     }
 
-    componentDidMount() {
-        window.addEventListener("scroll", this.handleScroll, true);
-    }
 
-    handleScroll() {
-        //console.log("scrolled");
-        //console.log(window.scrollY);
-    }
-
-    onClickSearchbutton() {
-        let tempSearchText = this.state.tempSearchText;
-
-        this.setState({
-            searchText: tempSearchText
-        });
-
-        this.props.onSearch(tempSearchText);
-    }
 
     onKeyPress(event: React.KeyboardEvent) {
         if (event.keyCode == 13) {
@@ -345,9 +327,36 @@ class ContactTracing extends React.Component<IProps, IState> {
         }
     }
 
+    onClickSearchbutton() {
+        let tempSearchText = this.state.tempSearchText;
+        this.setState({ searchText: tempSearchText }, this.searchUsers);
+    }
+
+    searchUsers() {
+
+        let _data = JSON.stringify({
+            searchtext: this.state.searchText
+        });
+        fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/search", {
+            method: 'POST',
+            headers: {
+                'Authorization': 'APIKEY ' + this.props.apiKey,
+                'Content-Type': 'application/json'
+            },
+            body: _data
+        })
+            .then(res => res.json())
+            .then(res => {
+                this.setState({ searchResult: res });
+            })
+            .catch(err => {
+                console.log(err);
+                throw err;
+            });
+    }
+
     showSearchView() {
-        this.setState({ searchText: "" });
-        this.props.onSearch("");
+        this.setState({ searchText: "" }, this.searchUsers);
     }
 
     render() {
@@ -357,23 +366,70 @@ class ContactTracing extends React.Component<IProps, IState> {
             searchBoxClass += " filled";
         }
 
-        return (
-            <div className="contact-tracing-block">
+        let Items: IEmployeeDetails[] = [];
 
-                {
-                    this.props.searchText.length > 0 ?
-                        <SearchResult searchText={this.props.searchText} items={this.props.items} apiUrl={this.props.apiUrl} apiKey={this.props.apiKey} goBack={this.showSearchView} />
-                        :
-                        <>
-                            <div className={`back-button-container`}>
-                                <div className="back-button" onClick={() => this.props.goBack()}>Reports Home</div>
-                            </div>
+        return (
+
+            <div className="report-section">
+                <div className="report-container">
+
+                    <div className="header">
+                        <div className="title"><span className={`arrow`}></span>Contact Tracking</div>
+
+                        <div className="last-updated">
+                            {
+                                this.state.searchText.length > 0 ?
+                                    <><i>Showing Results for&nbsp;&nbsp;</i> <span>"{this.state.searchText}"</span></>
+                                    :
+                                    ""
+                            }
+
+                        </div>
+
+                        <div className="filters">
                             <div className={searchBoxClass}>
-                                <input type="text" name="search" className="search" placeholder="search by name or email" value={this.state.tempSearchText} onChange={(event) => { this.setState({ tempSearchText: event.target.value }) }} onKeyDown={(event) => this.onKeyPress(event)} />
-                                <span className={`search-button`} onClick={this.onClickSearchbutton} ></span>
+                                <input type="text" className={`search `} placeholder="search by name or email"
+                                    value={this.state.searchText}
+                                    onChange={event => { this.setState({ searchText: event.target.value }, this.searchUsers) }}
+                                />
+                                <span className="close-button" onClick={() => this.setState({ searchText: "" }, this.searchUsers)}></span>
                             </div>
-                        </>
-                }
+                        </div>
+
+                    </div>
+
+                    <div className="body">
+
+                        <div className="contact-tracing-block">
+
+                            {
+                                this.state.searchText.length > 0 ?
+                                    <SearchResult
+                                        searchText={this.state.searchText}
+                                        items={this.state.searchResult}
+                                        apiUrl={this.props.apiUrl}
+                                        apiKey={this.props.apiKey}
+                                        goBack={this.showSearchView}
+                                    />
+                                    :
+                                    <>
+                                        <div className={`back-button-container`}>
+                                            <div className="back-button" onClick={() => this.props.goBack()}>Reports Home</div>
+                                        </div>
+                                        <div className={searchBoxClass}>
+                                            <input type="text" name="search" className="search" placeholder="search by name or email"
+                                                value={this.state.tempSearchText}
+                                                onChange={(event) => { this.setState({ tempSearchText: event.target.value }) }}
+                                                onKeyDown={(event) => this.onKeyPress(event)}
+                                            />
+                                            <span className={`search-button`} onClick={this.onClickSearchbutton} ></span>
+                                        </div>
+                                    </>
+                            }
+                        </div>
+                    </div>
+
+                </div>
             </div>
         );
     }

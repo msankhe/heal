@@ -11,10 +11,7 @@ function statusName(status:string) {
 interface IEmployeeStatusProps {
     apiUrl: string,
     apiKey: string,
-    onSearch: any,
-    items: any[],
-    searchText: string,
-    goBack: ()=>void;
+    goBack: () => void;
 }
 
 interface IEmployee {
@@ -33,8 +30,8 @@ interface IEmployeeStatusState {
     users:IEmployee[];
 
 }
-export class EmployeeStatus extends React.Component<IEmployeeStatusProps,IEmployeeStatusState> {
-    constructor(props:IEmployeeStatusProps) {
+export class EmployeeStatus extends React.Component<IEmployeeStatusProps, IEmployeeStatusState> {
+    constructor(props: IEmployeeStatusProps) {
         super(props);
         this.state = {
             searchText:'',
@@ -50,24 +47,24 @@ export class EmployeeStatus extends React.Component<IEmployeeStatusProps,IEmploy
     }
 
     componentDidMount() {
-        this.loadStats().then(_=>{}).catch(e => console.error(e));
+        this.loadStats().then(_ => { }).catch(e => console.error(e));
     }
-    
-    async setStateAsync(state:any) {
-        return new Promise((ok,nope)=>{
-            this.setState(state,()=>ok());
+
+    async setStateAsync(state: any) {
+        return new Promise((ok, nope) => {
+            this.setState(state, () => ok());
         });
     }
     async loadStats() {
-        await this.setStateAsync({loadingStats:true});
-        let response= await fetch(this.props.apiUrl + '/Lucy/UserStatus/stats',{
-            method:'GET',
-            headers:{
-                'Authorization':`APIKEY ${this.props.apiKey}`
+        await this.setStateAsync({ loadingStats: true });
+        let response = await fetch(this.props.apiUrl + '/Lucy/UserStatus/stats', {
+            method: 'GET',
+            headers: {
+                'Authorization': `APIKEY ${this.props.apiKey}`
             }
         });
         let json = await response.json();
-        this.setState({loadingStats:false,officeCount:json.office,remoteCount:json.remote,leaveCount:json.leave});
+        this.setState({ loadingStats: false, officeCount: json.office, remoteCount: json.remote, leaveCount: json.leave });
     }
     async loadUsers(mode:'office'|'remote'|'leave') {
         await this.setStateAsync({loadingUsers:true});
@@ -88,35 +85,41 @@ export class EmployeeStatus extends React.Component<IEmployeeStatusProps,IEmploy
         });
     }
     renderStats() {
-        let leaveCount:string = this.state.leaveCount+'';
-        let officeCount:string = this.state.officeCount+'';
-        let remoteCount:string = this.state.remoteCount+'';
+        let leaveCount: string = this.state.leaveCount + '';
+        let officeCount: string = this.state.officeCount + '';
+        let remoteCount: string = this.state.remoteCount + '';
 
         if (this.state.loadingStats) {
             leaveCount = '...';
             remoteCount = '...';
             officeCount = '...';
         }
-        return <div className='e-stats'>
-            <div onClick={this.showUsers.bind(this,'office')} className='stat office'>
-                <div className='bg' />
-                <div className='title'>Office</div>
-                <div className='value'>{officeCount}</div>
+        return (<>
+            <div className={`back-button-container`}>
+                <div className="back-button" onClick={() => this.props.goBack()}>Reports Home</div>
             </div>
-            <div onClick={this.showUsers.bind(this,'remote')} className='stat remote'>
-                <div className='bg' />
-                <div className='title'>Remote</div>
-                <div className='value'>{remoteCount}</div>
+
+            <div className='e-stats'>
+                <div onClick={this.showUsers.bind(this, 'office')} className='stat office'>
+                    <div className='bg' />
+                    <div className='title'>Office</div>
+                    <div className='value'>{officeCount}</div>
+                </div>
+                <div onClick={this.showUsers.bind(this, 'remote')} className='stat remote'>
+                    <div className='bg' />
+                    <div className='title'>Remote</div>
+                    <div className='value'>{remoteCount}</div>
+                </div>
+                <div onClick={this.showUsers.bind(this, 'leave')} className='stat leave'>
+                    <div className='bg' />
+                    <div className='title'>Leave</div>
+                    <div className='value'>{leaveCount}</div>
+                </div>
             </div>
-            <div onClick={this.showUsers.bind(this,'leave')} className='stat leave'>
-                <div className='bg' />
-                <div className='title'>Leave</div>
-                <div className='value'>{leaveCount}</div>
-            </div>
-        </div>;
+        </>);
     }
     renderUser(user:IEmployee, key:number) {
-        return <div className='e-user' key={key}>
+        return <div className={'e-user ' + user.status} key={key}>
             <div className='title'>{user.name}</div>
             <div className='status'>{statusName(user.status)}</div>
         </div>;
@@ -125,9 +128,12 @@ export class EmployeeStatus extends React.Component<IEmployeeStatusProps,IEmploy
         let users = this.state.users;
         return <>
         <div className={`back-button-container`}>
-            <div className="back-button" onClick={() => this.props.goBack()}>Back to search</div>
+            <div className="back-button" onClick={() => this.props.goBack()}>Back</div>
         </div>
         <div className="e-users search-result-container">
+            {
+                this.state.loadingUsers?<div className='loading'>Loading</div>:null
+            }
             {
                 users.length > 0 ?
                     users.map((item, key) => this.renderUser(item, key))
@@ -139,9 +145,26 @@ export class EmployeeStatus extends React.Component<IEmployeeStatusProps,IEmploy
 
     }
     render() {
-        if (this.state.mode == '') {
-            return this.renderStats();
-        }
-        return this.renderFilteredUsers();
+
+        return (
+            <div className="report-section">
+                <div className="report-container">
+
+                    <div className="header">
+                        <div className="title"><span className={`arrow`}></span>Employee Status</div>
+                    </div>
+
+                    <div className="body">
+
+                        {
+                            this.state.mode == "" ? this.renderStats() : this.renderFilteredUsers()
+                        }
+
+                    </div>
+
+                </div>
+            </div>
+
+        );
     }
 }
