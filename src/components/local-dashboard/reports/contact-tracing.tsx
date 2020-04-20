@@ -35,7 +35,7 @@ interface IProps {
     onSearch: any,
     items: IEmployeeDetails[],
     searchText: string,
-    goBack: any
+    goBack: ()=>void;
 }
 
 interface IState {
@@ -48,7 +48,7 @@ interface ISearchResultProps {
     apiUrl: string,
     apiKey: string,
     items: IEmployeeDetails[],
-    goBack: any,
+    goBack: ()=>void,
     searchText: string
 }
 

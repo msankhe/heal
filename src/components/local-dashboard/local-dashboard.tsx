@@ -503,11 +503,11 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
                     <div className='qrcodes'>
                         <div className='code'>
-                            <img src='http://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/qrcodes/qr-lobby.png' />
+                            <img src='https://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/qrcodes/qr-lobby.png' />
                             <div className='caption'>Scan for Lobby Staff</div>
                         </div>
                         <div className='code'>
-                            <img src='http://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/qrcodes/qr-user.png' />
+                            <img src='https://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/qrcodes/qr-user.png' />
                             <div className='caption'>Scan for Users and Guests</div>
                         </div>
                     </div>
@@ -1114,17 +1114,17 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                                 <div className="header">
                                     <div className="closeButton" onClick={() => this.setState({ dialog: "" })}></div>
                                 </div>
-                                <img src="http://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/qrcodes/qr-lobby.png" alt="qr-code" className="qr-code-image" />
+                                <img src="https://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/qrcodes/qr-lobby.png" alt="qr-code" className="qr-code-image" />
 
                                 <p>Scan to start screening</p>
                                 <h3 onClick={() => this.setState({ dialog: 'scan-dialog' })}>new screening</h3>
                             </div>
-                            <img src="http://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/images/footer-hover.svg" alt="qr-code-button" className={`qr-code-handle`} />
+                            <img src="https://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/images/footer-hover.svg" alt="qr-code-button" className={`qr-code-handle`} />
                         </div>
 
                         :
                         <div className="scanning-button">
-                            <img src="http://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/images/footer-icon.svg" alt="qr-code-button" className={``} onClick={() => this.setState({ dialog: "scann" })} />
+                            <img src="https://s3.amazonaws.com/ecyber.public/lucyinthesky.io/heal/images/footer-icon.svg" alt="qr-code-button" className={``} onClick={() => this.setState({ dialog: "scann" })} />
                         </div>
                 }
             </div>
