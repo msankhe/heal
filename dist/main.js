@@ -20343,49 +20343,83 @@ class ContactTracing extends React.Component {
         super(props);
         this.state = {
             searchText: "",
-            tempSearchText: ""
+            tempSearchText: "",
+            searchResult: []
         };
         this.onClickSearchbutton = this.onClickSearchbutton.bind(this);
         this.showSearchView = this.showSearchView.bind(this);
         this.onKeyPress = this.onKeyPress.bind(this);
-    }
-    componentDidMount() {
-        window.addEventListener("scroll", this.handleScroll, true);
-    }
-    handleScroll() {
-        //console.log("scrolled");
-        //console.log(window.scrollY);
-    }
-    onClickSearchbutton() {
-        let tempSearchText = this.state.tempSearchText;
-        this.setState({
-            searchText: tempSearchText
-        });
-        this.props.onSearch(tempSearchText);
+        this.searchUsers = this.searchUsers.bind(this);
     }
     onKeyPress(event) {
         if (event.keyCode == 13) {
             this.onClickSearchbutton();
         }
     }
+    onClickSearchbutton() {
+        let tempSearchText = this.state.tempSearchText;
+        this.setState({ searchText: tempSearchText }, this.searchUsers);
+    }
+    searchUsers() {
+        let _data = JSON.stringify({
+            searchtext: this.state.searchText
+        });
+        fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/search", {
+            method: 'POST',
+            headers: {
+                'Authorization': 'APIKEY ' + this.props.apiKey,
+                'Content-Type': 'application/json'
+            },
+            body: _data
+        })
+            .then(res => res.json())
+            .then(res => {
+            this.setState({ searchResult: res });
+        })
+            .catch(err => {
+            console.log(err);
+            throw err;
+        });
+    }
     showSearchView() {
-        this.setState({ searchText: "" });
-        this.props.onSearch("");
+        this.setState({ searchText: "" }, this.searchUsers);
     }
     render() {
         let searchBoxClass = "search-box";
         if (this.state.searchText.length > 0 || this.state.tempSearchText.length > 0) {
             searchBoxClass += " filled";
         }
-        return (React.createElement("div", { className: "contact-tracing-block" }, this.props.searchText.length > 0 ?
-            React.createElement(SearchResult, { searchText: this.props.searchText, items: this.props.items, apiUrl: this.props.apiUrl, apiKey: this.props.apiKey, goBack: this.showSearchView })
-            :
-                React.createElement(React.Fragment, null,
-                    React.createElement("div", { className: `back-button-container` },
-                        React.createElement("div", { className: "back-button", onClick: () => this.props.goBack() }, "Reports Home")),
-                    React.createElement("div", { className: searchBoxClass },
-                        React.createElement("input", { type: "text", name: "search", className: "search", placeholder: "search by name or email", value: this.state.tempSearchText, onChange: (event) => { this.setState({ tempSearchText: event.target.value }); }, onKeyDown: (event) => this.onKeyPress(event) }),
-                        React.createElement("span", { className: `search-button`, onClick: this.onClickSearchbutton })))));
+        let Items = [];
+        return (React.createElement("div", { className: "report-section" },
+            React.createElement("div", { className: "report-container" },
+                React.createElement("div", { className: "header" },
+                    React.createElement("div", { className: "title" },
+                        React.createElement("span", { className: `arrow` }),
+                        "Contact Tracking"),
+                    React.createElement("div", { className: "last-updated" }, this.state.searchText.length > 0 ?
+                        React.createElement(React.Fragment, null,
+                            React.createElement("i", null, "Showing Results for\u00A0\u00A0"),
+                            " ",
+                            React.createElement("span", null,
+                                "\"",
+                                this.state.searchText,
+                                "\""))
+                        :
+                            ""),
+                    React.createElement("div", { className: "filters" },
+                        React.createElement("div", { className: searchBoxClass },
+                            React.createElement("input", { type: "text", className: `search `, placeholder: "search by name or email", value: this.state.searchText, onChange: event => { this.setState({ searchText: event.target.value }, this.searchUsers); } }),
+                            React.createElement("span", { className: "close-button", onClick: () => this.setState({ searchText: "" }, this.searchUsers) })))),
+                React.createElement("div", { className: "body" },
+                    React.createElement("div", { className: "contact-tracing-block" }, this.state.searchText.length > 0 ?
+                        React.createElement(SearchResult, { searchText: this.state.searchText, items: this.state.searchResult, apiUrl: this.props.apiUrl, apiKey: this.props.apiKey, goBack: this.showSearchView })
+                        :
+                            React.createElement(React.Fragment, null,
+                                React.createElement("div", { className: `back-button-container` },
+                                    React.createElement("div", { className: "back-button", onClick: () => this.props.goBack() }, "Reports Home")),
+                                React.createElement("div", { className: searchBoxClass },
+                                    React.createElement("input", { type: "text", name: "search", className: "search", placeholder: "search by name or email", value: this.state.tempSearchText, onChange: (event) => { this.setState({ tempSearchText: event.target.value }); }, onKeyDown: (event) => this.onKeyPress(event) }),
+                                    React.createElement("span", { className: `search-button`, onClick: this.onClickSearchbutton }))))))));
     }
 }
 exports.default = ContactTracing;
@@ -20458,28 +20492,34 @@ class EmployeeStatus extends React.Component {
             remoteCount = '...';
             officeCount = '...';
         }
-        return React.createElement("div", { className: 'e-stats' },
-            React.createElement("div", { onClick: this.loadStats.bind(this, 'office'), className: 'stat office' },
-                React.createElement("div", { className: 'bg' }),
-                React.createElement("div", { className: 'title' }, "Office"),
-                React.createElement("div", { className: 'value' }, officeCount)),
-            React.createElement("div", { onClick: this.loadStats.bind(this, 'remote'), className: 'stat remote' },
-                React.createElement("div", { className: 'bg' }),
-                React.createElement("div", { className: 'title' }, "Remote"),
-                React.createElement("div", { className: 'value' }, remoteCount)),
-            React.createElement("div", { onClick: this.loadStats.bind(this, 'leave'), className: 'stat leave' },
-                React.createElement("div", { className: 'bg' }),
-                React.createElement("div", { className: 'title' }, "Leave"),
-                React.createElement("div", { className: 'value' }, leaveCount)));
+        return (React.createElement(React.Fragment, null,
+            React.createElement("div", { className: `back-button-container` },
+                React.createElement("div", { className: "back-button", onClick: () => this.props.goBack() }, "Reports Home")),
+            React.createElement("div", { className: 'e-stats' },
+                React.createElement("div", { onClick: this.loadStats.bind(this, 'office'), className: 'stat office' },
+                    React.createElement("div", { className: 'bg' }),
+                    React.createElement("div", { className: 'title' }, "Office"),
+                    React.createElement("div", { className: 'value' }, officeCount)),
+                React.createElement("div", { onClick: this.loadStats.bind(this, 'remote'), className: 'stat remote' },
+                    React.createElement("div", { className: 'bg' }),
+                    React.createElement("div", { className: 'title' }, "Remote"),
+                    React.createElement("div", { className: 'value' }, remoteCount)),
+                React.createElement("div", { onClick: this.loadStats.bind(this, 'leave'), className: 'stat leave' },
+                    React.createElement("div", { className: 'bg' }),
+                    React.createElement("div", { className: 'title' }, "Leave"),
+                    React.createElement("div", { className: 'value' }, leaveCount)))));
     }
     renderFilteredUsers() {
         return React.createElement("div", null);
     }
     render() {
-        if (this.state.mode == '') {
-            return this.renderStats();
-        }
-        return this.renderFilteredUsers();
+        return (React.createElement("div", { className: "report-section" },
+            React.createElement("div", { className: "report-container" },
+                React.createElement("div", { className: "header" },
+                    React.createElement("div", { className: "title" },
+                        React.createElement("span", { className: `arrow` }),
+                        "Employee Status")),
+                React.createElement("div", { className: "body" }, this.state.mode == "" ? this.renderStats() : this.renderFilteredUsers()))));
     }
 }
 exports.EmployeeStatus = EmployeeStatus;
@@ -20516,119 +20556,43 @@ class Reports extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            title: "Health Reports",
             selectedReport: null,
-            searchText: "",
-            searchResult: []
         };
         this.renderReports = this.renderReports.bind(this);
-        this.searchCallback = this.searchCallback.bind(this);
-        this.searchUsers = this.searchUsers.bind(this);
-        this.onSearch = this.onSearch.bind(this);
         this.showReportsView = this.showReportsView.bind(this);
     }
-    onSearch(event) {
-        this.setState({ searchText: event.target.value });
-        this.searchUsers(event.target.value);
-    }
-    searchCallback(searchText) {
-        this.setState({ searchText: searchText });
-        this.searchUsers(searchText);
-    }
-    searchUsers(searchText) {
-        let _data = JSON.stringify({
-            searchtext: searchText
-        });
-        fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/search", {
-            method: 'POST',
-            headers: {
-                'Authorization': 'APIKEY ' + this.props.apiKey,
-                'Content-Type': 'application/json'
-            },
-            body: _data
-        })
-            .then(res => res.json())
-            .then(res => {
-            this.setState({ searchResult: res });
-        })
-            .catch(err => {
-            console.log(err);
-            throw err;
+    onSelectReport(report) {
+        this.setState({
+            selectedReport: report
         });
     }
     showReportsView() {
         this.setState({ selectedReport: null });
     }
     renderReports() {
-        return (React.createElement("div", { className: "reports" }, AllReports.map(r => (React.createElement("div", { className: "report-card " + r.name, onClick: () => this.onSelectReport(r.name) },
-            React.createElement("div", { className: "report-image " + r.name }),
-            React.createElement("div", { className: "report-name" },
-                " ",
-                r.title))))));
-    }
-    onSelectReport(report) {
-        let title = "Health Reports";
-        let reportDetails = getReportDetails(report);
-        if (!!reportDetails) {
-            title = reportDetails.title;
-        }
-        this.setState({
-            selectedReport: report,
-            title: title
-        });
+        return (React.createElement("div", { className: "report-section" },
+            React.createElement("div", { className: "report-container" },
+                React.createElement("div", { className: "header" },
+                    React.createElement("div", { className: "title" }, "Health Reports")),
+                React.createElement("div", { className: "body" },
+                    React.createElement("div", { className: "reports" }, AllReports.map(r => (React.createElement("div", { className: "report-card " + r.name, onClick: () => this.onSelectReport(r.name) },
+                        React.createElement("div", { className: "report-image " + r.name }),
+                        React.createElement("div", { className: "report-name" },
+                            " ",
+                            r.title)))))))));
     }
     render() {
         let content = React.createElement("div", null);
         let reportDetails = getReportDetails(this.state.selectedReport);
         if (reportDetails) {
             let RC = reportDetails.component;
-            content = React.createElement(RC, { items: this.state.searchResult, onSearch: this.searchCallback, searchText: this.state.searchText, apiUrl: this.props.apiUrl, apiKey: this.props.apiKey, goBack: this.showReportsView });
+            content = React.createElement(RC, { apiUrl: this.props.apiUrl, apiKey: this.props.apiKey, goBack: this.showReportsView });
         }
         else {
             content = this.renderReports();
         }
-        /*switch (this.state.selectedReport) {
-            case "contact-tracking":
-                content = <ContactTracing items={this.state.searchResult} onSearch={this.searchCallback}
-                searchText={this.state.searchText}
-                apiUrl={this.props.apiUrl}
-                apiKey={this.props.apiKey}
-                goBack={this.showReportsView}
-                 />;
-                break;
-
-            default:
-                content = this.renderReports();
-        }*/
-        let searchBoxClass = "search-box";
-        if (this.state.searchText.length > 0) {
-            searchBoxClass += " filled";
-        }
-        if (this.state.selectedReport == null) {
-            searchBoxClass += " hide";
-        }
-        return (React.createElement("div", { className: "report-section" },
-            React.createElement("div", { className: "report-container" },
-                React.createElement("div", { className: "header" },
-                    React.createElement("div", { className: "title" },
-                        React.createElement("span", { className: `arrow ${this.state.selectedReport == null ? "hide" : ""}` }),
-                        " ",
-                        this.state.title),
-                    React.createElement("div", { className: "last-updated" }, this.state.searchText.length > 0 ?
-                        React.createElement(React.Fragment, null,
-                            React.createElement("i", null, "Showing Results for\u00A0\u00A0"),
-                            " ",
-                            React.createElement("span", null,
-                                "\"",
-                                this.state.searchText,
-                                "\""))
-                        :
-                            ""),
-                    React.createElement("div", { className: "filters" },
-                        React.createElement("div", { className: searchBoxClass },
-                            React.createElement("input", { type: "text", className: `search `, placeholder: "search by name or email", value: this.state.searchText, onChange: event => this.onSearch(event) }),
-                            React.createElement("span", { className: "close-button", onClick: () => this.setState({ searchText: "" }) })))),
-                React.createElement("div", { className: "body" }, content))));
+        // render content
+        return React.createElement(React.Fragment, null, content);
     }
 }
 exports.default = Reports;
@@ -20683,13 +20647,13 @@ const global_dashboard_1 = __webpack_require__(/*! ./components/global-dashboard
 const local_dashboard_1 = __webpack_require__(/*! ./components/local-dashboard/local-dashboard */ "./src/components/local-dashboard/local-dashboard.tsx");
 __webpack_require__(/*! ./index.scss */ "./src/index.scss");
 const API_URL = "http://staywoke.v4.iviva.cloud/hook/Covid19";
-const Local_Data_URL = "http://staywoke.v4.iviva.cloud";
-const APIKey = "SC:staywoke:529c20cd6c187259";
+const Local_Data_URL = "http://testaccount.ivivacloud.com:5000";
+const APIKey = "SC:testaccount:00d8242a63a5656f";
 class Layout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            dashboard: "global",
+            dashboard: "local",
             title: "Health Monitor",
             userName: null,
             dialog: ""
