@@ -86,12 +86,18 @@ class SearchResult extends React.Component<ISearchResultProps, ISearchResultStat
         this.setState({ selected: item });
 
         // get tracing 
+        let _data = JSON.stringify({
+            'email':item.email,
+            '_id':item._id,
+        });
+
         fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users/reports/contact-tracing", {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 'Authorization': 'APIKEY ' + this.props.apiKey,
                 'Content-Type': 'application/json'
-            }
+            },
+            body: _data
         })
             .then(res => res.json())
             .then(res => {
