@@ -1,4 +1,13 @@
 import * as React from 'react';
+
+function statusName(status:string) {
+    switch(status) {
+        case 'office': return 'Checked-In';
+        case 'remote': return 'Remote';
+        case 'leave': return 'On Leave';
+        default: return status;
+    }
+}
 interface IEmployeeStatusProps {
     apiUrl: string,
     apiKey: string,
@@ -8,14 +17,20 @@ interface IEmployeeStatusProps {
     goBack: ()=>void;
 }
 
+interface IEmployee {
+    name: string;
+    status: string;
+}
 interface IEmployeeStatusState {
     searchText: string;
     tempSearchText: string;
     mode: '' | 'office' | 'remote' | 'leave' | 'search';
     loadingStats:boolean;
+    loadingUsers:boolean;
     officeCount:number;
     leaveCount:number;
     remoteCount:number;
+    users:IEmployee[];
 
 }
 export class EmployeeStatus extends React.Component<IEmployeeStatusProps,IEmployeeStatusState> {
@@ -29,6 +44,8 @@ export class EmployeeStatus extends React.Component<IEmployeeStatusProps,IEmploy
             leaveCount:0,
             remoteCount:0,
             officeCount:0,
+            loadingUsers:false,
+            users:[],
         }
     }
 
@@ -52,6 +69,24 @@ export class EmployeeStatus extends React.Component<IEmployeeStatusProps,IEmploy
         let json = await response.json();
         this.setState({loadingStats:false,officeCount:json.office,remoteCount:json.remote,leaveCount:json.leave});
     }
+    async loadUsers(mode:'office'|'remote'|'leave') {
+        await this.setStateAsync({loadingUsers:true});
+        let response= await fetch(this.props.apiUrl + `/Lucy/UserStatus/users?mode=${mode}`,{
+            
+            method:'GET',
+            headers:{
+                'Authorization':`APIKEY ${this.props.apiKey}`
+            }
+        });
+        let json = await response.json();
+        await this.setStateAsync({loadingUsers:false,users:json});
+    }
+
+    showUsers(type:'office'|'remote'|'leave') {
+        this.setState({mode:type},()=>{
+            this.loadUsers(type).then(_ => {});
+        });
+    }
     renderStats() {
         let leaveCount:string = this.state.leaveCount+'';
         let officeCount:string = this.state.officeCount+'';
@@ -63,25 +98,45 @@ export class EmployeeStatus extends React.Component<IEmployeeStatusProps,IEmploy
             officeCount = '...';
         }
         return <div className='e-stats'>
-            <div onClick={this.loadStats.bind(this,'office')} className='stat office'>
+            <div onClick={this.showUsers.bind(this,'office')} className='stat office'>
                 <div className='bg' />
                 <div className='title'>Office</div>
                 <div className='value'>{officeCount}</div>
             </div>
-            <div onClick={this.loadStats.bind(this,'remote')} className='stat remote'>
+            <div onClick={this.showUsers.bind(this,'remote')} className='stat remote'>
                 <div className='bg' />
                 <div className='title'>Remote</div>
                 <div className='value'>{remoteCount}</div>
             </div>
-            <div onClick={this.loadStats.bind(this,'leave')} className='stat leave'>
+            <div onClick={this.showUsers.bind(this,'leave')} className='stat leave'>
                 <div className='bg' />
                 <div className='title'>Leave</div>
                 <div className='value'>{leaveCount}</div>
             </div>
         </div>;
     }
+    renderUser(user:IEmployee, key:number) {
+        return <div className='e-user' key={key}>
+            <div className='title'>{user.name}</div>
+            <div className='status'>{statusName(user.status)}</div>
+        </div>;
+    }
     renderFilteredUsers() {
-        return <div></div>;
+        let users = this.state.users;
+        return <>
+        <div className={`back-button-container`}>
+            <div className="back-button" onClick={() => this.props.goBack()}>Back to search</div>
+        </div>
+        <div className="e-users search-result-container">
+            {
+                users.length > 0 ?
+                    users.map((item, key) => this.renderUser(item, key))
+                    :
+                    <div className="no-result">No Users</div>
+            }
+        </div>
+    </>;
+
     }
     render() {
         if (this.state.mode == '') {
