@@ -1479,9 +1479,9 @@ html {
     &.scann-form {
         left: 20%;
         right: 20%;
-        height: fit-content;
-        top: 50%;
-        transform: translateY(-50%);
+        // height: fit-content;
+        // top: 50%;
+        // transform: translateY(-50%);
 
         .header {
             height: 30px;
@@ -1669,10 +1669,6 @@ html {
                 color: #000;
                 font-weight: 600;
 
-                span {
-                    float: right;
-                    color: lightgray;
-                }
             }
 
             .input {
@@ -1737,6 +1733,99 @@ html {
                     color: red;
                 }
             }
+        }
+
+        .form {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-start;
+
+            .form-group {
+                position: relative;
+                width: 50%;
+                padding: 10px;
+                box-sizing: border-box;
+    
+                .label {
+                    position: relative;
+                    display: block;
+                    width: 100%;
+                    margin-bottom: 15px;
+                    color: #000;
+                    font-weight: 600;
+                    font-size: 0.7rem;
+
+                    .required {
+                        color: red;
+                        font-size: 1.1rem;
+                    }
+                }
+    
+                .input {
+                    position: relative;
+                    display: block;
+                    width: 100%;
+                    box-sizing: border-box;
+                    padding: 10px 20px;
+                    border-radius: 35px;
+                    background-color: #f8f8f8;
+                    border: 0;
+                    outline: none;
+    
+                    &.filled {
+                        @include employees-gradient();
+                        color: #fff;
+                        box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 0.1);
+                    }
+                }
+    
+                &.buttons {
+                    width: 100%;
+                    text-align: center;
+                    margin-top: 10px;
+    
+                    .submit-button {
+                        width: auto;
+                        padding: 10px 40px;
+                        border-radius: 50px;
+                        background-color: #f8f8f8;
+                        border: 0;
+                        box-shadow: -2px 6px 9px rgba(0, 0, 0, 0.3);
+                        color: gray;
+    
+                        .icon {
+                            //width: 30px;
+                            //height: 30px;
+                            //background: url("../images/");
+                        }
+    
+                        &.valid {
+                            background-color: orange;
+                            color: #fff;
+                        }
+                    }
+                }
+    
+                .feedback {
+                    display: block;
+                    width: 100%;
+                    height: auto;
+                    color: black;
+                    text-align: center;
+    
+                    &.info {
+                        color: blue;
+                    }
+    
+                    &.success {
+                        color: green;
+                    }
+                    &.error {
+                        color: red;
+                    }
+                }
+            }  
         }
 
         &.edit {
@@ -1844,6 +1933,11 @@ html {
                         width: 100%;
                         display: block;
                         text-align: left;
+                    }
+
+                    .required {
+                        color: red;
+                        font-size: 1.1rem;
                     }
                 }
 
@@ -2428,6 +2522,7 @@ html {
         }
 
         .toolbar {
+            position: unset;
             width: 100%;
             box-sizing: border-box;
             margin: 10px 0;
@@ -2608,6 +2703,19 @@ html {
             }
         }
     }
+
+    .dialog { 
+        .body{
+            .form {
+                flex-wrap: nowrap;
+                flex-direction: column;
+                .form-group {
+                    width: 100%;
+                }
+            }
+        }
+    }
+
 }
 
 @import "./components/local-dashboard/reports/reports.scss";

@@ -55,7 +55,9 @@ interface IScanData {
     isValid: boolean,
     feedback: any,
     buttonText: string,
-    tempUnit: string
+    tempUnit: string,
+    email: string,
+    contactnumber: string
 }
 
 interface IEditFormData {
@@ -325,7 +327,7 @@ class WebCam extends React.Component<IWebCamProps, IWebCamState>{
             .catch(e => console.error(e));
     }
 
-    stopVideo(stream:MediaStream) {
+    stopVideo(stream: MediaStream) {
         stream.getTracks().forEach(track => {
             track.stop();
         })
@@ -352,7 +354,7 @@ class WebCam extends React.Component<IWebCamProps, IWebCamState>{
         let snap = this.state.snapshot;
         this.props.onTakeSnap(snap);
 
-        let closeButton:HTMLButtonElement = document.querySelector("#cancelVideo");
+        let closeButton: HTMLButtonElement = document.querySelector("#cancelVideo");
         closeButton.click();
     }
 
@@ -407,7 +409,9 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 isValid: false,
                 feedback: <span></span>,
                 buttonText: "Submit",
-                tempUnit: "celsius"
+                tempUnit: "celsius",
+                email: "",
+                contactnumber: ""
             },
             selected: null,
             editForm: {
@@ -579,41 +583,57 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 </div>
                 <div className='body'>
 
-                    <div className="form-group">
-                        <label className="label" >Name  </label>
-                        <input type="text" name="name" className={`input ${this.state.scannData.name.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.name} placeholder="Example: John Doe" onChange={(event) => this.updateFormData(event, 'name')} />
+                    <div className="form">
+
+                        <div className="form-group">
+                            <label className="label" >Name <span className="required"><sup>*</sup></span>  </label>
+                            <input type="text" name="name" className={`input ${this.state.scannData.name.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.name} placeholder="Ex: John Doe" onChange={(event) => this.updateFormData(event, 'name')} />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="label" >Id (if available) </label>
+                            <input type="text" name="id" className={`input ${this.state.scannData.id.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.id} placeholder="Ex: E123" onChange={(event) => this.updateFormData(event, 'id')} />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="label" >Temperature <span className="required"><sup>*</sup></span></label>
+                            <input type="text" name="temperature" className={`input ${this.state.scannData.temperature.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.temperature} placeholder="Ex: 23" onChange={(event) => this.updateFormData(event, 'temperature')} />
+                        </div>
+
+                        <div className="form-group" style={{ display: 'none' }}>
+                            <label className="label" >Location  </label>
+                            <input type="text" name="location" className={`input ${this.state.scannData.location.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.location} placeholder="Ex: Singapore" onChange={(event) => this.updateFormData(event, 'location')} />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="label" >Countries Visited </label>
+                            <input type="text" name="lastvisited" className={`input ${this.state.scannData.lastVisitedCountry.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.lastVisitedCountry} placeholder="Ex: Kenya" onChange={(event) => this.updateFormData(event, 'lastVisited')} />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="label" >Email</label>
+                            <input type="text" name="email" className={`input ${this.state.scannData.email.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.email} placeholder="Example: abc@abc.com" onChange={(event) => this.updateFormData(event, 'email')} />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="label" >Contact Number </label>
+                            <input type="text" name="contactnumber" className={`input ${this.state.scannData.contactnumber.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.contactnumber} placeholder="Ex: +1(504)43227645" onChange={(event) => this.updateFormData(event, 'contact')} />
+                        </div>
+
+                        <div className="form-group">
+                            {this.state.scannData.feedback}
+                        </div>
+
+                        <div className="form-group buttons">
+                            <button type="button" className={`submit-button ${this.state.scannData.isValid ? "valid" : ""} `} onClick={this.submitForm}>
+                                <span className="icon"></span>
+                                {this.state.scannData.buttonText}
+                            </button>
+                        </div>
+
+
                     </div>
 
-                    <div className="form-group">
-                        <label className="label" >Id (if available) </label>
-                        <input type="text" name="id" className={`input ${this.state.scannData.id.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.id} placeholder="Example: E123" onChange={(event) => this.updateFormData(event, 'id')} />
-                    </div>
-
-                    <div className="form-group">
-                        <label className="label" >Temperature</label>
-                        <input type="text" name="temperature" className={`input ${this.state.scannData.temperature.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.temperature} placeholder="Example: 23" onChange={(event) => this.updateFormData(event, 'temperature')} />
-                    </div>
-
-                    <div className="form-group" style={{ display: 'none' }}>
-                        <label className="label" >Location  </label>
-                        <input type="text" name="location" className={`input ${this.state.scannData.location.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.location} placeholder="Example: Singapore" onChange={(event) => this.updateFormData(event, 'location')} />
-                    </div>
-
-                    <div className="form-group">
-                        <label className="label" >Countries Visited </label>
-                        <input type="text" name="lastvisited" className={`input ${this.state.scannData.lastVisitedCountry.trim().length == 0 ? "" : "filled"} `} value={this.state.scannData.lastVisitedCountry} placeholder="Example: Kenya" onChange={(event) => this.updateFormData(event, 'lastVisited')} />
-                    </div>
-
-                    <div className="form-group">
-                        {this.state.scannData.feedback}
-                    </div>
-
-                    <div className="form-group buttons">
-                        <button type="button" className={`submit-button ${this.state.scannData.isValid ? "valid" : ""} `} onClick={this.submitForm}>
-                            <span className="icon"></span>
-                            {this.state.scannData.buttonText}
-                        </button>
-                    </div>
 
                     <div className='qrcodes'>
                         <div className='code'>
@@ -649,7 +669,7 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
                     <div className={`left`}>
                         <div className="form-group">
-                            <label className="label" >Temperature</label>
+                            <label className="label" >Temperature<span className="required"><sup>*</sup></span></label>
                             <input type="text" name="temperature" className={`input ${this.state.selected.temperature != null && this.state.selected.temperature.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.temperature} placeholder="Ex: 23" onChange={(event) => this.updateEditFormData(event, 'temperature')} />
 
                             <span className="temp-units">
@@ -659,12 +679,12 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         </div>
 
                         <div className="form-group">
-                            <label className="label" >Name  </label>
+                            <label className="label" >Name<span className="required"><sup>*</sup></span>  </label>
                             <input type="text" name="name" className={`input ${this.state.selected.name != null && this.state.selected.name.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.name} placeholder="Ex: John Doe" onChange={(event) => this.updateEditFormData(event, 'name')} />
                         </div>
 
                         <div className="form-group">
-                            <label className="label" >Location  </label>
+                            <label className="label" >Location <span className="required"><sup>*</sup></span> </label>
                             <input type="text" name="location" className={`input ${this.state.selected.location != null && this.state.selected.location.trim().length == 0 ? "" : "filled"} `} value={this.state.selected.location} placeholder="Ex: Singapore" onChange={(event) => this.updateEditFormData(event, 'location')} />
                         </div>
 
@@ -776,6 +796,12 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             case "lastVisited":
                 scannedData.lastVisitedCountry = newValue;
                 break;
+            case "email":
+                scannedData.email = newValue;
+                break;
+            case "contact":
+                scannedData.contactnumber = newValue;
+                break;
         }
 
         scannedData.isValid = scannedData.name.trim().length > 0 && scannedData.temperature.trim().length > 0;
@@ -820,12 +846,14 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
     submitForm() {
 
         let scanData = this.state.scannData;
-        scanData.feedback = <span className="feedback info" >Submitting...</span>;
-        scanData.buttonText = "Submitting...";
+       
 
         this.setState({ scannData: scanData });
 
         if (this.state.scannData.isValid) {
+
+            scanData.feedback = <span className="feedback info" >Submitting...</span>;
+            scanData.buttonText = "Submitting...";
 
             let temperature = this.state.scannData.temperature.trim();
             let tempUnit = this.state.scannData.tempUnit;
@@ -841,6 +869,8 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                 "temperature": temperature,
                 "source": "Lucy",
                 "countriesvisited": this.state.scannData.lastVisitedCountry.trim(),
+                "email": this.state.scannData.email.trim(),
+                "contactnumber": this.state.scannData.contactnumber.trim()
             });
 
             fetch(this.props.apiUrl + "/Lucy/SituationalAwareness/users", {
@@ -879,6 +909,10 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                     console.log(err);
                     throw err;
                 })
+        }
+        else {
+            scanData.feedback = <span className="feedback error" >Please complete the form</span>;
+            scanData.buttonText = "Submit";
         }
     }
 
