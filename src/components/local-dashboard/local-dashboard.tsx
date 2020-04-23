@@ -9,6 +9,8 @@ declare const window: any;
 type IStatType = 'screened' | 'employees' | 'oranges';
 type IListFilter = 'starred' | 'all';
 
+const placeholderImage = "images/camera.png";
+
 function checkInStatusText(s: string) {
     switch (s?.toLowerCase()) {
         default: return 'Expected';
@@ -81,7 +83,9 @@ interface ILocalState {
     editForm: IEditFormData,
     searchText: string,
     newItems: IEmployeeDetails[],
-    view: 'all' | 'reports';
+    view: 'all' | 'reports',
+    showWebCam: boolean,
+    snapshot: string
 }
 
 interface IListWidgetProps {
@@ -98,6 +102,15 @@ interface IListWidgetState {
 
 interface IMapWidgetProps {
     items: IEmployeeDetails[]
+}
+
+interface IWebCamProps {
+    onTakeSnap: any
+    onClose: any
+}
+
+interface IWebCamState {
+    snapshot: string
 }
 
 
@@ -276,6 +289,103 @@ class MapWidget extends React.Component<IMapWidgetProps, {}> {
     }
 }
 
+class WebCam extends React.Component<IWebCamProps, IWebCamState>{
+    constructor(props: IWebCamProps) {
+        super(props);
+
+        this.state = {
+            snapshot: ""
+        }
+
+        this.captureSnap = this.captureSnap.bind(this);
+        this.closeWebCamModel = this.closeWebCamModel.bind(this);
+        this.saveSnapshot = this.saveSnapshot.bind(this);
+    }
+
+    componentDidMount() {
+        this.startVideo();
+    }
+
+    startVideo() {
+        let videoElement: HTMLVideoElement = document.querySelector("#videoElement");
+
+        navigator.mediaDevices
+            .getUserMedia({ video: true })
+            .then(stream => {
+
+                let cancelButton: HTMLButtonElement = document.querySelector("#cancelVideo");
+                cancelButton.addEventListener("click", () => {
+                    this.stopVideo(stream);
+                    this.closeWebCamModel();
+                })
+
+                videoElement.srcObject = stream
+
+            })
+            .catch(e => console.error(e));
+    }
+
+    stopVideo(stream:MediaStream) {
+        stream.getTracks().forEach(track => {
+            track.stop();
+        })
+    }
+
+    closeWebCamModel() {
+        return this.props.onClose(false);
+    }
+
+    captureSnap() {
+        let videoElement: HTMLVideoElement = document.querySelector("#videoElement");
+        let canvasElement: HTMLCanvasElement = document.querySelector("#canvasElement");
+        let context = canvasElement.getContext("2d");
+
+        canvasElement.width = videoElement.width;
+        canvasElement.height = videoElement.height;
+
+        context.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+        let snapBase64 = canvasElement.toDataURL();
+        this.setState({ snapshot: snapBase64 })
+    }
+
+    saveSnapshot() {
+        let snap = this.state.snapshot;
+        this.props.onTakeSnap(snap);
+
+        let closeButton:HTMLButtonElement = document.querySelector("#cancelVideo");
+        closeButton.click();
+    }
+
+    render() {
+
+        return (<>
+            <div className={"imageCaptureModel"}>
+                <div className="cam-container">
+                    <video id="videoElement" width="350" height="250" muted autoPlay
+                        className={`videoElement ${this.state.snapshot == "" ? "" : "hide"}`} >
+                        loading...
+                    </video>
+                    <canvas id="canvasElement" className={`canvasElement ${this.state.snapshot == "" ? "hide" : ""}`} ></canvas>
+
+                    <div className="button-container">
+                        <button className={`take-photo ${this.state.snapshot == "" ? "" : "hide"} `}
+                            onClick={this.captureSnap}><span className="icon"></span>Take Photo</button>
+
+                        <button className={`submit ${this.state.snapshot == "" ? "hide" : ""} `}
+                            onClick={this.saveSnapshot} >Done</button>
+
+                        <button className={`try-again ${this.state.snapshot == "" ? "hide" : ""} `}
+                            onClick={() => this.setState({ snapshot: "" })}>Take Another</button>
+
+                        <button className="cancel" id="cancelVideo" >Cancel</button>
+                    </div>
+
+                </div>
+            </div>
+        </>);
+    }
+}
+
 class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
 
     constructor(props: ILocalProps) {
@@ -307,7 +417,9 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             },
             searchText: "",
             newItems: [],
-            view: "all"
+            view: "all",
+            showWebCam: false,
+            snapshot: ""
         }
 
         this.submitForm = this.submitForm.bind(this);
@@ -323,6 +435,8 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
         this.onSearch = this.onSearch.bind(this);
         this.closeMessage = this.closeMessage.bind(this);
         this.toggleReportsView = this.toggleReportsView.bind(this);
+        this.toggleWebCam = this.toggleWebCam.bind(this);
+        this.onTakeSnap = this.onTakeSnap.bind(this);
     }
 
     componentDidMount() {
@@ -583,9 +697,9 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
                         <div className="form-group">
                             <label className="label full-width" >Capture Image </label>
                             <div className="placeholder">
-                                <img src="images/camera.png" alt="camera" />
+                                <img src={this.state.snapshot == "" ? placeholderImage : this.state.snapshot} alt="camera" />
                             </div>
-                            <button className={`take-photo`}><span className={`icon`}></span> Take Photo </button>
+                            <button className={`take-photo`} onClick={() => this.toggleWebCam(true)}><span className={`icon`}></span> Take Photo </button>
                         </div>
 
                     </div>
@@ -610,6 +724,18 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             </div>
 
         </>;
+    }
+
+    toggleWebCam(option?: boolean) {
+        let opt = true;
+        if (typeof option !== "undefined") {
+            opt = option
+        }
+        this.setState({ showWebCam: opt })
+    }
+
+    onTakeSnap(snapshot: string) {
+        this.setState({ snapshot: snapshot });
     }
 
     closeScanningForm() {
@@ -1130,6 +1256,10 @@ class LocalDashboard extends React.Component<ILocalProps, ILocalState>  {
             </div>
 
             {dialog}
+
+            {
+                this.state.showWebCam ? <WebCam onTakeSnap={this.onTakeSnap} onClose={this.toggleWebCam} /> : ""
+            }
 
             <div className="message-container">
                 {

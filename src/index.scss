@@ -1462,6 +1462,7 @@ html {
     background-color: rgba(79, 74, 109, 0.466);
     z-index: 500;
 }
+
 .dialog {
     position: fixed;
     z-index: 500;
@@ -1897,6 +1898,95 @@ html {
         }
     }
 }
+
+.imageCaptureModel {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: rgba(79, 74, 109, 0.466);
+    z-index: 501;
+
+    .cam-container {
+        position: fixed;
+        z-index: 501;
+        left: 20%;
+        right: 20%;
+        height: auto;
+        min-height: 60%;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: white;
+        box-sizing: border-box;
+        @include boxshadow();
+        border-radius: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+        video,
+        canvas,
+        button {
+            width: 350px;
+            height: 250px;
+            border: 1px solid gray;
+
+            &.hide {
+                display: none;
+            }
+        }
+
+        .button-container {
+            width: auto;
+            margin-top: 30px;
+        }
+
+        button {
+            text-align: center;
+            width: auto;
+            padding: 8px 20px;
+            border-radius: 50px;
+            background-color: gray;
+            border: 0;
+            color: #fff;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            outline: none;
+            max-height: 32px;
+            margin: 2px;
+
+            &:hover {
+                @include toggleBtnGradient();
+                color: white;
+            }
+        }
+
+        .cancel, .try-again{
+            background-color: white;
+            color: gray;
+        }
+
+        
+
+        .take-photo {
+            
+            .icon {
+                display: inline-block;
+                width: 15px;
+                height: 10px;
+                background-image: url("../images/camera.svg");
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: contain;
+            }
+        }
+    }
+}
+
 @keyframes map-ripple {
     0% {
         transform: scale(0.3) translate(-50%, -50%);
